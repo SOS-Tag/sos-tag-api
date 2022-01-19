@@ -34,7 +34,6 @@ class UserResolver {
   }
 
   @Query(() => UserResponse, { description: 'Get a user by his id.' })
-  @UseMiddleware(isAuth)
   async userById(@Arg('userId') userId: string): Promise<UserResponse> {
     try {
       const user = await this.userService.findUserById(userId);
@@ -46,7 +45,6 @@ class UserResolver {
   }
 
   @Query(() => UsersResponse, { description: 'Get all users.' })
-  @UseMiddleware(isAuth)
   async users(): Promise<UsersResponse> {
     try {
       const users = await this.userService.findUsers();
