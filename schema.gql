@@ -147,20 +147,27 @@ input RegisterInput {
 type User {
   _id: ID
   advanceDirectives: Boolean
+  antecedents: [String]
   birthday: DateTime
   bloodGroup: String
   confirmed: Boolean
   createdAt: String
+  diabetes: Boolean
+  drugAllergies: [String]
   email: String
+  epilepsy: Boolean
   firstname: String
+  haemophilia: Boolean
   height: Float
   lastname: String
+  pacemaker: Boolean
   password: String
   phone: String
   sex: String
   smoking: Boolean
   tokenVersion: Int
   updatedAt: String
+  utdVaccines: Boolean
   weight: Float
 }
 
