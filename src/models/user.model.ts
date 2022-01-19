@@ -44,13 +44,70 @@ const userModel: mongoose.Schema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    confirmed: {
-      type: Boolean,
-    },
     tokenVersion: {
       type: Number,
       required: false,
       default: 0,
+    },
+    confirmed: {
+      type: Boolean,
+    },
+    sex: {
+      type: String,
+      required: true
+    },
+    birthday: {
+      type: Date,
+      required: true
+    },
+    height: {
+      type: Date,
+      required: true
+    },
+    weight: {
+      type: Number,
+      required: true
+    },
+    bloodGroup: {
+      type: String,
+      required: false
+    },
+    advancedDirective: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    smoking: {
+      type: Boolean,
+      required: false,
+    },
+    drugAllergies: {
+      type: [String],
+      required: false,
+    },
+    antecedents: {
+      type: [String],
+      required: false,
+    },
+    utdVaccines: {
+      type: Boolean,
+      required: false,
+    },
+    diabetes: {
+      type: Boolean,
+      required: false,
+    },
+    haemophilia: {
+      type: Boolean,
+      required: false,
+    },
+    epilepsy: {
+      type: Boolean,
+      required: false,
+    },
+    pacemaker: {
+      type: Boolean,
+      required: false,
     },
   },
   { timestamps: true },

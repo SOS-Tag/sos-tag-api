@@ -31,6 +31,48 @@ class User {
 
   @Field(() => String)
   updatedAt: Date;
+
+  @Field()
+  sex: String;
+
+  @Field()
+  birthday: Date;
+
+  @Field()
+  height: Number;
+
+  @Field()
+  weight: Number;
+
+  @Field()
+  bloodGroup: String;
+
+  @Field()
+  advanceDirectives: Boolean;
+
+  @Field()
+  smoking: Boolean;
+
+  @Field()
+  drugAllergies: String[];
+
+  @Field()
+  antecedents: String[];
+
+  @Field()
+  utdVaccines: Boolean;
+
+  @Field()
+  diabetes: Boolean;
+
+  @Field()
+  haemophilia: Boolean;
+
+  @Field()
+  epilepsy: Boolean;
+
+  @Field()
+  pacemaker: Boolean;
 }
 
 export default User;

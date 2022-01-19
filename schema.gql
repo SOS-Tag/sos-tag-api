@@ -15,6 +15,11 @@ input ChangePasswordInput {
   token: String
 }
 
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
 """Error with message and the associated field"""
 type FieldError {
   field: String
@@ -141,15 +146,22 @@ input RegisterInput {
 """User Schema"""
 type User {
   _id: ID
+  advanceDirectives: Boolean
+  birthday: DateTime
+  bloodGroup: String
   confirmed: Boolean
   createdAt: String
   email: String
   firstname: String
+  height: Float
   lastname: String
   password: String
   phone: String
+  sex: String
+  smoking: Boolean
   tokenVersion: Int
   updatedAt: String
+  weight: Float
 }
 
 """User response"""
