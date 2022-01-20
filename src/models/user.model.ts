@@ -81,7 +81,16 @@ const userModel: mongoose.Schema = new mongoose.Schema(
       type: Boolean,
       required: false,
     },
+    organsDonation: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     drugAllergies: {
+      type: [String],
+      required: false,
+    },
+    currentTreatment: {
       type: [String],
       required: false,
     },

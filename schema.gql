@@ -152,6 +152,7 @@ type User {
   bloodGroup: String
   confirmed: Boolean
   createdAt: String
+  currentTreatment: [String]
   diabetes: Boolean
   drugAllergies: [String]
   email: String
@@ -160,6 +161,7 @@ type User {
   haemophilia: Boolean
   height: Float
   lastname: String
+  organsDonation: Boolean
   pacemaker: Boolean
   password: String
   phone: String

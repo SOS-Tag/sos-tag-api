@@ -53,8 +53,14 @@ class User {
   @Field()
   smoking: Boolean;
 
+  @Field()
+  organsDonation: Boolean;
+
   @Field(() => [String])
   drugAllergies: [String];
+
+  @Field(() => [String])
+  currentTreatment: [String];
 
   @Field(() => [String])
   antecedents: [String];
