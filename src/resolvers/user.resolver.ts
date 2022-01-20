@@ -5,8 +5,9 @@ import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';
 import { logger } from '@utils/logger';
 import { verify } from 'jsonwebtoken';
-import { Arg, Ctx, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Service } from 'typedi';
+import { LoginResponse } from '@/responses/auth.response';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
@@ -56,6 +57,8 @@ class UserResolver {
       throw error;
     }
   }
+
+
 }
 
 export default UserResolver;

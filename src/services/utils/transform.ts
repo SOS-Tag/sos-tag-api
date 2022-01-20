@@ -21,4 +21,5 @@ const transformUser = account => {
   };
 };
 
+
 export { transformQRCode, transformUser };
