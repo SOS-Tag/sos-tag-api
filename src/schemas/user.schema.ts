@@ -1,4 +1,5 @@
 import { Field, ID, Int, ObjectType } from 'type-graphql';
+import Sheet from './sheet.schema';
 
 @ObjectType({ description: 'User Schema' })
 class User {
@@ -31,6 +32,9 @@ class User {
 
   @Field(() => Boolean, { defaultValue: false })
   confirmed: boolean;
+
+  @Field(() => [Sheet]) //TODO Check if that is correct
+  sheets: Sheet[];
 
   @Field(() => String)
   createdAt: Date;

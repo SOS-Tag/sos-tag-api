@@ -1,15 +1,6 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
-
-type MedDataElement = {
-  value: string;
-  hidden: boolean;
-};
-
-const MedDataElementSchema = new mongoose.Schema({
-  value: String,
-  hidden: Boolean,
-});
+import { MedData } from '@/schemas/sheet.schema';
 
 export interface ISheet extends mongoose.Document {
   _id: string;
@@ -17,9 +8,9 @@ export interface ISheet extends mongoose.Document {
   lname: string;
   dateOfBirth: Date;
   nationality: string;
-  medData: MedDataElement;
-  activated: boolean;
-  affectedTo: number;
+  medData: MedData;
+  hidden: boolean;
+  isInUse: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -53,17 +44,16 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
       trim: true,
     },
     medData: {
-      type: [MedDataElementSchema],
+      type: MedData,
       required: true,
     },
-    activated: {
+    hidden: {
       type: Boolean,
       required: true,
       default: true,
     },
-    affectedTo: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    isInUse: {
+      type: Boolean,
       required: true,
     },
   },

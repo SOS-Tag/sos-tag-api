@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
+import Sheet from '@/schemas/sheet.schema';
 
 export interface IUser extends mongoose.Document {
   _id: string;
@@ -12,6 +13,7 @@ export interface IUser extends mongoose.Document {
   tokenVersion: number;
   activated: boolean;
   confirmed: boolean;
+  sheets: Sheet[];
   createdAt: string;
   updatedAt: string;
 }
@@ -61,6 +63,11 @@ const userModel: mongoose.Schema = new mongoose.Schema(
     },
     confirmed: {
       type: Boolean,
+    },
+    sheets: {
+      type: Schema.Types.ObjectId,
+      ref: 'Sheet',
+      required: true,
     },
   },
   { timestamps: true },

@@ -39,6 +39,30 @@ type LoginResponseData {
   user: User
 }
 
+"""Nested medical data object"""
+type MedData {
+  advanceDirectives: MedDataElement
+  antecedents: MedDataElement
+  bloodGroup: MedDataElement
+  currentTreatment: MedDataElement
+  diabetes: MedDataElement
+  drugAllergies: MedDataElement
+  epilepsy: MedDataElement
+  haemophilia: MedDataElement
+  height: MedDataElement
+  organsDonation: MedDataElement
+  pacemaker: MedDataElement
+  sex: MedDataElement
+  smoking: MedDataElement
+  utdVaccines: MedDataElement
+}
+
+"""Nested medical data element object"""
+type MedDataElement {
+  hidden: Boolean
+  value: String
+}
+
 type Mutation {
   """
   Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.
@@ -138,6 +162,20 @@ input RegisterInput {
   phone: String
 }
 
+"""Sheet Schema"""
+type Sheet {
+  _id: ID
+  createdAt: String
+  dateOfBirth: String
+  fname: String
+  hidden: Boolean
+  isInUse: Boolean
+  lname: String
+  medData: MedData
+  nationality: String
+  updatedAt: String
+}
+
 """User Schema"""
 type User {
   _id: ID
@@ -150,6 +188,7 @@ type User {
   nationality: String
   password: String
   phone: String
+  sheets: [Sheet]
   tokenVersion: Int
   updatedAt: String
 }
