@@ -27,6 +27,7 @@ import { Container } from 'typedi';
 import { refreshToken } from '@utils/token';
 import dbConnection from '@databases';
 import Context from '@interfaces/context.interface';
+import ejs from 'ejs'
 
 class Server {
   public express: express.Application;
@@ -46,6 +47,7 @@ class Server {
 
   private async initialize() {
     this.express.set('proxy', 1);
+    this.express.use(express.static('public'))
 
     await this.buildGraphQLSchema();
     await this.connectToDatabase();
@@ -106,6 +108,50 @@ class Server {
   private initializeRoutes() {
     this.express.get('/', (_, res) => res.send(`SOS-Tag API (alpha version)`));
     this.express.post('/refresh_token', (req, res) => refreshToken(req, res));
+    this.express.get('/:id', (req, res) => {
+      res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
+      // TEMPORARY, replace with data from database
+      const fakeData = {
+            id: req.params.id,
+            firstname: 'John',
+            lastname: 'Doe',
+            updatedAt: '2000-01-01',
+            sex: 'M',
+            birthday: '1980-01-01',
+            height: '178',
+            weight: '76',
+            bloodGroup: 'A-',
+            advanceDirectives: false,
+            drugAllergies: ['pollen', 'cocaïne'],
+            organsDonation: true,
+            currentTreatment: [],
+            smoking: false,
+            antecedents: [],
+            utdVaccines: true,
+            diabetes: false,
+            haemophilia: false,
+            epilepsy: true,
+            pacemaker: false
+      }
+      if (fakeData.id !== '00000000') {
+        // Render health sheet template filled with user data
+        ejs.renderFile(__dirname + '/templates/sostag.ejs', fakeData, {}, (err, template) => {
+          if (err) {
+            throw err
+          } else {
+            res.end(template)
+          }
+        })
+      } else {
+        ejs.renderFile(__dirname + '/templates/healthSheetNotFound.ejs', { id: req.params.id }, {}, (err, template) => {
+          if (err) {
+            throw err
+          } else {
+            res.end(template)
+          }
+        })
+      }
+    });
   }
 
   private initializeTranslation() {
