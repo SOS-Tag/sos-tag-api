@@ -6,10 +6,10 @@ class User {
   _id: String;
 
   @Field()
-  firstname: String;
+  fname: String;
 
   @Field()
-  lastname: String;
+  lname: String;
 
   @Field()
   email: String;
@@ -18,10 +18,16 @@ class User {
   phone: String;
 
   @Field()
+  nationality: String;
+
+  @Field()
   password: String;
 
   @Field(() => Int, { defaultValue: 0 })
   tokenVersion: Number;
+
+  @Field(() => Boolean, { defaultValue: false })
+  activated: boolean;
 
   @Field(() => Boolean, { defaultValue: false })
   confirmed: boolean;

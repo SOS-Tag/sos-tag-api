@@ -36,7 +36,7 @@ const emptyArgsExist = (
 };
 
 const invalidArgsExist = (
-  input: Pick<ChangePasswordInput, 'password'> | LoginInput | Omit<RegisterInput, 'firstname' | 'lastname'>,
+  input: Pick<ChangePasswordInput, 'password'> | LoginInput | Omit<RegisterInput, 'fname' | 'lname'>,
   req: Request,
 ): Record<string, string> => {
   const invalidArgs = {};

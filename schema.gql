@@ -132,8 +132,8 @@ type Query {
 """Register input"""
 input RegisterInput {
   email: String
-  firstname: String
-  lastname: String
+  fname: String
+  lname: String
   password: String
   phone: String
 }
@@ -141,11 +141,13 @@ input RegisterInput {
 """User Schema"""
 type User {
   _id: ID
+  activated: Boolean
   confirmed: Boolean
   createdAt: String
   email: String
-  firstname: String
-  lastname: String
+  fname: String
+  lname: String
+  nationality: String
   password: String
   phone: String
   tokenVersion: Int

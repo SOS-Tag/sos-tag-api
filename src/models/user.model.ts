@@ -3,13 +3,15 @@ import autopopulate from 'mongoose-autopopulate';
 
 export interface IUser extends mongoose.Document {
   _id: string;
-  firstname: string;
-  lastname: string;
+  fname: string;
+  lname: string;
   email: string;
   phone: string;
+  nationality: string;
   password: string;
-  confirmed: boolean;
   tokenVersion: number;
+  activated: boolean;
+  confirmed: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,12 +20,12 @@ export type IUserModel = mongoose.Model<IUser>;
 
 const userModel: mongoose.Schema = new mongoose.Schema(
   {
-    firstname: {
+    fname: {
       type: String,
       required: true,
       trim: true,
     },
-    lastname: {
+    lname: {
       type: String,
       required: true,
       trim: true,
@@ -40,17 +42,25 @@ const userModel: mongoose.Schema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    nationality: {
+      type: String,
+      //TODO remove  required: true,
+      trim: true,
+    },
     password: {
       type: String,
       required: true,
-    },
-    confirmed: {
-      type: Boolean,
     },
     tokenVersion: {
       type: Number,
       required: false,
       default: 0,
+    },
+    activated: {
+      type: Boolean,
+    },
+    confirmed: {
+      type: Boolean,
     },
   },
   { timestamps: true },

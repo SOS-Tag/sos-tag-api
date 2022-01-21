@@ -89,7 +89,7 @@ class AuthService {
         ],
       };
 
-    await sendEmail('change_password', user.firstname, userEmail, await createForgotPasswordUrl(user.id), req);
+    await sendEmail('change_password', user.fname, userEmail, await createForgotPasswordUrl(user.id), req);
 
     return { response: true };
   }
@@ -145,8 +145,8 @@ class AuthService {
     return { response: true };
   }
 
-  async register({ firstname, lastname, email, phone, password }: RegisterInput, req: Request): Promise<UserResponse> {
-    const errors = checkRegisterValidity({ firstname, lastname, email, phone, password }, req);
+  async register({ fname, lname, email, phone, password }: RegisterInput, req: Request): Promise<UserResponse> {
+    const errors = checkRegisterValidity({ fname, lname, email, phone, password }, req);
     if (errors) return errors;
 
     const userFound = await this.users.findOne({ email });
@@ -162,14 +162,14 @@ class AuthService {
     const hashedPassword = await hash(password, 12);
 
     const user = await this.users.create({
-      firstname,
-      lastname,
+      fname,
+      lname,
       email,
       phone,
       password: hashedPassword,
     });
 
-    await sendEmail('confirm_user', firstname, email, await createConfirmationUrl(user.id), req);
+    await sendEmail('confirm_user', fname, email, await createConfirmationUrl(user.id), req);
 
     return { response: transformUser(await user.save()) };
   }

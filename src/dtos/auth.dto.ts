@@ -21,9 +21,9 @@ class LoginInput {
 @InputType({ description: 'Register input' })
 class RegisterInput {
   @Field()
-  firstname: string;
+  fname: string;
   @Field()
-  lastname: string;
+  lname: string;
   @Field()
   email: string;
   @Field()
