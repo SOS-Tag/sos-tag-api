@@ -23,7 +23,7 @@ const isValid = (input: string, customRegex: CustomRegex, req: Request): string 
 };
 
 const emptyArgsExist = (
-  input: ChangePasswordInput | LoginInput | RegisterInput | { token: string } | { email: string },
+  input: ChangePasswordInput | LoginInput | RegisterInput | { id: string } | { email: string },
   req: Request,
 ): Record<string, string> => {
   const emptyArgs = {};

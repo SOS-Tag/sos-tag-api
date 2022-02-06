@@ -24,7 +24,6 @@ import { connect, ConnectOptions, set } from 'mongoose';
 import morgan from 'morgan';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
-import { refreshToken } from '@utils/token';
 import dbConnection from '@databases';
 import Context from '@interfaces/context.interface';
 
@@ -105,7 +104,6 @@ class Server {
 
   private initializeRoutes() {
     this.express.get('/', (_, res) => res.send(`SOS-Tag API (alpha version)`));
-    this.express.post('/refresh_token', (req, res) => refreshToken(req, res));
   }
 
   private initializeTranslation() {

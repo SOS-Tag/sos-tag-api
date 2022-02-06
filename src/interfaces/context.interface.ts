@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 
 interface ContextPayload {
   userId: string;
-  tokenVersion: number;
 }
 
 interface Context extends ExpressContext {

@@ -1,8 +1,7 @@
-import { UserResponse } from '@responses/user.response';
-import { ChangePasswordInput, LoginInput, RegisterInput } from '@dtos/auth.dto';
+import { RegisterInput } from '@dtos/auth.dto';
 import Context from '@interfaces/context.interface';
-import { LoginResponse } from '@responses/auth.response';
 import { BooleanResponse } from '@responses/common.response';
+import { UserResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import AuthService from '@services/auth.service';
 import { logger } from '@utils/logger';
@@ -23,36 +22,21 @@ class AuthResolver {
     }
   }
 
-  @Mutation(() => UserResponse, {
-    description:
-      'Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.',
+  @Mutation(() => BooleanResponse, {
+    description: 'Delete an account',
   })
-  async changePassword(@Arg('changePasswordInput') changePasswordInput: ChangePasswordInput, @Ctx() { req }: Context): Promise<UserResponse> {
+  async deleteAccount(@Arg('accountId') accountId: string, @Ctx() { req }: Context): Promise<BooleanResponse> {
     try {
-      const changePasswordResponse = await this.authService.changePassword(changePasswordInput, req);
-      return changePasswordResponse;
+      const deleteAccountResponse = await this.authService.deleteAccount(accountId, req);
+      return deleteAccountResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:changePassword] ${error.message}`);
+      logger.error(`[resolver:Auth:deleteAccount] ${error.message}`);
       throw error;
     }
   }
 
   @Mutation(() => BooleanResponse, {
-    description: 'Confirm and validate a user. Validation is based on the existence of the email address used during the registration process.',
-  })
-  async confirmUser(@Arg('token') token: string, @Ctx() { req }: Context): Promise<BooleanResponse> {
-    try {
-      const confirmationResponse = await this.authService.confirmUser(token, req);
-      return confirmationResponse;
-    } catch (error) {
-      logger.error(`[resolver:Auth:confirmUser] ${error.message}`);
-      throw error;
-    }
-  }
-
-  @Mutation(() => BooleanResponse, {
-    description:
-      'Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.',
+    description: 'Send an email containing a link that redirect to change password dedicated route on Firebase.',
   })
   async forgotPassword(@Arg('userEmail') userEmail: string, @Ctx() { req }: Context): Promise<BooleanResponse> {
     try {
@@ -60,28 +44,6 @@ class AuthResolver {
       return forgotPasswordResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:forgotPassword] ${error.message}`);
-      throw error;
-    }
-  }
-
-  @Mutation(() => LoginResponse, { description: 'Log the user in using his email address and his password.' })
-  async login(@Arg('loginInput') loginInput: LoginInput, @Ctx() { req, res }: Context): Promise<LoginResponse> {
-    try {
-      const loginResponse: LoginResponse = await this.authService.login(loginInput, req, res);
-      return loginResponse;
-    } catch (error) {
-      logger.error(`[resolver:Auth:login] ${error.message}`);
-      throw error;
-    }
-  }
-
-  @Mutation(() => BooleanResponse, { description: 'Log the user out. He will no longer be authenticated.' })
-  async logout(@Ctx() { res }: Context): Promise<BooleanResponse> {
-    try {
-      const logoutResponse = await this.authService.logout(res);
-      return logoutResponse;
-    } catch (error) {
-      logger.error(`[resolver:Auth:logout] ${error.message}.`);
       throw error;
     }
   }

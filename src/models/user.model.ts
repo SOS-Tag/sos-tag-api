@@ -7,9 +7,7 @@ export interface IUser extends mongoose.Document {
   lastname: string;
   email: string;
   phone: string;
-  password: string;
   confirmed: boolean;
-  tokenVersion: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,6 +16,10 @@ export type IUserModel = mongoose.Model<IUser>;
 
 const userModel: mongoose.Schema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      required: true,
+    },
     firstname: {
       type: String,
       required: true,
@@ -40,17 +42,8 @@ const userModel: mongoose.Schema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    password: {
-      type: String,
-      required: true,
-    },
     confirmed: {
       type: Boolean,
-    },
-    tokenVersion: {
-      type: Number,
-      required: false,
-      default: 0,
     },
   },
   { timestamps: true },

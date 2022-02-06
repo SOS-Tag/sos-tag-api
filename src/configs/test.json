@@ -4,12 +4,6 @@
       "user": "vincent",
       "database": "sos-tag-test"
   },
-  "accessToken": {
-      "duration": 15
-  },
-  "refreshToken": {
-      "duration": 7
-  },
   "log": {
       "format": "dev",
       "dir": "../logs"

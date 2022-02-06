@@ -1,4 +1,7 @@
 {
+  "generic": {
+    "server_error": "Une erreur est survenue"
+  },
   "auth": {
     "account_already_exist": "Un compte associé à {{email}} existe déjà",
     "accont_confirmation_expired": "Le lien de confirmation du compte a expiré. Un nouveau mail doit être envoyé pour pouvoir confirmer le compte.",
@@ -44,6 +47,7 @@
     "email_with_article": "l'email",
     "phone_with_article": "le numéro de téléphone",
     "password_with_article": "le mot de passe",
-    "token_with_article": "le token"
+    "token_with_article": "le token",
+    "id_with_article": "l'identifiant"
   }
 }

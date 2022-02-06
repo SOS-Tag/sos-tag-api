@@ -1,5 +1,4 @@
 import { IUser, IUserModel } from '@models/user.model';
-import { BooleanResponse } from '@responses/common.response';
 import { UserResponse, UsersResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
 import { isEmpty } from '@utils/object';
@@ -35,29 +34,6 @@ class UserService {
   async findUsers(): Promise<UsersResponse> {
     const accounts: IUser[] = await this.users.find();
     return { response: accounts.map(account => transformUser(account)) };
-  }
-
-  async revokeRefreshTokensByUserId(userId: string): Promise<BooleanResponse> {
-    if (isEmpty(userId))
-      return {
-        errors: [
-          {
-            message: 'Empty userId parameter.',
-          },
-        ],
-      };
-
-    const updatedUser = await this.users.findOneAndUpdate({ _id: userId }, { $inc: { tokenVersion: 1 } });
-    if (!updatedUser)
-      return {
-        errors: [
-          {
-            message: 'User not found.',
-          },
-        ],
-      };
-
-    return { response: true };
   }
 }
 

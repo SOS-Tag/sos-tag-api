@@ -1,4 +1,7 @@
 {
+  "generic": {
+    "server_error": "An error occured"
+  },
   "auth": {
     "account_already_exist": "An account associated to {{email}} already exists",
     "account_confirmation_expired": "Account confirmation link has expired. A new email needs to be sent to confirm this account.",
@@ -44,6 +47,7 @@
     "email_with_article": "the email",
     "phone_with_article": "the phone",
     "password_with_article": "the password",
-    "token_with_article": "the token"
+    "token_with_article": "the token",
+    "id_with_article": "the identifier"
   }
 }

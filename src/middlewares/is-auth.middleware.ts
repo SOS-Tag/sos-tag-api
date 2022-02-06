@@ -1,24 +1,28 @@
 import Context from '@interfaces/context.interface';
 import 'dotenv-safe/config';
-import { verify } from 'jsonwebtoken';
+import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 import { MiddlewareFn } from 'type-graphql';
+import firebaseAdmin from '../firebase';
 
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-
-export const isAuth: MiddlewareFn<Context> = ({ context }, next) => {
-  const authorization = context.req.headers['authorization'];
-
-  if (!authorization) {
-    throw new Error('Not authenticated');
-  }
-
+export const isAuth: MiddlewareFn<Context> = async ({ context }, next) => {
   try {
-    const token = authorization.split(' ')[1];
-    const payload = verify(token, accessTokenSecret);
-    context.payload = payload as any;
+    const firebaseToken = context.req.headers.authorization?.split(' ')[1];
+
+    let firebaseUser: DecodedIdToken;
+    if (firebaseToken) {
+      firebaseUser = await firebaseAdmin.auth.verifyIdToken(firebaseToken);
+    }
+
+    if (!firebaseUser) {
+      // Unauthorized
+      throw new Error('Not authenticated');
+    }
+
+    context.payload = { userId: firebaseUser.uid };
+
+    next();
   } catch (err) {
+    //Unauthorized
     throw new Error('Not authenticated');
   }
-
-  return next();
 };

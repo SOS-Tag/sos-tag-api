@@ -1,4 +1,4 @@
-import { Field, ID, Int, ObjectType } from 'type-graphql';
+import { Field, ID, ObjectType } from 'type-graphql';
 
 @ObjectType({ description: 'User Schema' })
 class User {
@@ -16,12 +16,6 @@ class User {
 
   @Field()
   phone: String;
-
-  @Field()
-  password: String;
-
-  @Field(() => Int, { defaultValue: 0 })
-  tokenVersion: Number;
 
   @Field(() => Boolean, { defaultValue: false })
   confirmed: boolean;

@@ -1,44 +1,26 @@
-import { confirmUserPrefix, forgotPasswordPrefix } from '@constants/redis-prefixes';
-import { ChangePasswordInput, LoginInput, RegisterInput } from '@dtos/auth.dto';
+import { RegisterInput } from '@dtos/auth.dto';
 import { IUser, IUserModel } from '@models/user.model';
-import { LoginResponse } from '@responses/auth.response';
 import { BooleanResponse } from '@responses/common.response';
 import { UserResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
-import { createConfirmationUrl, createForgotPasswordUrl, sendEmail } from '@utils/email';
-import { createAccessToken, createRefreshToken, sendRefreshToken } from '@utils/token';
-import {
-  checkChangePasswordValidity,
-  checkConfirmUserValidity,
-  checkForgotPasswordValidity,
-  checkLoginValidity,
-  checkRegisterValidity,
-} from '@validators/auth.validator';
-import { compare, hash } from 'bcryptjs';
-import { Request, Response } from 'express';
+import { sendEmail } from '@utils/email';
+import { checkDeleteAccountValidity, checkForgotPasswordValidity, checkRegisterValidity } from '@validators/auth.validator';
+import { Request } from 'express';
 import { Inject, Service } from 'typedi';
-import { redis } from '../redis';
+import firebaseAdmin from '../firebase';
 
 @Service()
 class AuthService {
   constructor(@Inject('USER') private readonly users: IUserModel) {}
 
-  async changePassword({ token, password }: ChangePasswordInput, req: Request): Promise<UserResponse> {
-    const errors = checkChangePasswordValidity({ token, password }, req);
+  async deleteAccount(userId: string, req: Request): Promise<BooleanResponse> {
+    const errors = checkDeleteAccountValidity(userId, req);
     if (errors) return errors;
 
-    const userId = await redis.get(forgotPasswordPrefix + token);
-    if (!userId)
-      return {
-        errors: [
-          {
-            message: req.t('auth.password_modification_expired'),
-          },
-        ],
-      };
+    const firebaseUser = await firebaseAdmin.auth.getUser(userId);
+    const user: IUser = await this.users.findById(userId);
 
-    const user: IUser = await this.users.findOne({ _id: userId });
-    if (!user)
+    if (!user && !firebaseUser)
       return {
         errors: [
           {
@@ -47,30 +29,14 @@ class AuthService {
         ],
       };
 
-    await redis.del(forgotPasswordPrefix + token);
+    if (firebaseUser) {
+      await firebaseAdmin.auth.deleteUser(userId);
+    }
 
-    user.password = await hash(password, 12);
-
-    return { response: transformUser(await user.save()) };
-  }
-
-  async confirmUser(token: string, req: Request): Promise<BooleanResponse> {
-    const errors = checkConfirmUserValidity(token, req);
-    if (errors) return errors;
-
-    const userId = await redis.get(confirmUserPrefix + token);
-    if (!userId)
-      return {
-        errors: [
-          {
-            message: req.t('auth.account_confirmation_expired'),
-          },
-        ],
-      };
-
-    await this.users.findOneAndUpdate({ _id: userId }, { confirmed: true });
-
-    await redis.del(confirmUserPrefix + token);
+    if (user) {
+      // Does it remove the possible referenced objects in it?
+      await this.users.deleteOne({ _id: userId });
+    }
 
     return { response: true };
   }
@@ -79,6 +45,7 @@ class AuthService {
     const errors = checkForgotPasswordValidity(userEmail, req);
     if (errors) return errors;
 
+    // Not working...
     const user: IUser = await this.users.findOne({ email: userEmail });
     if (!user)
       return {
@@ -89,59 +56,10 @@ class AuthService {
         ],
       };
 
-    await sendEmail('change_password', user.firstname, userEmail, await createForgotPasswordUrl(user.id), req);
+    const actionLink = await firebaseAdmin.auth.generatePasswordResetLink(userEmail);
 
-    return { response: true };
-  }
+    await sendEmail('change_password', user.firstname, userEmail, actionLink, req);
 
-  async login({ email, password }: LoginInput, req: Request, res: Response): Promise<LoginResponse> {
-    const errors = checkLoginValidity({ email, password }, req);
-    if (errors) return errors;
-
-    const user = await this.users.findOne({ email });
-    if (!user)
-      return {
-        errors: [
-          {
-            message: req.t('auth.account_does_not_exist'),
-          },
-        ],
-      };
-
-    const valid = await compare(password, user.password);
-    if (!valid)
-      return {
-        errors: [
-          {
-            message: req.t('auth.incorrect_password'),
-          },
-        ],
-      };
-
-    if (!user.confirmed)
-      return {
-        errors: [
-          {
-            message: req.t('auth.unvalidated_account', { email }),
-          },
-        ],
-      };
-
-    const accessToken = createAccessToken(user);
-    const refreshToken = createRefreshToken(user);
-
-    sendRefreshToken(res, refreshToken);
-
-    return {
-      response: {
-        user: transformUser(user),
-        accessToken: accessToken,
-      },
-    };
-  }
-
-  async logout(res: Response): Promise<BooleanResponse> {
-    sendRefreshToken(res, '');
     return { response: true };
   }
 
@@ -149,29 +67,41 @@ class AuthService {
     const errors = checkRegisterValidity({ firstname, lastname, email, phone, password }, req);
     if (errors) return errors;
 
-    const userFound = await this.users.findOne({ email });
-    if (userFound)
-      return {
-        errors: [
-          {
-            message: req.t('auth.account_already_exist', { email }),
-          },
-        ],
-      };
+    try {
+      const firebaseUser = await firebaseAdmin.auth.createUser({
+        email,
+        password,
+        emailVerified: false,
+      });
 
-    const hashedPassword = await hash(password, 12);
+      if (firebaseUser) {
+        const user = await this.users.create({
+          _id: firebaseUser.uid,
+          firstname,
+          lastname,
+          email,
+          phone,
+        });
 
-    const user = await this.users.create({
-      firstname,
-      lastname,
-      email,
-      phone,
-      password: hashedPassword,
-    });
+        const actionLink = await firebaseAdmin.auth.generateEmailVerificationLink(firebaseUser.email);
 
-    await sendEmail('confirm_user', firstname, email, await createConfirmationUrl(user.id), req);
+        await sendEmail('confirm_user', firstname, email, actionLink, req);
 
-    return { response: transformUser(await user.save()) };
+        return { response: transformUser(await user.save()) };
+      }
+    } catch (error) {
+      if (error.code === 'auth/email-already-exists') {
+        return {
+          errors: [
+            {
+              message: req.t('auth.account_already_exist', { email }),
+            },
+          ],
+        };
+      }
+
+      throw error;
+    }
   }
 }
 

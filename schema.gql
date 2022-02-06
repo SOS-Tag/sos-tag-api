@@ -9,62 +9,25 @@ type BooleanResponse {
   response: Boolean
 }
 
-"""Change password input"""
-input ChangePasswordInput {
-  password: String
-  token: String
-}
-
 """Error with message and the associated field"""
 type FieldError {
   field: String
   message: String
 }
 
-"""Login input"""
-input LoginInput {
-  email: String
-  password: String
-}
-
-"""Login response"""
-type LoginResponse {
-  errors: [FieldError!]
-  response: LoginResponseData
-}
-
-"""Login response data"""
-type LoginResponseData {
-  accessToken: String
-  user: User
-}
-
 type Mutation {
-  """
-  Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.
-  """
-  changePassword(changePasswordInput: ChangePasswordInput): UserResponse
-
-  """
-  Confirm and validate a user. Validation is based on the existence of the email address used during the registration process.
-  """
-  confirmUser(token: String): BooleanResponse
-
   """
   Create a QR Code with a custom id. By default, the QR Code is not used.
   """
   createQRCode: QRCodeResponse
 
+  """Delete an account"""
+  deleteAccount(accountId: String): BooleanResponse
+
   """
-  Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.
+  Send an email containing a link that redirect to change password dedicated route on Firebase.
   """
   forgotPassword(userEmail: String): BooleanResponse
-
-  """Log the user in using his email address and his password."""
-  login(loginInput: LoginInput): LoginResponse
-
-  """Log the user out. He will no longer be authenticated."""
-  logout: BooleanResponse
 
   """
   Register a new user. To complete the registration, the user will have to confirm his account by following the link that has been sent to him by email.
@@ -146,9 +109,7 @@ type User {
   email: String
   firstname: String
   lastname: String
-  password: String
   phone: String
-  tokenVersion: Int
   updatedAt: String
 }
 
