@@ -9,6 +9,13 @@ const transformQRCode = qrCode => {
   };
 };
 
+const transformSheet = sheet => {
+  return {
+    ...sheet._doc,
+    _id: sheet.id,
+  };
+};
+
 const transformUser = account => {
   return {
     ...account._doc,
@@ -21,4 +28,4 @@ const transformUser = account => {
   };
 };
 
-export { transformQRCode, transformUser };
+export { transformQRCode, transformSheet, transformUser };

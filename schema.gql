@@ -15,6 +15,31 @@ input ChangePasswordInput {
   token: String
 }
 
+"""Create Sheet input"""
+input CreateSheetInput {
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
+  currentTreatment: String
+  dateOfBirth: DateTime
+  emergencyContact1: String
+  emergencyContact2: String
+  fname: String
+  id: String
+  lname: String
+  medicalHistory: String
+  nationality: String
+  organDonor: Boolean
+  smoker: Boolean
+  treatingDoctor: String
+  user: String
+}
+
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
 """Error with message and the associated field"""
 type FieldError {
   field: String
@@ -39,30 +64,6 @@ type LoginResponseData {
   user: User
 }
 
-"""Nested medical data object"""
-type MedData {
-  advanceDirectives: MedDataElement
-  antecedents: MedDataElement
-  bloodGroup: MedDataElement
-  currentTreatment: MedDataElement
-  diabetes: MedDataElement
-  drugAllergies: MedDataElement
-  epilepsy: MedDataElement
-  haemophilia: MedDataElement
-  height: MedDataElement
-  organsDonation: MedDataElement
-  pacemaker: MedDataElement
-  sex: MedDataElement
-  smoking: MedDataElement
-  utdVaccines: MedDataElement
-}
-
-"""Nested medical data element object"""
-type MedDataElement {
-  hidden: Boolean
-  value: String
-}
-
 type Mutation {
   """
   Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.
@@ -79,6 +80,9 @@ type Mutation {
   """
   createQRCode: QRCodeResponse
 
+  """"""
+  createSheet(createSheetInput: CreateSheetInput): SheetResponse
+
   """
   Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.
   """
@@ -94,6 +98,9 @@ type Mutation {
   Register a new user. To complete the registration, the user will have to confirm his account by following the link that has been sent to him by email.
   """
   register(registerInput: RegisterInput): UserResponse
+
+  """"""
+  updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse
 }
 
 """Paginated QR Code response"""
@@ -143,6 +150,12 @@ type Query {
   """
   qrCodesWithPagination(paginatorInput: PaginatorInput): PaginatedQRCodeResponse
 
+  """"""
+  sheetById(sheetId: String): SheetResponse
+
+  """Get all sheets."""
+  sheets: SheetsResponse
+
   """Get a user by his id."""
   userById(userId: String): UserResponse
 
@@ -164,22 +177,51 @@ input RegisterInput {
 
 """Sheet Schema"""
 type Sheet {
-  _id: ID
+  _id: String
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
   createdAt: String
+  currentTreatment: String
   dateOfBirth: String
+  emergencyContact1: String
+  emergencyContact2: String
   fname: String
   hidden: Boolean
   isInUse: Boolean
   lname: String
-  medData: MedData
+  medicalHistory: String
   nationality: String
+  organDonor: Boolean
+  smoker: Boolean
+  treatingDoctor: String
   updatedAt: String
+  user: String
+}
+
+"""Sheet response"""
+type SheetResponse {
+  errors: [FieldError!]
+  response: Sheet
+}
+
+"""Sheets response"""
+type SheetsResponse {
+  errors: [FieldError!]
+  response: [Sheet!]
+}
+
+"""Update Sheet input"""
+input UpdateSheetInput {
+  id: String
 }
 
 """User Schema"""
 type User {
   _id: ID
   activated: Boolean
+  address: String
+  city: String
   confirmed: Boolean
   createdAt: String
   email: String
@@ -188,9 +230,9 @@ type User {
   nationality: String
   password: String
   phone: String
-  sheets: [Sheet]
   tokenVersion: Int
   updatedAt: String
+  zipCode: String
 }
 
 """User response"""

@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { __prod__ } from '@constants/env';
 import AuthResolver from '@resolvers/auth.resolver';
 import QRCodeResolver from '@resolvers/qrcode.resolver';
+import SheetResolver from '@resolvers/sheet.resolver';
 import UserResolver from '@resolvers/user.resolver';
 import { logger, stream } from '@utils/logger';
 import { ApolloServer, ExpressContext } from 'apollo-server-express';
@@ -57,7 +58,7 @@ class Server {
 
   private async buildGraphQLSchema() {
     this.schema = await buildSchema({
-      resolvers: [AuthResolver, QRCodeResolver, UserResolver],
+      resolvers: [AuthResolver, QRCodeResolver, SheetResolver, UserResolver],
       emitSchemaFile: true,
       nullableByDefault: true,
       container: Container,

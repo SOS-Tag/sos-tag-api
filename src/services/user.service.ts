@@ -19,7 +19,7 @@ class UserService {
         ],
       };
 
-    const account: IUser = await this.users.findOne({ _id: userId });
+    const account: IUser = await this.users.findById(userId);
     if (!account)
       return {
         errors: [
@@ -47,7 +47,7 @@ class UserService {
         ],
       };
 
-    const updatedUser = await this.users.findOneAndUpdate({ _id: userId }, { $inc: { tokenVersion: 1 } });
+    const updatedUser = await this.users.findByIdAndUpdate(userId, { $inc: { tokenVersion: 1 } });
     if (!updatedUser)
       return {
         errors: [

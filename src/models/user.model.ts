@@ -1,11 +1,12 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
-import Sheet from '@/schemas/sheet.schema';
 
 export interface IUser extends mongoose.Document {
-  _id: string;
   fname: string;
   lname: string;
+  adress: string;
+  zipCode: string;
+  city: string;
   email: string;
   phone: string;
   nationality: string;
@@ -13,7 +14,6 @@ export interface IUser extends mongoose.Document {
   tokenVersion: number;
   activated: boolean;
   confirmed: boolean;
-  sheets: Sheet[];
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +32,24 @@ const userModel: mongoose.Schema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    adress: {
+      type: String,
+      //TODO  required: true,
+      //TODO  minLength: 1,
+      trim: true,
+    },
+    zipCode: {
+      type: String,
+      //TODO  required: true,
+      //TODO  minLength: 1,
+      trim: true,
+    },
+    city: {
+      type: String,
+      //TODO  required: true,
+      //TODO  minLength: 1,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
@@ -42,16 +60,19 @@ const userModel: mongoose.Schema = new mongoose.Schema(
     phone: {
       type: String,
       required: true,
+      minLength: 1,
       trim: true,
     },
     nationality: {
       type: String,
-      //TODO remove  required: true,
+      //TODO  required: true,
+      //TODO  minLength: 1,
       trim: true,
     },
     password: {
       type: String,
       required: true,
+      minLength: 1,
     },
     tokenVersion: {
       type: Number,
@@ -63,11 +84,6 @@ const userModel: mongoose.Schema = new mongoose.Schema(
     },
     confirmed: {
       type: Boolean,
-    },
-    sheets: {
-      type: Schema.Types.ObjectId,
-      ref: 'Sheet',
-      required: true,
     },
   },
   { timestamps: true },
