@@ -17,7 +17,7 @@ class SheetResolver {
   @UseMiddleware(isAuth)
   async createSheet(@Ctx() { payload }: Context, @Arg('createSheetInput') createSheetInput: CreateSheetInput): Promise<SheetResponse> {
     try {
-      const createSheetResponse = await this.sheetService.createSheet(createSheetInput, payload.accountId); //TODO rename to userId ?
+      const createSheetResponse = await this.sheetService.createSheet(createSheetInput, payload.userId);
       return createSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:createSheet] ${error.message}.`);
@@ -29,7 +29,7 @@ class SheetResolver {
   @UseMiddleware(isAuth)
   async updateSheet(@Ctx() { payload }: Context, @Arg('updateSheetInput') updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
     try {
-      const updateSheetResponse = await this.sheetService.updateSheet(updateSheetInput, payload.accountId);
+      const updateSheetResponse = await this.sheetService.updateSheet(updateSheetInput, payload.userId);
       return updateSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:updateSheet] ${error.message}.`);
@@ -52,7 +52,7 @@ class SheetResolver {
   @UseMiddleware(isAuth)
   async sheetsCurrentUser(@Ctx() { payload }: Context): Promise<SheetsResponse> {
     try {
-      const sheets = await this.sheetService.findSheetsByUser(payload.accountId);
+      const sheets = await this.sheetService.findSheetsByUser(payload.userId);
       return sheets;
     } catch (error) {
       logger.error(`[resolver:Sheet:sheetByUser] ${error.message}.`);

@@ -19,8 +19,8 @@ class UserService {
         ],
       };
 
-    const account: IUser = await this.users.findById(userId);
-    if (!account)
+    const user: IUser = await this.users.findById(userId);
+    if (!user)
       return {
         errors: [
           {
@@ -29,12 +29,12 @@ class UserService {
         ],
       };
 
-    return { response: transformUser(account) };
+    return { response: transformUser(user) };
   }
 
   async findUsers(): Promise<UsersResponse> {
-    const accounts: IUser[] = await this.users.find();
-    return { response: accounts.map(account => transformUser(account)) };
+    const users: IUser[] = await this.users.find();
+    return { response: users.map(user => transformUser(user)) };
   }
 
   async revokeRefreshTokensByUserId(userId: string): Promise<BooleanResponse> {

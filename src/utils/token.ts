@@ -1,6 +1,6 @@
 import { ContextPayload } from '@interfaces/context.interface';
 import tokenConfig from '@interfaces/token.interface';
-import accountModel, { IUser } from '@models/user.model';
+import userModel, { IUser } from '@models/user.model';
 import config from 'config';
 import 'dotenv/config';
 import { Request, Response } from 'express';
@@ -12,10 +12,10 @@ const { duration: refreshTokenDuration }: tokenConfig = config.get('refreshToken
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
-const createAccessToken = (account: IUser) => {
+const createAccessToken = (user: IUser) => {
   return sign(
     {
-      accountId: account.id,
+      userId: user.id,
     },
     accessTokenSecret,
     {
@@ -24,11 +24,11 @@ const createAccessToken = (account: IUser) => {
   );
 };
 
-const createRefreshToken = (account: IUser) => {
+const createRefreshToken = (user: IUser) => {
   return sign(
     {
-      userId: account.id,
-      tokenVersion: account.tokenVersion,
+      userId: user.id,
+      tokenVersion: user.tokenVersion,
     },
     refreshTokenSecret,
     {
@@ -51,18 +51,18 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 
   // Refresh token is valid and we can send back an access token
-  const account: IUser = await accountModel.findOne({ _id: payload.accountId });
+  const user: IUser = await userModel.findOne({ _id: payload.userId });
 
-  if (!account) {
+  if (!user) {
     return res.send({ ok: false, accessToken: '' });
   }
 
-  if (account.tokenVersion !== payload.tokenVersion) {
+  if (user.tokenVersion !== payload.tokenVersion) {
     return res.send({ ok: false, accessToken: '' });
   }
 
-  sendRefreshToken(res, createRefreshToken(account));
-  return res.send({ ok: true, accessToken: createAccessToken(account) });
+  sendRefreshToken(res, createRefreshToken(user));
+  return res.send({ ok: true, accessToken: createAccessToken(user) });
 };
 
 const sendRefreshToken = (res: Response, token: string) => {

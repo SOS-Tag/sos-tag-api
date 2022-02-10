@@ -17,17 +17,17 @@ const OAuth2Client = new OAuth2(process.env.GOOGLE_OAUTH_CLIENT_ID, process.env.
 
 OAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_CLIENT_REFRESH_TOKEN });
 
-const createConfirmationUrl = async (accountId: string) => {
+const createConfirmationUrl = async (userId: string) => {
   const token = nanoid();
-  await redis.set(confirmUserPrefix + token, accountId, 'ex', 60 * 60 * 24);
+  await redis.set(confirmUserPrefix + token, userId, 'ex', 60 * 60 * 24);
 
   // Must correspond to the dedicated route on the frontend
   return `http://localhost:3000/user/confirm/${token}`;
 };
 
-const createForgotPasswordUrl = async (accountId: string) => {
+const createForgotPasswordUrl = async (userId: string) => {
   const token = nanoid();
-  await redis.set(forgotPasswordPrefix + token, accountId, 'ex', 60 * 60 * 24);
+  await redis.set(forgotPasswordPrefix + token, userId, 'ex', 60 * 60 * 24);
 
   // Must correspond to the dedicated route on the frontend
   return `http://localhost:3000/user/change-password/${token}`;

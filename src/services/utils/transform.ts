@@ -16,15 +16,15 @@ const transformSheet = sheet => {
   };
 };
 
-const transformUser = account => {
+const transformUser = user => {
   return {
-    ...account._doc,
-    _id: account.id,
+    ...user._doc,
+    _id: user.id,
     // We want to overwrite the password with a null value to avoid
     // returning it (even if it is a hash, it can cause security issues)
     password: null,
-    createdAt: dateToString(account.createdAt),
-    updatedAt: dateToString(account.updatedAt),
+    createdAt: dateToString(user.createdAt),
+    updatedAt: dateToString(user.updatedAt),
   };
 };
 
