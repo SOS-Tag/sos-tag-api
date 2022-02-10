@@ -32,7 +32,6 @@ input CreateSheetInput {
   organDonor: Boolean
   smoker: Boolean
   treatingDoctor: String
-  user: String
 }
 
 """
@@ -80,7 +79,7 @@ type Mutation {
   """
   createQRCode: QRCodeResponse
 
-  """"""
+  """Create a sheet."""
   createSheet(createSheetInput: CreateSheetInput): SheetResponse
 
   """
@@ -99,7 +98,7 @@ type Mutation {
   """
   register(registerInput: RegisterInput): UserResponse
 
-  """"""
+  """Update a sheet."""
   updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse
 }
 
@@ -150,11 +149,14 @@ type Query {
   """
   qrCodesWithPagination(paginatorInput: PaginatorInput): PaginatedQRCodeResponse
 
-  """"""
+  """Get a sheet by its id."""
   sheetById(sheetId: String): SheetResponse
 
   """Get all sheets."""
   sheets: SheetsResponse
+
+  """Get the sheets of the specified user."""
+  sheetsCurrentUser: SheetsResponse
 
   """Get a user by his id."""
   userById(userId: String): UserResponse

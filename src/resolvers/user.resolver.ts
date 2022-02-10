@@ -25,7 +25,7 @@ class UserResolver {
     try {
       const token = authorization.split(' ')[1];
       const payload: any = verify(token, accessTokenSecret);
-      const currentUser = await this.userById(payload.userId);
+      const currentUser = await this.userById(payload.accountId); //TODO rename accountId to userId ?
       return currentUser;
     } catch (error) {
       logger.error(`[resolver:User:currentUser] ${error.message}.`);

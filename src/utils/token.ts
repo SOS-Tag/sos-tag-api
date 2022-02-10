@@ -51,7 +51,7 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 
   // Refresh token is valid and we can send back an access token
-  const account: IUser = await accountModel.findOne({ _id: payload.userId });
+  const account: IUser = await accountModel.findOne({ _id: payload.accountId });
 
   if (!account) {
     return res.send({ ok: false, accessToken: '' });

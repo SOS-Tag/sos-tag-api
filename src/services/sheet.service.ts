@@ -9,8 +9,12 @@ import { Inject, Service } from 'typedi';
 class SheetService {
   constructor(@Inject('SHEET') private readonly sheets: ISheetModel) {}
 
-  async createSheet(sheetData: CreateSheetInput): Promise<SheetResponse> {
-    const sheet = await this.sheets.create({ ...sheetData, _id: sheetData.id });
+  async createSheet(sheetData: CreateSheetInput, userId: string): Promise<SheetResponse> {
+    const sheet = await this.sheets.create({
+      ...sheetData,
+      user: userId,
+      _id: sheetData.id,
+    });
     return { response: transformSheet(await sheet.save()) };
   }
 
@@ -42,8 +46,19 @@ class SheetService {
     return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
-  async updateSheet(updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
-    const sheet = await this.sheets.findByIdAndUpdate(updateSheetInput.id, updateSheetInput.changes);
+  async findSheetsByUser(userId: string): Promise<SheetsResponse> {
+    const sheets: ISheet[] = await this.sheets.find({ user: userId });
+    return { response: sheets.map(sheet => transformSheet(sheet)) };
+  }
+
+  async updateSheet(updateSheetInput: UpdateSheetInput, userId: string): Promise<SheetResponse> {
+    const sheet = await this.sheets.findOneAndUpdate(
+      {
+        _id: updateSheetInput.id,
+        user: userId,
+      },
+      updateSheetInput.changes,
+    );
     if (!sheet)
       return {
         errors: [

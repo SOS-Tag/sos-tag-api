@@ -4,18 +4,20 @@ import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
 import { logger } from '@utils/logger';
 import { isAuth } from '@middlewares/is-auth.middleware';
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Service } from 'typedi';
+import Context from '@/interfaces/context.interface';
 
 @Service()
 @Resolver(() => SheetSchema)
 class SheetResolver {
   constructor(private readonly sheetService: SheetService) {}
 
-  @Mutation(() => SheetResponse, { description: '' })
-  async createSheet(@Arg('createSheetInput') createSheetInput: CreateSheetInput): Promise<SheetResponse> {
+  @Mutation(() => SheetResponse, { description: 'Create a sheet.' })
+  @UseMiddleware(isAuth)
+  async createSheet(@Ctx() { payload }: Context, @Arg('createSheetInput') createSheetInput: CreateSheetInput): Promise<SheetResponse> {
     try {
-      const createSheetResponse = await this.sheetService.createSheet(createSheetInput);
+      const createSheetResponse = await this.sheetService.createSheet(createSheetInput, payload.accountId); //TODO rename to userId ?
       return createSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:createSheet] ${error.message}.`);
@@ -23,10 +25,11 @@ class SheetResolver {
     }
   }
 
-  @Mutation(() => SheetResponse, { description: '' })
-  async updateSheet(@Arg('updateSheetInput') updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
+  @Mutation(() => SheetResponse, { description: 'Update a sheet.' })
+  @UseMiddleware(isAuth)
+  async updateSheet(@Ctx() { payload }: Context, @Arg('updateSheetInput') updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
     try {
-      const updateSheetResponse = await this.sheetService.updateSheet(updateSheetInput);
+      const updateSheetResponse = await this.sheetService.updateSheet(updateSheetInput, payload.accountId);
       return updateSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:updateSheet] ${error.message}.`);
@@ -34,7 +37,7 @@ class SheetResolver {
     }
   }
 
-  @Query(() => SheetResponse, { description: '' })
+  @Query(() => SheetResponse, { description: 'Get a sheet by its id.' })
   async sheetById(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
       const sheet = await this.sheetService.findSheetById(sheetId);
@@ -45,8 +48,20 @@ class SheetResolver {
     }
   }
 
-  @Query(() => SheetsResponse, { description: 'Get all sheets.' })
+  @Query(() => SheetsResponse, { description: 'Get the sheets of the specified user.' })
   @UseMiddleware(isAuth)
+  async sheetsCurrentUser(@Ctx() { payload }: Context): Promise<SheetsResponse> {
+    try {
+      const sheets = await this.sheetService.findSheetsByUser(payload.accountId);
+      return sheets;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:sheetByUser] ${error.message}.`);
+      throw error;
+    }
+  }
+
+  @Query(() => SheetsResponse, { description: 'Get all sheets.' })
+  @UseMiddleware(isAuth) //TODO isAuthenticatedAsAdmin
   async sheets(): Promise<SheetsResponse> {
     try {
       const sheets = await this.sheetService.findSheets();

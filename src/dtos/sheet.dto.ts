@@ -34,8 +34,6 @@ class CreateSheetInput {
   emergencyContact1: string;
   @Field()
   emergencyContact2: string;
-  @Field()
-  user: string;
 }
 
 @InputType({ description: 'Sheet fields to be changed with an update operation' })
