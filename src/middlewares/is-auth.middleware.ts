@@ -9,6 +9,7 @@ export const isAuth: MiddlewareFn<Context> = async ({ context }, next) => {
     const firebaseToken = context.req.headers.authorization?.split(' ')[1];
 
     let firebaseUser: DecodedIdToken;
+
     if (firebaseToken) {
       firebaseUser = await firebaseAdmin.auth.verifyIdToken(firebaseToken);
     }
@@ -20,9 +21,9 @@ export const isAuth: MiddlewareFn<Context> = async ({ context }, next) => {
 
     context.payload = { userId: firebaseUser.uid };
 
-    next();
+    return next();
   } catch (err) {
-    //Unauthorized
+    // Unauthorized
     throw new Error('Not authenticated');
   }
 };
