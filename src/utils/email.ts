@@ -22,7 +22,7 @@ const createConfirmationUrl = async (userId: string) => {
   await redis.set(confirmUserPrefix + token, userId, 'ex', 60 * 60 * 24);
 
   // Must correspond to the dedicated route on the frontend
-  return `http://localhost:3000/user/confirm/${token}`;
+  return `http://localhost:3000/auth/confirm/${token}`;
 };
 
 const createForgotPasswordUrl = async (userId: string) => {
@@ -30,7 +30,7 @@ const createForgotPasswordUrl = async (userId: string) => {
   await redis.set(forgotPasswordPrefix + token, userId, 'ex', 60 * 60 * 24);
 
   // Must correspond to the dedicated route on the frontend
-  return `http://localhost:3000/user/change-password/${token}`;
+  return `http://localhost:3000/auth/change-password/${token}`;
 };
 
 const sendEmail = async (type: EmailAim, name: string, email: string, url: string, req: Request): Promise<void> => {
