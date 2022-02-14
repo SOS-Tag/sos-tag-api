@@ -47,6 +47,9 @@ async function googleOauthHandler(req: Request, res: Response) {
 
   try {
     const { id_token, access_token } = await getGoogleOAuthTokens({ code });
+
+    // Redirect to the frontend with the token id and the access token as parameters.
+    // They will be used as mutation parameters to handle the login with Google using GraphQL.
     res.redirect(`${process.env.WEB_APP_GOOGLE_AUTH_URL}?tokenId=${id_token}&accessToken=${access_token}`);
   } catch (error) {
     logger.error(`[util:oauth:googleOauthHandler] ${error.message}`);

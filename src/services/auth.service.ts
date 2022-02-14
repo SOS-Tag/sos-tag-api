@@ -147,8 +147,11 @@ class AuthService {
     const errors = checkLoginWithGoogleValidity({ tokenId, token }, req);
     if (errors) return errors;
 
+    // Get the Google user asking for connection using OAuth 2.0 client credentials (token id and access token previously
+    // retrieved.
     const googleUser: GoogleUser = await getGoogleUser({ tokenId, token });
 
+    // We check if the Google user has already confirmed his Google account. If not, we will not handle his request.
     if (!googleUser.verified_email)
       return {
         errors: [
@@ -163,8 +166,9 @@ class AuthService {
         email: googleUser.email,
       },
       {
-        // Question: if the user has already logged in using his Google email, but using the classic way (by password), do we
-        // really have to replace his firstname and lastname? Indeed, it can differ from the ones he filled when he registered.
+        // If the user has already logged in using his Google email, but using the classic way (by password), do we
+        // really have to replace his firstname and lastname? Indeed, it can differ from the ones he filled when he
+        // previously registered.
         fname: googleUser.given_name,
         lname: googleUser.family_name,
         email: googleUser.email,
