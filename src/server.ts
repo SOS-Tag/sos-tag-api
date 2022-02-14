@@ -28,6 +28,7 @@ import { Container } from 'typedi';
 import { refreshToken } from '@utils/token';
 import dbConnection from '@databases';
 import Context from '@interfaces/context.interface';
+import { googleOauthHandler } from './utils/oauth';
 
 class Server {
   public express: express.Application;
@@ -107,6 +108,7 @@ class Server {
   private initializeRoutes() {
     this.express.get('/', (_, res) => res.send(`SOS-Tag API (alpha version)`));
     this.express.post('/refresh_token', (req, res) => refreshToken(req, res));
+    this.express.get('/oauth/google', (req, res) => googleOauthHandler(req, res));
   }
 
   private initializeTranslation() {

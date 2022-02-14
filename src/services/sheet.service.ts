@@ -1,4 +1,4 @@
-import { CreateSheetInput, UpdateSheetInput } from '@/dtos/sheet.dto';
+import { CreateSheetInput, UpdateSheetInput } from 'dtos/sheet.dto';
 import { ISheet, ISheetModel } from '@models/sheet.model';
 import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { transformSheet } from '@services/utils/transform';

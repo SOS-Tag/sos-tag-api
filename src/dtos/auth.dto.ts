@@ -18,6 +18,14 @@ class LoginInput {
   password: string;
 }
 
+@InputType({ description: 'Login with Google input' })
+class LoginWithGoogleInput {
+  @Field()
+  tokenId: string;
+  @Field()
+  token: string;
+}
+
 @InputType({ description: 'Register input' })
 class RegisterInput {
   @Field()
@@ -32,4 +40,4 @@ class RegisterInput {
   password: string;
 }
 
-export { ChangePasswordInput, LoginInput, RegisterInput };
+export { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput };

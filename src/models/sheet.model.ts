@@ -1,4 +1,4 @@
-import { QRCODE_LENGTH } from '@/services/qrcode.service';
+import { QRCODE_LENGTH } from '@services/qrcode.service';
 import mongoose, { Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
 

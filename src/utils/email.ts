@@ -13,9 +13,9 @@ import { redis } from '../redis';
 type EmailAim = 'change_password' | 'confirm_user';
 
 const OAuth2 = google.auth.OAuth2;
-const OAuth2Client = new OAuth2(process.env.GOOGLE_OAUTH_CLIENT_ID, process.env.GOOGLE_OAUTH_CLIENT_SECRET);
+const OAuth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
 
-OAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_CLIENT_REFRESH_TOKEN });
+OAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_CLIENT_REFRESH_TOKEN });
 
 const createConfirmationUrl = async (userId: string) => {
   const token = nanoid();

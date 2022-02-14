@@ -6,7 +6,7 @@ import { logger } from '@utils/logger';
 import { isAuth } from '@middlewares/is-auth.middleware';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Service } from 'typedi';
-import Context from '@/interfaces/context.interface';
+import Context from '@interfaces/context.interface';
 
 @Service()
 @Resolver(() => SheetSchema)

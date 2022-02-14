@@ -1,5 +1,5 @@
 import { capitalizeFirstLetter, containsOnlySpaces } from '@utils/string';
-import { ChangePasswordInput, LoginInput, RegisterInput } from '@dtos/auth.dto';
+import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import CustomRegex from '@interfaces/custom-regex.interface';
 import { isEmpty } from '@utils/object';
 import { emailRegex, passwordRegex, phoneRegex } from './regex';
@@ -23,7 +23,7 @@ const isValid = (input: string, customRegex: CustomRegex, req: Request): string 
 };
 
 const emptyArgsExist = (
-  input: ChangePasswordInput | LoginInput | RegisterInput | { token: string } | { email: string },
+  input: ChangePasswordInput | LoginInput | LoginWithGoogleInput | RegisterInput | { token: string } | { email: string },
   req: Request,
 ): Record<string, string> => {
   const emptyArgs = {};

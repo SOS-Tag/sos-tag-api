@@ -63,6 +63,12 @@ type LoginResponseData {
   user: User
 }
 
+"""Login with Google input"""
+input LoginWithGoogleInput {
+  token: String
+  tokenId: String
+}
+
 type Mutation {
   """
   Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.
@@ -89,6 +95,9 @@ type Mutation {
 
   """Log the user in using his email address and his password."""
   login(loginInput: LoginInput): LoginResponse
+
+  """Log the user using his google account."""
+  loginWithGoogle(loginInput: LoginWithGoogleInput): LoginResponse
 
   """Log the user out. He will no longer be authenticated."""
   logout: BooleanResponse

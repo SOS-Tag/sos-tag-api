@@ -1,5 +1,5 @@
 import { UserResponse } from '@responses/user.response';
-import { ChangePasswordInput, LoginInput, RegisterInput } from '@dtos/auth.dto';
+import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import Context from '@interfaces/context.interface';
 import { LoginResponse } from '@responses/auth.response';
 import { BooleanResponse } from '@responses/common.response';
@@ -71,6 +71,17 @@ class AuthResolver {
       return loginResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:login] ${error.message}`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => LoginResponse, { description: 'Log the user using his google account.' })
+  async loginWithGoogle(@Arg('loginInput') loginWithGoogleInput: LoginWithGoogleInput, @Ctx() { req, res }: Context): Promise<LoginResponse> {
+    try {
+      const loginResponse: LoginResponse = await this.authService.loginWithGoogle(loginWithGoogleInput, req, res);
+      return loginResponse;
+    } catch (error) {
+      logger.error(`[resolver:Auth:loginWithGoogle] ${error.message}`);
       throw error;
     }
   }

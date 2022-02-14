@@ -1,4 +1,4 @@
-import { ChangePasswordInput, LoginInput, RegisterInput } from '@dtos/auth.dto';
+import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import { isEmpty } from '@utils/object';
 import { Request } from 'express';
 import { generateFieldErrors } from './utils/errors';
@@ -29,6 +29,11 @@ const checkLoginValidity = (loginInput: LoginInput, req: Request) => {
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 };
 
+const checkLoginWithGoogleValidity = (loginWithGoogleInput: LoginWithGoogleInput, req: Request) => {
+  const emptyArgs = emptyArgsExist(loginWithGoogleInput, req);
+  if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
+};
+
 const checkRegisterValidity = (registerInput: RegisterInput, req: Request) => {
   const emptyArgs = emptyArgsExist(registerInput, req);
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
@@ -39,4 +44,11 @@ const checkRegisterValidity = (registerInput: RegisterInput, req: Request) => {
   if (!isEmpty(invalidArgs)) return generateFieldErrors(invalidArgs);
 };
 
-export { checkChangePasswordValidity, checkConfirmUserValidity, checkForgotPasswordValidity, checkLoginValidity, checkRegisterValidity };
+export {
+  checkChangePasswordValidity,
+  checkConfirmUserValidity,
+  checkForgotPasswordValidity,
+  checkLoginValidity,
+  checkLoginWithGoogleValidity,
+  checkRegisterValidity,
+};
