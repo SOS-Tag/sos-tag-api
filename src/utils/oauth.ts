@@ -11,7 +11,7 @@ async function getGoogleOAuthTokens({ code }: { code: string }): Promise<GoogleT
     code,
     client_id: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
     client_secret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
-    redirect_uri: process.env.GOOGLE_AUTH_REDIRECT_URL as string,
+    redirect_uri: process.env.GOOGLE_OAUTH_REDIRECT_URL as string,
     grant_type: 'authorization_code',
   };
 
