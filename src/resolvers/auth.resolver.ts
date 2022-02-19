@@ -75,7 +75,7 @@ class AuthResolver {
     }
   }
 
-  @Mutation(() => LoginResponse, { description: 'Log the user using his google account.' })
+  @Mutation(() => LoginResponse, { description: 'Log the user in using his google account.' })
   async loginWithGoogle(@Arg('loginInput') loginWithGoogleInput: LoginWithGoogleInput, @Ctx() { req, res }: Context): Promise<LoginResponse> {
     try {
       const loginResponse: LoginResponse = await this.authService.loginWithGoogle(loginWithGoogleInput, req, res);
@@ -86,7 +86,9 @@ class AuthResolver {
     }
   }
 
-  @Mutation(() => BooleanResponse, { description: 'Log the user out. He will no longer be authenticated.' })
+  @Mutation(() => BooleanResponse, {
+    description: 'Log the user out. He will no longer be authenticated and will not have access to restricted and private resources anymore.',
+  })
   async logout(@Ctx() { res }: Context): Promise<BooleanResponse> {
     try {
       const logoutResponse = await this.authService.logout(res);
@@ -107,6 +109,20 @@ class AuthResolver {
       return registerResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:register] ${error.message}`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => BooleanResponse, {
+    description:
+      'Resend an email containing a link to confirm the account of a specific user. The previous confirmation link sent to him when he registered can indeed be expired.',
+  })
+  async resendConfirmationLink(@Arg('userEmail') userEmail: string, @Ctx() { req }: Context): Promise<BooleanResponse> {
+    try {
+      const resendConfirmationLinkResponse = await this.authService.resendConfirmationLink(userEmail, req);
+      return resendConfirmationLinkResponse;
+    } catch (error) {
+      logger.error(`[resolver:Auth:resendConfirmationLink] ${error.message}`);
       throw error;
     }
   }

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Request, Response } from 'express';
 import qs from 'qs';
 import { logger } from './logger';
+import { isUrlValid } from './url';
 
 async function getGoogleOAuthTokens({ code }: { code: string }): Promise<GoogleTokens> {
   const url = 'https://oauth2.googleapis.com/token';
@@ -21,6 +22,7 @@ async function getGoogleOAuthTokens({ code }: { code: string }): Promise<GoogleT
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
+
     return res.data;
   } catch (error) {
     logger.error(`[util:oauth:getGoogleOAuthTokens] ${error.message}`);
@@ -48,9 +50,13 @@ async function googleOauthHandler(req: Request, res: Response) {
   try {
     const { id_token, access_token } = await getGoogleOAuthTokens({ code });
 
+    const googleOauthRedirectRoute = `${process.env.WEB_APP_GOOGLE_AUTH_URL}?tokenId=${id_token}&accessToken=${access_token}`;
+
+    if (!isUrlValid(googleOauthRedirectRoute)) throw new Error('Redirect route for finalization of Google authentication process is not a valid URL');
+
     // Redirect to the frontend with the token id and the access token as parameters.
     // They will be used as mutation parameters to handle the login with Google using GraphQL.
-    res.redirect(`${process.env.WEB_APP_GOOGLE_AUTH_URL}?tokenId=${id_token}&accessToken=${access_token}`);
+    res.redirect(googleOauthRedirectRoute);
   } catch (error) {
     logger.error(`[util:oauth:googleOauthHandler] ${error.message}`);
     throw error;

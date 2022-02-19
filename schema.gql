@@ -96,16 +96,23 @@ type Mutation {
   """Log the user in using his email address and his password."""
   login(loginInput: LoginInput): LoginResponse
 
-  """Log the user using his google account."""
+  """Log the user in using his google account."""
   loginWithGoogle(loginInput: LoginWithGoogleInput): LoginResponse
 
-  """Log the user out. He will no longer be authenticated."""
+  """
+  Log the user out. He will no longer be authenticated and will not have access to restricted and private resources anymore.
+  """
   logout: BooleanResponse
 
   """
   Register a new user. To complete the registration, the user will have to confirm his account by following the link that has been sent to him by email.
   """
   register(registerInput: RegisterInput): UserResponse
+
+  """
+  Resend an email containing a link to confirm the account of a specific user. The previous confirmation link sent to him when he registered can indeed be expired.
+  """
+  resendConfirmationLink(userEmail: String): BooleanResponse
 
   """Update a sheet."""
   updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse

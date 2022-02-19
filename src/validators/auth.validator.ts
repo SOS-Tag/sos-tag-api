@@ -44,6 +44,11 @@ const checkRegisterValidity = (registerInput: RegisterInput, req: Request) => {
   if (!isEmpty(invalidArgs)) return generateFieldErrors(invalidArgs);
 };
 
+const checkResendConfirmationLinkValidity = (email: string, req: Request) => {
+  const emptyArgs = emptyArgsExist({ email }, req);
+  if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
+};
+
 export {
   checkChangePasswordValidity,
   checkConfirmUserValidity,
@@ -51,4 +56,5 @@ export {
   checkLoginValidity,
   checkLoginWithGoogleValidity,
   checkRegisterValidity,
+  checkResendConfirmationLinkValidity,
 };

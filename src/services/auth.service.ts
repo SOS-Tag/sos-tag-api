@@ -16,6 +16,7 @@ import {
   checkLoginValidity,
   checkLoginWithGoogleValidity,
   checkRegisterValidity,
+  checkResendConfirmationLinkValidity,
 } from '@validators/auth.validator';
 import { compare, hash } from 'bcryptjs';
 import { Request, Response } from 'express';
@@ -225,6 +226,25 @@ class AuthService {
     await sendEmail('confirm_user', fname, email, await createConfirmationUrl(user.id), req);
 
     return { response: transformUser(await user.save()) };
+  }
+
+  async resendConfirmationLink(userEmail: string, req: Request): Promise<BooleanResponse> {
+    const errors = checkResendConfirmationLinkValidity(userEmail, req);
+    if (errors) return errors;
+
+    const user: IUser = await this.users.findOne({ email: userEmail });
+    if (!user)
+      return {
+        errors: [
+          {
+            message: req.t('auth.account_does_not_exist'),
+          },
+        ],
+      };
+
+    await sendEmail('confirm_user', user.fname, userEmail, await createConfirmationUrl(user.id), req);
+
+    return { response: true };
   }
 }
 

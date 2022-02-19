@@ -5,6 +5,9 @@ import { isEmpty } from '@utils/object';
 import { emailRegex, passwordRegex, phoneRegex } from './regex';
 import { Request } from 'express';
 
+type PotentialyEmptyArgs = ChangePasswordInput | LoginInput | LoginWithGoogleInput | RegisterInput | { token: string } | { email: string };
+type PotentialyInvalidArgs = Pick<ChangePasswordInput, 'password'> | LoginInput | Omit<RegisterInput, 'fname' | 'lname'>;
+
 const validators = {
   isEmailValid: function (input: string, req: Request) {
     return isValid(input, emailRegex, req);
@@ -22,10 +25,7 @@ const isValid = (input: string, customRegex: CustomRegex, req: Request): string 
   return null;
 };
 
-const emptyArgsExist = (
-  input: ChangePasswordInput | LoginInput | LoginWithGoogleInput | RegisterInput | { token: string } | { email: string },
-  req: Request,
-): Record<string, string> => {
+const emptyArgsExist = (input: PotentialyEmptyArgs, req: Request): Record<string, string> => {
   const emptyArgs = {};
   for (const [key, value] of Object.entries(input)) {
     if (isEmpty(value) || containsOnlySpaces(value)) {
@@ -35,10 +35,7 @@ const emptyArgsExist = (
   return emptyArgs;
 };
 
-const invalidArgsExist = (
-  input: Pick<ChangePasswordInput, 'password'> | LoginInput | Omit<RegisterInput, 'fname' | 'lname'>,
-  req: Request,
-): Record<string, string> => {
+const invalidArgsExist = (input: PotentialyInvalidArgs, req: Request): Record<string, string> => {
   const invalidArgs = {};
   for (const [key, value] of Object.entries(input)) {
     const validator = `is${capitalizeFirstLetter(key)}Valid`;
