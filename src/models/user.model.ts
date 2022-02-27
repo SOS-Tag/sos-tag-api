@@ -4,7 +4,7 @@ import autopopulate from 'mongoose-autopopulate';
 export interface IUser extends mongoose.Document {
   fname: string;
   lname: string;
-  adress: string;
+  address: string;
   zipCode: string;
   city: string;
   email: string;
@@ -25,29 +25,31 @@ const userModel: mongoose.Schema = new mongoose.Schema(
     fname: {
       type: String,
       required: true,
+      minLength: 1,
       trim: true,
     },
     lname: {
       type: String,
       required: true,
+      minLength: 1,
       trim: true,
     },
-    adress: {
+    address: {
       type: String,
       //TODO  required: true,
-      //TODO  minLength: 1,
+      minLength: 1,
       trim: true,
     },
     zipCode: {
       type: String,
       //TODO  required: true,
-      //TODO  minLength: 1,
+      minLength: 1,
       trim: true,
     },
     city: {
       type: String,
       //TODO  required: true,
-      //TODO  minLength: 1,
+      minLength: 1,
       trim: true,
     },
     email: {
@@ -59,14 +61,15 @@ const userModel: mongoose.Schema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true,
+      //TODO  required: true,
       minLength: 1,
       trim: true,
     },
     nationality: {
       type: String,
       //TODO  required: true,
-      //TODO  minLength: 1,
+      minLength: 2,
+      maxLength: 2,
       trim: true,
     },
     password: {

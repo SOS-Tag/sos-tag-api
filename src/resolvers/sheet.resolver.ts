@@ -55,7 +55,7 @@ class SheetResolver {
       const sheets = await this.sheetService.findSheetsByUser(payload.userId);
       return sheets;
     } catch (error) {
-      logger.error(`[resolver:Sheet:sheetByUser] ${error.message}.`);
+      logger.error(`[resolver:Sheet:sheetsCurrentUser] ${error.message}.`);
       throw error;
     }
   }

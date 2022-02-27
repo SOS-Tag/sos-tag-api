@@ -13,6 +13,9 @@ const transformSheet = sheet => {
   return {
     ...sheet._doc,
     _id: sheet.id,
+    dateOfBirth: dateToString(sheet.dateOfBirth),
+    createdAt: dateToString(sheet.createdAt),
+    updatedAt: dateToString(sheet.updatedAt),
   };
 };
 

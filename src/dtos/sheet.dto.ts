@@ -6,9 +6,13 @@ class CreateSheetInput {
   @Field()
   id: string;
   @Field()
+  enabled: boolean;
+  @Field()
   fname: string;
   @Field()
   lname: string;
+  @Field()
+  sex: string;
   @Field()
   @IsDate()
   dateOfBirth: Date;
@@ -39,9 +43,13 @@ class CreateSheetInput {
 @InputType({ description: 'Sheet fields to be changed with an update operation' })
 class UpdateSheetChangesInput {
   @Field()
+  enabled: boolean;
+  @Field()
   fname: string;
   @Field()
   lname: string;
+  @Field()
+  sex: string;
   @Field()
   @IsDate()
   dateOfBirth: Date;

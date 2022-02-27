@@ -4,12 +4,12 @@ import autopopulate from 'mongoose-autopopulate';
 
 export interface ISheet extends mongoose.Document {
   _id: string;
+  enabled: boolean;
   fname: string;
   lname: string;
+  sex: string;
   dateOfBirth: Date;
   nationality: string;
-  hidden: boolean;
-  isInUse: boolean;
   bloodType: string;
   smoker: boolean;
   organDonor: boolean;
@@ -37,41 +37,40 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
       trim: true,
       uppercase: true,
     },
+    enabled: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
     fname: {
       type: String,
-      required: true,
       minLength: 1,
       trim: true,
     },
     lname: {
       type: String,
-      required: true,
       minLength: 1,
+      trim: true,
+    },
+    sex: {
+      type: String,
+      minLength: 1,
+      maxLength: 1,
       trim: true,
     },
     dateOfBirth: {
       type: Date,
-      //TODO  required: true,
     },
     nationality: {
       type: String,
-      //TODO  required: true,
-      //TODO  minLength: 1,
+      minLength: 2,
+      maxLength: 2,
       trim: true,
-    },
-    hidden: {
-      type: Boolean,
-      required: true,
-      default: true,
-    },
-    isInUse: {
-      type: Boolean,
-      required: true,
-      default: false,
     },
     bloodType: {
       type: String,
-      required: true,
+      minLength: 2,
+      maxLength: 3,
       trim: true,
       uppercase: true,
     },
@@ -89,32 +88,26 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
     },
     allergies: {
       type: String,
-      required: true,
       trim: true,
     },
     medicalHistory: {
       type: String,
-      required: true,
       trim: true,
     },
     currentTreatment: {
       type: String,
-      required: true,
       trim: true,
     },
     treatingDoctor: {
       type: String,
-      required: true,
       trim: true,
     },
     emergencyContact1: {
       type: String,
-      required: true,
       trim: true,
     },
     emergencyContact2: {
       type: String,
-      required: true,
       trim: true,
     },
     user: {

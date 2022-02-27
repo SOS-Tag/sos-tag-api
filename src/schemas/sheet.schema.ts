@@ -5,23 +5,23 @@ class Sheet {
   @Field() // This is not an ObjectID
   _id: String;
 
+  @Field(() => Boolean, { defaultValue: true })
+  enabled: Boolean;
+
   @Field()
   fname: String;
 
   @Field()
   lname: String;
 
+  @Field()
+  sex: String;
+
   @Field(() => String)
   dateOfBirth: Date;
 
   @Field()
   nationality: String;
-
-  @Field(() => Boolean, { defaultValue: false })
-  hidden: Boolean;
-
-  @Field()
-  isInUse: Boolean;
 
   @Field()
   bloodType: String;

@@ -24,12 +24,14 @@ input CreateSheetInput {
   dateOfBirth: DateTime
   emergencyContact1: String
   emergencyContact2: String
+  enabled: Boolean
   fname: String
   id: String
   lname: String
   medicalHistory: String
   nationality: String
   organDonor: Boolean
+  sex: String
   smoker: Boolean
   treatingDoctor: String
 }
@@ -204,13 +206,13 @@ type Sheet {
   dateOfBirth: String
   emergencyContact1: String
   emergencyContact2: String
+  enabled: Boolean
   fname: String
-  hidden: Boolean
-  isInUse: Boolean
   lname: String
   medicalHistory: String
   nationality: String
   organDonor: Boolean
+  sex: String
   smoker: Boolean
   treatingDoctor: String
   updatedAt: String
