@@ -34,6 +34,7 @@
       "@dtos/*": ["dtos/*"],
       "@exceptions/*": ["exceptions/*"],
       "@interfaces/*": ["interfaces/*"],
+      "@locales/*": ["locales/*"],
       "@middlewares/*": ["middlewares/*"],
       "@models/*": ["models/*"],
       "@resolvers/*": ["resolvers/*"],

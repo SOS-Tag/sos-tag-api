@@ -1,3 +1,8 @@
+const applyVariable = (str: string, variable: string) => {
+  const toReplace = str.slice(str.indexOf('{'), str.lastIndexOf('}') + 1);
+  return str.replace(toReplace, variable);
+};
+
 const isEmpty = (value: string | number | object): boolean => {
   if (value === null) {
     return true;
@@ -17,4 +22,4 @@ const filterObject = (obj: Object, predicate: Function): any =>
     .filter(key => predicate(obj[key]))
     .reduce((res, key) => ((res[key] = obj[key]), res), {});
 
-export { isEmpty, filterObject };
+export { applyVariable, isEmpty, filterObject };

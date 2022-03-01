@@ -1,3 +1,4 @@
+import message from '@locales/en/translation.json';
 import { createConnection } from '@utils/mongoose';
 import { LOGIN } from './utils/graphql/auth.graphql';
 import { CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from './utils/graphql/sheet.graphql';
@@ -29,7 +30,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(SHEETS, undefined);
       const error = response.errors[0];
       expect(response.data.sheets).toBeNull();
-      expect(error.message).toEqual('Unauthorized access');
+      expect(error.message).toEqual(message.auth.unauthorized);
     });
     test('successful when user is logged in', async () => {
       const response = await graphqlTestCall(SHEETS, undefined, accessToken);
@@ -44,7 +45,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, undefined);
       const error = response.errors[0];
       expect(response.data.sheetsCurrentUser).toBeNull();
-      expect(error.message).toEqual('Unauthorized access');
+      expect(error.message).toEqual(message.auth.unauthorized);
     });
     test('successful when a user is logged in', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, undefined, accessToken);
@@ -68,7 +69,7 @@ describe('Medical sheets service', () => {
       );
       const error = response.errors[0];
       expect(response.data.createSheet).toBeNull();
-      expect(error.message).toEqual('Unauthorized access');
+      expect(error.message).toEqual(message.auth.unauthorized);
     });
     test('successful when a user is logged in', async () => {
       const response = await graphqlTestCall(
@@ -146,14 +147,14 @@ describe('Medical sheets service', () => {
       const data = response.data.updateSheet;
       const error = response.errors[0];
       expect(data).toBeNull();
-      expect(error.message).toEqual('Unauthorized access');
+      expect(error.message).toEqual(message.auth.unauthorized);
     });
     test('unsuccessfull with an unassigned ID or an ID referencing a sheet that does not belong to the current user', async () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
           updateSheetInput: {
-            id: customId + 'blabla',
+            id: `UNKNOWN-${customId}`,
             changes: {
               bloodType: newBloodType,
             },

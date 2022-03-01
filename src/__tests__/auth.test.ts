@@ -1,3 +1,5 @@
+import message from '@locales/en/translation.json';
+import { applyVariable } from '@utils/object';
 import { createConnection } from '@utils/mongoose';
 import { CONFIRMATION, LOGIN, REGISTER } from './utils/graphql/auth.graphql';
 import { alreadyUsedEmail, initialUserData, newUserData, password, unknownEmail } from './utils/mock-data';
@@ -13,7 +15,7 @@ afterAll(async () => {
 });
 
 describe('Authentication service', () => {
-  describe('User registration', () => {
+  describe('Registration', () => {
     test('unsuccessful with already existing email', async () => {
       const newUser = {
         ...newUserData,
@@ -23,7 +25,7 @@ describe('Authentication service', () => {
       const data = response.data.register.response;
       const error = response.data.register.errors[0];
       expect(data).toBeNull();
-      expect(error.message).toEqual(`An account associated to ${alreadyUsedEmail} already exists`);
+      expect(error.message).toEqual(applyVariable(message.auth.account_already_exist, alreadyUsedEmail));
     });
 
     test('unsuccessful with invalid or weak password', async () => {
@@ -36,9 +38,7 @@ describe('Authentication service', () => {
       const error = response.data.register.errors[0];
       expect(data).toBeNull();
       expect(error.field).toEqual('password');
-      expect(error.message).toEqual(
-        'Password must contain a minimum of eight characters, and at least one uppercase letter, one lowercase letter, one number and one special character',
-      );
+      expect(error.message).toEqual(message.error.invalid_password);
     });
 
     test('unsuccessful with invalid phone number', async () => {
@@ -51,7 +51,7 @@ describe('Authentication service', () => {
       const error = response.data.register.errors[0];
       expect(data).toBeNull();
       expect(error.field).toEqual('phone');
-      expect(error.message).toEqual('Phone must be a valid french phone number');
+      expect(error.message).toEqual(message.error.invalid_phone);
     });
 
     test('unsuccessful with at least one empty field', async () => {
@@ -63,7 +63,7 @@ describe('Authentication service', () => {
       expect(errors.length).toEqual(5);
       for (const error of errors) {
         expect(error.field).toBeDefined();
-        expect(error.message).toBeDefined();
+        expect(error.message).toContain('is required');
       }
     });
 
@@ -81,18 +81,18 @@ describe('Authentication service', () => {
     });
   });
 
-  describe('User confirmation', () => {
+  describe('Confirmation', () => {
     test('unsuccessful with unknown or expired token', async () => {
       const response = await graphqlTestCall(CONFIRMATION, { token: 'abcdefghijkl.mnopqrst.uvwxyz' });
       const data = response.data.confirmUser.response;
       const error = response.data.confirmUser.errors[0];
       expect(data).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual('Account confirmation link has expired. A new email needs to be sent to confirm this account.');
+      expect(error.message).toEqual(message.auth.account_confirmation_expired);
     });
   });
 
-  describe('User login', () => {
+  describe('Login', () => {
     test('unsuccessful with unknown user email', async () => {
       const loginInput = {
         email: unknownEmail,
@@ -103,7 +103,7 @@ describe('Authentication service', () => {
       const error = response.data.login.errors[0];
       expect(data).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual('This account does not exist');
+      expect(error.message).toEqual(message.auth.account_does_not_exist);
     });
     test('unsuccessful with wrong password', async () => {
       const loginInput = {
@@ -115,7 +115,7 @@ describe('Authentication service', () => {
       const error = response.data.login.errors[0];
       expect(data).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual('Password is incorrect');
+      expect(error.message).toEqual(message.auth.incorrect_password);
     });
     test('successful with accesstoken and logged in user information returned', async () => {
       const loginInput = {
