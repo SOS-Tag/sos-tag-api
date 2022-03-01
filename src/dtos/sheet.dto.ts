@@ -81,6 +81,7 @@ class UpdateSheetChangesInput {
 class UpdateSheetInput {
   @Field()
   id: string;
+  @Field()
   changes: UpdateSheetChangesInput;
 }
 

@@ -1,6 +1,6 @@
 import UserSchema from '@schemas/user.schema';
 import { ObjectType } from 'type-graphql';
-import { ObjectsResponse, SingleObjectResponse } from './common.response';
+import { ObjectsResponse, SingleObjectResponse } from '@responses/common.response';
 
 @ObjectType({ description: 'User response' })
 class UserResponse extends SingleObjectResponse(UserSchema) {}

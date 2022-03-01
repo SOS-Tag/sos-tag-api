@@ -8,7 +8,7 @@ import { nanoid } from 'nanoid';
 import nodemailer from 'nodemailer';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import path from 'path';
-import { redis } from '../redis';
+import redis from '../redis';
 
 type EmailAim = 'change_password' | 'confirm_user';
 

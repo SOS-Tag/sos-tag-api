@@ -1,6 +1,6 @@
 import { UserResponse, UsersResponse } from '@responses/user.response';
 import Context from '@interfaces/context.interface';
-import { isAuth } from '@middlewares/is-auth.middleware';
+import isAuth from '@middlewares/is-auth.middleware';
 import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';
 import { logger } from '@utils/logger';

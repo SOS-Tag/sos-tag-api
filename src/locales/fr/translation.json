@@ -3,8 +3,10 @@
     "account_already_exist": "Un compte associé à {{email}} existe déjà",
     "accont_confirmation_expired": "Le lien de confirmation du compte a expiré. Un nouveau mail doit être envoyé pour pouvoir confirmer le compte.",
     "account_does_not_exist": "Ce compte n'existe pas",
+    "incorrect_login_method": "Le compte existe mais a été créé via votre compte Google, c'est pourquoi aucun mot de passe n'y est associé. Connectez-vous via 'Se connecter avec Google'.",
     "incorrect_password": "Le mot de passe est incorrect",
     "password_modification_expired": "Le lien de modification du mot de passe a expiré. Un nouveau mail doit être envoyé pour pouvoir changer le mot de passe de son compte.",
+    "unauthorized": "Accès non autorisé",
     "unvalidated_account": "Le compte doit être validé en suivant le lien envoyé à {{email}}"
   },
   "email": {
@@ -33,14 +35,14 @@
     "welcome": "Bienvenue sur {{what}}"
   },
   "input": {
-    "firstname": "prénom",
-    "lastname": "nom de famille",
+    "fname": "prénom",
+    "lname": "nom de famille",
     "email": "email",
     "phone": "numéro de téléphone",
     "password": "mot de passe",
     "token": "token",
-    "firstname_with_article": "le prénom",
-    "lastname_with_article": "le nom de famille",
+    "fname_with_article": "le prénom",
+    "lname_with_article": "le nom de famille",
     "email_with_article": "l'email",
     "phone_with_article": "le numéro de téléphone",
     "password_with_article": "le mot de passe",

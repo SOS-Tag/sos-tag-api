@@ -3,7 +3,7 @@ import { CreateSheetInput, UpdateSheetInput } from '@dtos/sheet.dto';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
 import { logger } from '@utils/logger';
-import { isAuth } from '@middlewares/is-auth.middleware';
+import isAuth from '@middlewares/is-auth.middleware';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Service } from 'typedi';
 import Context from '@interfaces/context.interface';

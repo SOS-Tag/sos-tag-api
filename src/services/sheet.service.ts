@@ -58,7 +58,11 @@ class SheetService {
         user: userId,
       },
       updateSheetInput.changes,
+      {
+        new: true,
+      },
     );
+
     if (!sheet)
       return {
         errors: [

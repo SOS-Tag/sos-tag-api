@@ -5,7 +5,7 @@ import { transformQRCode } from '@services/utils/transform';
 import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
 
-export const QRCODE_LENGTH = 8;
+const QRCODE_LENGTH = 8;
 const customNanoId = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ1234578', QRCODE_LENGTH);
 
 @Service()
@@ -45,4 +45,5 @@ class QRCodeService {
   }
 }
 
+export { QRCODE_LENGTH, customNanoId };
 export default QRCodeService;

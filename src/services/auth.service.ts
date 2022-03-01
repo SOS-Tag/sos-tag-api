@@ -1,3 +1,4 @@
+import { __test__ } from '@constants/env';
 import { confirmUserPrefix, forgotPasswordPrefix } from '@constants/redis-prefixes';
 import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import { GoogleUser } from '@interfaces/oauth.interface';
@@ -21,7 +22,7 @@ import {
 import { compare, hash } from 'bcryptjs';
 import { Request, Response } from 'express';
 import { Inject, Service } from 'typedi';
-import { redis } from '../redis';
+import redis from '../redis';
 
 @Service()
 class AuthService {
@@ -93,7 +94,7 @@ class AuthService {
         ],
       };
 
-    await sendEmail('change_password', user.fname, userEmail, await createForgotPasswordUrl(user.id), req);
+    if (!__test__) await sendEmail('change_password', user.fname, userEmail, await createForgotPasswordUrl(user.id), req);
 
     return { response: true };
   }
@@ -108,6 +109,15 @@ class AuthService {
         errors: [
           {
             message: req.t('auth.account_does_not_exist'),
+          },
+        ],
+      };
+
+    if (!user.password)
+      return {
+        errors: [
+          {
+            message: req.t('auth.incorrect_login_method'),
           },
         ],
       };
@@ -134,7 +144,7 @@ class AuthService {
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user);
 
-    sendRefreshToken(res, refreshToken);
+    if (!__test__) sendRefreshToken(res, refreshToken);
 
     return {
       response: {
@@ -223,7 +233,7 @@ class AuthService {
       password: hashedPassword,
     });
 
-    await sendEmail('confirm_user', fname, email, await createConfirmationUrl(user.id), req);
+    if (!__test__) await sendEmail('confirm_user', fname, email, await createConfirmationUrl(user.id), req);
 
     return { response: transformUser(await user.save()) };
   }
@@ -242,7 +252,7 @@ class AuthService {
         ],
       };
 
-    await sendEmail('confirm_user', user.fname, userEmail, await createConfirmationUrl(user.id), req);
+    if (!__test__) await sendEmail('confirm_user', user.fname, userEmail, await createConfirmationUrl(user.id), req);
 
     return { response: true };
   }

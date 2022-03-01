@@ -17,3 +17,5 @@ Container.set({ id: 'USER', factory: () => UserModel });
 const server = new Server();
 
 server.listen();
+
+export default server;

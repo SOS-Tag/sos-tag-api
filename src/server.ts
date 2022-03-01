@@ -2,12 +2,16 @@ process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
 
 import 'reflect-metadata';
 
-import { __prod__ } from '@constants/env';
+import { __prod__, __test__ } from '@constants/env';
+import Context from '@interfaces/context.interface';
 import AuthResolver from '@resolvers/auth.resolver';
 import QRCodeResolver from '@resolvers/qrcode.resolver';
 import SheetResolver from '@resolvers/sheet.resolver';
 import UserResolver from '@resolvers/user.resolver';
 import { logger, stream } from '@utils/logger';
+import { createConnection } from '@utils/mongoose';
+import { googleOauthHandler } from '@utils/oauth';
+import { refreshToken } from '@utils/token';
 import { ApolloServer, ExpressContext } from 'apollo-server-express';
 import compression from 'compression';
 import config from 'config';
@@ -21,14 +25,9 @@ import hpp from 'hpp';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import middleware from 'i18next-http-middleware';
-import { connect, ConnectOptions, set } from 'mongoose';
 import morgan from 'morgan';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
-import { refreshToken } from '@utils/token';
-import dbConnection from '@databases';
-import Context from '@interfaces/context.interface';
-import { googleOauthHandler } from './utils/oauth';
 
 class Server {
   public express: express.Application;
@@ -49,8 +48,9 @@ class Server {
   private async initialize() {
     this.express.set('proxy', 1);
 
+    if (!__test__) await this.connectToDatabase();
+
     await this.buildGraphQLSchema();
-    await this.connectToDatabase();
     this.initializeTranslation();
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -67,17 +67,7 @@ class Server {
   }
 
   private async connectToDatabase() {
-    if (!__prod__) {
-      set('debug', true);
-    }
-
-    try {
-      await connect(dbConnection.url, dbConnection.options as ConnectOptions);
-    } catch (error) {
-      logger.error(`[mongoose:connect] ${error.message}.`);
-      throw error;
-    }
-    logger.info('[mongoose:connect] The connection with the database has been established successfully.');
+    await createConnection();
   }
 
   public get() {
@@ -124,12 +114,13 @@ class Server {
   }
 
   public listen() {
-    this.express.listen(typeof this.port === 'string' ? parseInt(this.port) : this.port, () => {
-      logger.info(`=================================`);
-      logger.info(`======= ENV: ${this.env} ========`);
-      logger.info(`  App listening on port ${this.port}  `);
-      logger.info(`=================================`);
-    });
+    if (!__test__)
+      this.express.listen(typeof this.port === 'string' ? parseInt(this.port) : this.port, () => {
+        logger.info(`=================================`);
+        logger.info(`======= ENV: ${this.env} ========`);
+        logger.info(`  App listening on port ${this.port}  `);
+        logger.info(`=================================`);
+      });
   }
 }
 

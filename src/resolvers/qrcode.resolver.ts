@@ -1,5 +1,5 @@
 import { PaginatorInput } from '@dtos/common.dto';
-import { isAuth } from '@middlewares/is-auth.middleware';
+import isAuth from '@middlewares/is-auth.middleware';
 import { PaginatedQRCodeResponse, QRCodeResponse, QRCodesResponse } from '@responses/qrcode.response';
 import QRCodeSchema from '@schemas/qrcode.schema';
 import QRCodeService from '@services/qrcode.service';

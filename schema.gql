@@ -231,8 +231,29 @@ type SheetsResponse {
   response: [Sheet!]
 }
 
+"""Sheet fields to be changed with an update operation"""
+input UpdateSheetChangesInput {
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
+  currentTreatment: String
+  dateOfBirth: DateTime
+  emergencyContact1: String
+  emergencyContact2: String
+  enabled: Boolean
+  fname: String
+  lname: String
+  medicalHistory: String
+  nationality: String
+  organDonor: Boolean
+  sex: String
+  smoker: Boolean
+  treatingDoctor: String
+}
+
 """Update Sheet input"""
 input UpdateSheetInput {
+  changes: UpdateSheetChangesInput
   id: String
 }
 
