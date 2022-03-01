@@ -1,23 +1,20 @@
 import message from '@locales/en/translation.json';
 import { createConnection } from '@utils/mongoose';
-import { LOGIN } from './utils/graphql/auth.graphql';
 import { CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from './utils/graphql/sheet.graphql';
 import { customId, initialUserData, newSheetData, password } from './utils/mock-data';
-import { createTestUser, graphqlTestCall, teardown } from './utils/setup';
+import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from './utils/set-up';
 
 let accessToken: string | undefined = undefined;
 
 beforeAll(async () => {
   await createConnection();
-  const registeredUser = await createTestUser(initialUserData, password);
 
-  const loginInput = {
+  const registeredUser = await registerTestUser(initialUserData, password);
+
+  accessToken = await logTestUserIn({
     email: registeredUser.email,
     password,
-  };
-  const response = await graphqlTestCall(LOGIN, { loginInput });
-
-  accessToken = response.data.login.response.accessToken;
+  });
 });
 
 afterAll(async () => {
@@ -42,7 +39,7 @@ describe('Medical sheets service', () => {
   });
   describe('Retrieve from current user', () => {
     test('unsuccessful when no user is currently logged in', async () => {
-      const response = await graphqlTestCall(SHEETS_CURRENT_USER, undefined);
+      const response = await graphqlTestCall(SHEETS_CURRENT_USER);
       const error = response.errors[0];
       expect(response.data.sheetsCurrentUser).toBeNull();
       expect(error.message).toEqual(message.auth.unauthorized);

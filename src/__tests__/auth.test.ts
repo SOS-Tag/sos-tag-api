@@ -1,13 +1,13 @@
 import message from '@locales/en/translation.json';
-import { applyVariable } from '@utils/object';
 import { createConnection } from '@utils/mongoose';
+import { applyVariable } from '@utils/object';
 import { CONFIRMATION, LOGIN, REGISTER } from './utils/graphql/auth.graphql';
-import { alreadyUsedEmail, initialUserData, newUserData, password, unknownEmail } from './utils/mock-data';
-import { createTestUser, graphqlTestCall, teardown } from './utils/setup';
+import { alreadyUsedEmail, initialUserData, invalidPhoneNumber, newUserData, password, unknownEmail } from './utils/mock-data';
+import { graphqlTestCall, registerTestUser, teardown } from './utils/set-up';
 
 beforeAll(async () => {
   await createConnection();
-  await createTestUser(initialUserData, password);
+  await registerTestUser(initialUserData, password);
 });
 
 afterAll(async () => {
@@ -44,7 +44,7 @@ describe('Authentication service', () => {
     test('unsuccessful with invalid phone number', async () => {
       const newUser = {
         ...newUserData,
-        phone: '1234567890',
+        phone: invalidPhoneNumber,
       };
       const response = await graphqlTestCall(REGISTER, { registerInput: newUser });
       const data = response.data.register.response;
@@ -108,7 +108,7 @@ describe('Authentication service', () => {
     test('unsuccessful with wrong password', async () => {
       const loginInput = {
         email: initialUserData.email,
-        password: 'wrong' + password,
+        password: password + 'isWrong',
       };
       const response = await graphqlTestCall(LOGIN, { loginInput });
       const data = response.data.login.response;

@@ -36,6 +36,7 @@ class QRCodeResolver {
   }
 
   @Query(() => PaginatedQRCodeResponse, { description: 'Get QR Codes page by page (by fixing the page and the limit of QR Codes by page).' })
+  @UseMiddleware(isAuth)
   async qrCodesWithPagination(@Arg('paginatorInput') paginatorInput: PaginatorInput): Promise<PaginatedQRCodeResponse> {
     try {
       const qrCodes = await this.qrCodeService.getQRCodesWithPagination(paginatorInput);

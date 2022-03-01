@@ -1,4 +1,4 @@
-import { __dev__, __test__ } from '@/constants/env';
+import { __dev__, __test__ } from '@constants/env';
 import dbConnection from '@databases';
 import { connect, ConnectOptions, disconnect, set } from 'mongoose';
 import { logger } from './logger';
