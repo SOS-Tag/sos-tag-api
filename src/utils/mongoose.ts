@@ -1,7 +1,7 @@
 import { __dev__, __test__ } from '@constants/env';
 import dbConnection from '@databases';
+import { logger } from '@utils/logger';
 import { connect, ConnectOptions, disconnect, set } from 'mongoose';
-import { logger } from './logger';
 
 const clearConnection = async () => {
   try {

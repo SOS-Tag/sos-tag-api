@@ -1,8 +1,8 @@
-import { capitalizeFirstLetter, containsOnlySpaces } from '@utils/string';
 import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import CustomRegex from '@interfaces/custom-regex.interface';
 import { isEmpty } from '@utils/object';
-import { emailRegex, passwordRegex, phoneRegex } from './regex';
+import { capitalizeFirstLetter, containsOnlySpaces } from '@utils/string';
+import { emailRegex, passwordRegex, phoneRegex } from '@validators/utils/regex';
 import { Request } from 'express';
 
 type PotentialyEmptyArgs = ChangePasswordInput | LoginInput | LoginWithGoogleInput | RegisterInput | { token: string } | { email: string };

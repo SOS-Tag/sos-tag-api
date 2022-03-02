@@ -1,8 +1,8 @@
 import { GoogleTokens, GoogleUser } from '@interfaces/oauth.interface';
+import { logger } from '@utils/logger';
 import axios from 'axios';
 import { Request, Response } from 'express';
 import qs from 'qs';
-import { logger } from './logger';
 
 const getGoogleOAuthTokens = async ({ code }: { code: string }): Promise<GoogleTokens> => {
   const url = 'https://oauth2.googleapis.com/token';

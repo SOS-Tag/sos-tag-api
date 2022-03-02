@@ -1,8 +1,8 @@
 import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import { isEmpty } from '@utils/object';
+import { generateFieldErrors } from '@validators/utils/errors';
+import { emptyArgsExist, invalidArgsExist } from '@validators/utils/validate';
 import { Request } from 'express';
-import { generateFieldErrors } from './utils/errors';
-import { emptyArgsExist, invalidArgsExist } from './utils/validate';
 
 const checkChangePasswordValidity = (changePasswordInput: ChangePasswordInput, req: Request) => {
   const emptyArgs = emptyArgsExist(changePasswordInput, req);

@@ -1,10 +1,9 @@
-import { setConfirmationToken, setForgotPasswordToken } from '@/utils/token';
 import message from '@locales/en/translation.json';
 import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
 import { applyVariable } from '@utils/object';
-import { nanoid } from 'nanoid';
-import { CHANGE_PASSWORD, CONFIRMATION, FORGOT_PASSWORD, LOGIN, REGISTER, RESEND_CONFIRMATION } from './utils/graphql/auth.graphql';
+import { setConfirmationToken, setForgotPasswordToken } from '@utils/token';
+import { CHANGE_PASSWORD, CONFIRMATION, FORGOT_PASSWORD, LOGIN, REGISTER, RESEND_CONFIRMATION } from '@__tests__/utils/graphql/auth.graphql';
 import {
   alreadyUsedEmail,
   confirmationToken,
@@ -16,8 +15,9 @@ import {
   password,
   unknownEmail,
   weakPassword,
-} from './utils/mock-data';
-import { graphqlTestCall, registerTestUser, teardown } from './utils/set-up';
+} from '@__tests__/utils/mock-data';
+import { graphqlTestCall, registerTestUser, teardown } from '@__tests__/utils/set-up';
+import { nanoid } from 'nanoid';
 
 let confirmedUserData: (IUser & { _id: string }) | null = null;
 let unconfirmedUserData: (IUser & { _id: string }) | null = null;

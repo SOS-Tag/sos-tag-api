@@ -1,14 +1,14 @@
 process.env['NODE_CONFIG_DIR'] = __dirname + '/../../configs';
 
+import server from '@/app';
 import { LoginInput, RegisterInput } from '@dtos/auth.dto';
 import User from '@models/user.model';
 import { clearConnection } from '@utils/mongoose';
+import { LOGIN } from '@__tests__/utils/graphql/auth.graphql';
 import { hash } from 'bcryptjs';
 import { DocumentNode, graphql } from 'graphql';
 import { t } from 'i18next';
 import { connection } from 'mongoose';
-import server from '../../app';
-import { LOGIN } from './graphql/auth.graphql';
 
 const clearCollections = async () => {
   const collections = connection.collections;

@@ -1,6 +1,6 @@
+import { ObjectsResponse, SingleObjectResponse } from '@responses/common.response';
 import SheetSchema from '@schemas/sheet.schema';
 import { ObjectType } from 'type-graphql';
-import { ObjectsResponse, SingleObjectResponse } from './common.response';
 
 @ObjectType({ description: 'Sheet response' })
 class SheetResponse extends SingleObjectResponse(SheetSchema) {}

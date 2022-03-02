@@ -1,9 +1,9 @@
 import message from '@locales/en/translation.json';
 import { QRCODE_LENGTH } from '@services/qrcode.service';
 import { createConnection } from '@utils/mongoose';
-import { CREATE_QRCODE, PAGINATED_QRCODES, QRCODES } from './utils/graphql/qrcode.graphql';
-import { initialUserData, nbOfQRCodes, paginatedQRCodesOptions, password } from './utils/mock-data';
-import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from './utils/set-up';
+import { CREATE_QRCODE, PAGINATED_QRCODES, QRCODES } from '@__tests__/utils/graphql/qrcode.graphql';
+import { initialUserData, nbOfQRCodes, paginatedQRCodesOptions, password } from '@__tests__/utils/mock-data';
+import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
 let accessToken: string | undefined = undefined;
 

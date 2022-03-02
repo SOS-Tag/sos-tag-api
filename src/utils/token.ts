@@ -1,6 +1,6 @@
-import { confirmUserPrefix, forgotPasswordPrefix } from '@/constants/redis-prefixes';
-import { oneDay } from '@/constants/time';
 import redis from '@/redis';
+import { confirmUserPrefix, forgotPasswordPrefix } from '@constants/redis-prefixes';
+import { oneDay } from '@constants/time';
 import { ContextPayload } from '@interfaces/context.interface';
 import tokenConfig from '@interfaces/token.interface';
 import userModel, { IUser } from '@models/user.model';
@@ -23,7 +23,7 @@ const createAccessToken = (user: IUser) => {
     },
     accessTokenSecret,
     {
-      expiresIn: `${accessTokenDuration}m`, // What access token duration do we want? Do we want differences between dev, prod and test mode?
+      expiresIn: `${accessTokenDuration}m`,
     },
   );
 };
@@ -36,7 +36,7 @@ const createRefreshToken = (user: IUser) => {
     },
     refreshTokenSecret,
     {
-      expiresIn: `${refreshTokenDuration}d`, // What refresh token duration do we want? Do we want differences between dev, prod and test mode?
+      expiresIn: `${refreshTokenDuration}d`,
     },
   );
 };

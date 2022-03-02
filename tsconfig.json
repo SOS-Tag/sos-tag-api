@@ -42,7 +42,8 @@
       "@schemas/*": ["schemas/*"],
       "@services/*": ["services/*"],
       "@utils/*": ["utils/*"],
-      "@validators/*": ["validators/*"]
+      "@validators/*": ["validators/*"],
+      "@__tests__/*": ["__tests__/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],

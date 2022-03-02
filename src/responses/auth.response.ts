@@ -1,7 +1,7 @@
 import { IUser } from '@models/user.model';
+import { SingleObjectResponse } from '@responses/common.response';
 import UserSchema from '@schemas/user.schema';
 import { Field, ObjectType } from 'type-graphql';
-import { SingleObjectResponse } from './common.response';
 
 @ObjectType({ description: 'Login response data' })
 class LoginResponseData {

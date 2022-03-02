@@ -1,3 +1,4 @@
+import redis from '@/redis';
 import { __test__ } from '@constants/env';
 import { confirmUserPrefix, forgotPasswordPrefix } from '@constants/redis-prefixes';
 import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
@@ -22,7 +23,6 @@ import {
 import { compare, hash } from 'bcryptjs';
 import { Request, Response } from 'express';
 import { Inject, Service } from 'typedi';
-import redis from '../redis';
 
 @Service()
 class AuthService {

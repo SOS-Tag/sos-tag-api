@@ -1,8 +1,8 @@
 import message from '@locales/en/translation.json';
 import { createConnection } from '@utils/mongoose';
-import { CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from './utils/graphql/sheet.graphql';
-import { customId, initialUserData, newSheetData, password } from './utils/mock-data';
-import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from './utils/set-up';
+import { CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
+import { customId, initialUserData, newSheetData, password } from '@__tests__/utils/mock-data';
+import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
 let accessToken: string | undefined = undefined;
 
