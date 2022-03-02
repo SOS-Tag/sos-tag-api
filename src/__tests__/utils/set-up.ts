@@ -46,10 +46,11 @@ const logTestUserIn = async (loginInput: LoginInput) => {
   return response.data.login.response.accessToken;
 };
 
-const registerTestUser = async (initialUser: Omit<RegisterInput, 'password'> & { confirmed: boolean }, password: string) => {
+const registerTestUser = async (initialUser: Omit<RegisterInput, 'password'>, password: string, confirmed = true) => {
   const user = {
     ...initialUser,
     password: await hash(password, 12),
+    confirmed,
   };
   const newUser = new User(user);
   await newUser.save();

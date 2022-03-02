@@ -1,14 +1,12 @@
-import { confirmUserPrefix, forgotPasswordPrefix } from '@constants/redis-prefixes';
+import { setConfirmationToken, setForgotPasswordToken } from '@utils/token';
 import { Request } from 'express';
 import fs from 'fs';
 import { google } from 'googleapis';
 import hogan from 'hogan.js';
 import inlineCss from 'inline-css';
-import { nanoid } from 'nanoid';
 import nodemailer from 'nodemailer';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import path from 'path';
-import redis from '../redis';
 
 type EmailAim = 'change_password' | 'confirm_user';
 
@@ -18,17 +16,13 @@ const OAuth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE
 OAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_CLIENT_REFRESH_TOKEN });
 
 const createConfirmationUrl = async (userId: string) => {
-  const token = nanoid();
-  await redis.set(confirmUserPrefix + token, userId, 'ex', 60 * 60 * 24);
-
+  const token = setConfirmationToken(userId);
   // Must correspond to the dedicated route on the frontend
   return `http://localhost:3000/auth/confirm/${token}`;
 };
 
 const createForgotPasswordUrl = async (userId: string) => {
-  const token = nanoid();
-  await redis.set(forgotPasswordPrefix + token, userId, 'ex', 60 * 60 * 24);
-
+  const token = setForgotPasswordToken(userId);
   // Must correspond to the dedicated route on the frontend
   return `http://localhost:3000/auth/change-password/${token}`;
 };

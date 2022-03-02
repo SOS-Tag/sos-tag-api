@@ -24,7 +24,7 @@ afterAll(async () => {
 describe('Medical sheets service', () => {
   describe('Retrieve all', () => {
     test('unsuccessful when user is not logged in', async () => {
-      const response = await graphqlTestCall(SHEETS, undefined);
+      const response = await graphqlTestCall(SHEETS);
       const error = response.errors[0];
       expect(response.data.sheets).toBeNull();
       expect(error.message).toEqual(message.auth.unauthorized);

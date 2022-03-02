@@ -1,3 +1,6 @@
+import { confirmUserPrefix, forgotPasswordPrefix } from '@/constants/redis-prefixes';
+import { oneDay } from '@/constants/time';
+import redis from '@/redis';
 import { ContextPayload } from '@interfaces/context.interface';
 import tokenConfig from '@interfaces/token.interface';
 import userModel, { IUser } from '@models/user.model';
@@ -5,6 +8,7 @@ import config from 'config';
 import 'dotenv/config';
 import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
+import { nanoid } from 'nanoid';
 
 const { duration: accessTokenDuration }: tokenConfig = config.get('accessToken');
 const { duration: refreshTokenDuration }: tokenConfig = config.get('refreshToken');
@@ -72,4 +76,14 @@ const sendRefreshToken = (res: Response, token: string) => {
   });
 };
 
-export { createAccessToken, createRefreshToken, refreshToken, sendRefreshToken };
+const setConfirmationToken = async (userId: string, token = nanoid()) => {
+  await redis.set(confirmUserPrefix + token, userId, 'ex', oneDay);
+  return token;
+};
+
+const setForgotPasswordToken = async (userId: string, token = nanoid()) => {
+  await redis.set(forgotPasswordPrefix + token, userId, 'ex', oneDay);
+  return token;
+};
+
+export { createAccessToken, createRefreshToken, refreshToken, sendRefreshToken, setConfirmationToken, setForgotPasswordToken };

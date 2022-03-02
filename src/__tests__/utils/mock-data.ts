@@ -1,13 +1,17 @@
 import { faker } from '@faker-js/faker';
 import { customNanoId } from '@services/qrcode.service';
+import { nanoid } from 'nanoid';
 
 const phoneNumberPattern = '07########';
 
 const alreadyUsedEmail = faker.internet.email();
+const confirmationToken = nanoid();
 const customId = customNanoId();
 const email = faker.internet.email();
+const forgotPasswordToken = nanoid();
 const invalidPhoneNumber = '1234567890';
 const nbOfQRCodes = faker.datatype.number({ min: 1, max: 20 });
+const newPassword = 'qY7k_6&h';
 const paginatedQRCodesOptions = {
   currentPage: 1,
   limit: Math.floor(nbOfQRCodes / 2),
@@ -31,7 +35,6 @@ const initialUserData = {
   ...initialUserFullName,
   email: alreadyUsedEmail,
   phone: phoneNumber,
-  confirmed: true,
 };
 
 const newSheetData = {
@@ -48,10 +51,13 @@ const newUserData = {
 
 export {
   alreadyUsedEmail,
+  confirmationToken,
   customId,
+  forgotPasswordToken,
   initialUserData,
   invalidPhoneNumber,
   nbOfQRCodes,
+  newPassword,
   newSheetData,
   newUserData,
   paginatedQRCodesOptions,
