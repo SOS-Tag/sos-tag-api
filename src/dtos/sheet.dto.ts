@@ -1,8 +1,8 @@
 import { Field, InputType } from 'type-graphql';
 import { IsDate } from 'class-validator';
 
-@InputType({ description: 'Create Sheet input' })
-class CreateSheetInput {
+@InputType({ description: 'Assign sheet to user input' })
+class AssignSheetToUserInput {
   @Field()
   id: string;
   @Field()
@@ -85,4 +85,4 @@ class UpdateSheetInput {
   changes: UpdateSheetChangesInput;
 }
 
-export { CreateSheetInput, UpdateSheetInput };
+export { AssignSheetToUserInput, UpdateSheetInput };

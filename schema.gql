@@ -3,20 +3,8 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-"""Boolean response"""
-type BooleanResponse {
-  errors: [FieldError!]
-  response: Boolean
-}
-
-"""Change password input"""
-input ChangePasswordInput {
-  password: String
-  token: String
-}
-
-"""Create Sheet input"""
-input CreateSheetInput {
+"""Assign sheet to user input"""
+input AssignSheetToUserInput {
   advanceDirectives: Boolean
   allergies: String
   bloodType: String
@@ -34,6 +22,18 @@ input CreateSheetInput {
   sex: String
   smoker: Boolean
   treatingDoctor: String
+}
+
+"""Boolean response"""
+type BooleanResponse {
+  errors: [FieldError!]
+  response: Boolean
+}
+
+"""Change password input"""
+input ChangePasswordInput {
+  password: String
+  token: String
 }
 
 """
@@ -72,6 +72,9 @@ input LoginWithGoogleInput {
 }
 
 type Mutation {
+  """Assign an unassigned sheet to the current user."""
+  assignSheetToUser(assignSheetToUserInput: AssignSheetToUserInput): SheetResponse
+
   """
   Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.
   """
@@ -87,8 +90,8 @@ type Mutation {
   """
   createQRCode: QRCodeResponse
 
-  """Create a sheet."""
-  createSheet(createSheetInput: CreateSheetInput): SheetResponse
+  """Create an empty sheet."""
+  createSheet(sheetId: String): SheetResponse
 
   """
   Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.

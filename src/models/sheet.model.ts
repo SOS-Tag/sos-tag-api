@@ -76,15 +76,12 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
     },
     smoker: {
       type: Boolean,
-      default: false,
     },
     organDonor: {
       type: Boolean,
-      default: false,
     },
     advanceDirectives: {
       type: Boolean,
-      default: false,
     },
     allergies: {
       type: String,

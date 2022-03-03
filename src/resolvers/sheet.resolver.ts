@@ -1,5 +1,5 @@
 import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
-import { CreateSheetInput, UpdateSheetInput } from '@dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateSheetInput } from '@dtos/sheet.dto';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
 import { logger } from '@utils/logger';
@@ -13,14 +13,29 @@ import Context from '@interfaces/context.interface';
 class SheetResolver {
   constructor(private readonly sheetService: SheetService) {}
 
-  @Mutation(() => SheetResponse, { description: 'Create a sheet.' })
-  @UseMiddleware(isAuth)
-  async createSheet(@Ctx() { payload }: Context, @Arg('createSheetInput') createSheetInput: CreateSheetInput): Promise<SheetResponse> {
+  @Mutation(() => SheetResponse, { description: 'Create an empty sheet.' })
+  @UseMiddleware(isAuth) //TODO isAuthenticatedAsAdmin
+  async createSheet(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
-      const createSheetResponse = await this.sheetService.createSheet(createSheetInput, payload.userId);
+      const createSheetResponse = await this.sheetService.createSheet(sheetId);
       return createSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:createSheet] ${error.message}.`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => SheetResponse, { description: 'Assign an unassigned sheet to the current user.' })
+  @UseMiddleware(isAuth)
+  async assignSheetToUser(
+    @Ctx() { payload }: Context,
+    @Arg('assignSheetToUserInput') assignSheetToUserInput: AssignSheetToUserInput,
+  ): Promise<SheetResponse> {
+    try {
+      const assignSheetToUserResponse = await this.sheetService.assignSheetToUser(assignSheetToUserInput, payload.userId);
+      return assignSheetToUserResponse;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:assignSheetToUser] ${error.message}.`);
       throw error;
     }
   }

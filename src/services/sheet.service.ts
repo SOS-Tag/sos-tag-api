@@ -1,4 +1,4 @@
-import { CreateSheetInput, UpdateSheetInput } from 'dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateSheetInput } from 'dtos/sheet.dto';
 import { ISheet, ISheetModel } from '@models/sheet.model';
 import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { transformSheet } from '@services/utils/transform';
@@ -9,11 +9,45 @@ import { Inject, Service } from 'typedi';
 class SheetService {
   constructor(@Inject('SHEET') private readonly sheets: ISheetModel) {}
 
-  async createSheet(sheetData: CreateSheetInput, userId: string): Promise<SheetResponse> {
-    const sheet = await this.sheets.create({
+  async createSheet(sheetId: string): Promise<SheetResponse> {
+    const sheetFound = await this.sheets.findById(sheetId);
+    if (sheetFound)
+      return {
+        errors: [
+          {
+            message: 'Sheet with this id already exists.',
+          },
+        ],
+      };
+
+    const sheet = await this.sheets.create({ _id: sheetId });
+    return { response: transformSheet(await sheet.save()) };
+  }
+
+  async assignSheetToUser(sheetData: AssignSheetToUserInput, userId: string): Promise<SheetResponse> {
+    const sheetFound = await this.sheets.findById(sheetData.id);
+    if (!sheetFound)
+      return {
+        errors: [
+          {
+            message: 'Sheet not found.',
+          },
+        ],
+      };
+
+    if (sheetFound.user)
+      return {
+        errors: [
+          {
+            message: 'Sheet with this id is already assigned to a user.',
+          },
+        ],
+      };
+
+    const sheet = sheetFound;
+    sheet.set({
       ...sheetData,
       user: userId,
-      _id: sheetData.id,
     });
     return { response: transformSheet(await sheet.save()) };
   }
@@ -33,7 +67,7 @@ class SheetService {
       return {
         errors: [
           {
-            message: 'Medical sheet not found.',
+            message: 'Sheet not found.',
           },
         ],
       };

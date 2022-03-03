@@ -13,7 +13,7 @@ const transformSheet = sheet => {
   return {
     ...sheet._doc,
     _id: sheet.id,
-    dateOfBirth: sheet.dateOfBirth && dateToString(sheet.dateOfBirth),
+    ...(sheet.dateOfBirth && { dateOfBirth: dateToString(sheet.dateOfBirth) }),
     createdAt: dateToString(sheet.createdAt),
     updatedAt: dateToString(sheet.updatedAt),
   };
