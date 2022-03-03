@@ -2,7 +2,7 @@ process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
 
 import 'reflect-metadata';
 
-import { __prod__, __test__ } from '@constants/env';
+import { __prod__ } from '@constants/env';
 import Context from '@interfaces/context.interface';
 import AuthResolver from '@resolvers/auth.resolver';
 import QRCodeResolver from '@resolvers/qrcode.resolver';
@@ -48,8 +48,7 @@ class Server {
   private async initialize() {
     this.express.set('proxy', 1);
 
-    if (!__test__) await this.connectToDatabase();
-
+    await this.connectToDatabase();
     await this.buildGraphQLSchema();
     this.initializeTranslation();
     this.initializeMiddlewares();
@@ -114,13 +113,12 @@ class Server {
   }
 
   public listen() {
-    if (!__test__)
-      this.express.listen(typeof this.port === 'string' ? parseInt(this.port) : this.port, () => {
-        logger.info(`=================================`);
-        logger.info(`======= ENV: ${this.env} ========`);
-        logger.info(`  App listening on port ${this.port}  `);
-        logger.info(`=================================`);
-      });
+    return this.express.listen(typeof this.port === 'string' ? parseInt(this.port) : this.port, () => {
+      logger.info(`=================================`);
+      logger.info(`======= ENV: ${this.env} ========`);
+      logger.info(`  App listening on port ${this.port}  `);
+      logger.info(`=================================`);
+    });
   }
 }
 

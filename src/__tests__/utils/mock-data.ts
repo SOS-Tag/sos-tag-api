@@ -4,22 +4,30 @@ import { nanoid } from 'nanoid';
 
 const phoneNumberPattern = '07########';
 
-const alreadyUsedEmail = faker.internet.email();
-const confirmationToken = nanoid();
 const customId = customNanoId();
-const email = faker.internet.email();
+
+const confirmationToken = nanoid();
 const forgotPasswordToken = nanoid();
-const invalidPhoneNumber = '1234567890';
-const nbOfQRCodes = faker.datatype.number({ min: 1, max: 20 });
+
+const email = faker.internet.email();
+const alreadyUsedEmail = faker.internet.email();
+const unknownEmail = faker.internet.email();
+
+const password = 'k"KM@2#x';
 const newPassword = 'qY7k_6&h';
+const weakPassword = '1234';
+
+const phoneNumber = faker.phone.phoneNumber(phoneNumberPattern);
+const invalidPhoneNumber = '1234567890';
+
+const bloodType = 'O-';
+const newBloodType = 'A+';
+
+const nbOfQRCodes = faker.datatype.number({ min: 1, max: 20 });
 const paginatedQRCodesOptions = {
   currentPage: 1,
   limit: Math.floor(nbOfQRCodes / 2),
 };
-const password = 'k"KM@2#x';
-const phoneNumber = faker.phone.phoneNumber(phoneNumberPattern);
-const unknownEmail = faker.internet.email();
-const weakPassword = '1234';
 
 const initialUserFullName = {
   fname: faker.name.firstName(),
@@ -39,7 +47,7 @@ const initialUserData = {
 
 const newSheetData = {
   ...initialUserFullName,
-  bloodType: 'O-',
+  bloodType,
 };
 
 const newUserData = {
@@ -57,6 +65,7 @@ export {
   initialUserData,
   invalidPhoneNumber,
   nbOfQRCodes,
+  newBloodType,
   newPassword,
   newSheetData,
   newUserData,

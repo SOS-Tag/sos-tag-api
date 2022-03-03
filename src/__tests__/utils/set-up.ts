@@ -1,9 +1,10 @@
 process.env['NODE_CONFIG_DIR'] = __dirname + '/../../configs';
 
 import server from '@/app';
+import { quitRedis } from '@/redis';
 import { LoginInput, RegisterInput } from '@dtos/auth.dto';
 import User from '@models/user.model';
-import { clearConnection } from '@utils/mongoose';
+import { closeConnection } from '@utils/mongoose';
 import { LOGIN } from '@__tests__/utils/graphql/auth.graphql';
 import { hash } from 'bcryptjs';
 import { DocumentNode, graphql } from 'graphql';
@@ -59,8 +60,9 @@ const registerTestUser = async (initialUser: Omit<RegisterInput, 'password'>, pa
 };
 
 const teardown = async function () {
+  await quitRedis();
   await clearCollections();
-  await clearConnection();
+  await closeConnection();
 };
 
 export { clearCollections, getGqlString, graphqlTestCall, logTestUserIn, registerTestUser, teardown };

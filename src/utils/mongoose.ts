@@ -3,7 +3,7 @@ import dbConnection from '@databases';
 import { logger } from '@utils/logger';
 import { connect, ConnectOptions, disconnect, set } from 'mongoose';
 
-const clearConnection = async () => {
+const closeConnection = async () => {
   try {
     await disconnect();
   } catch (error) {
@@ -27,4 +27,4 @@ const createConnection = async () => {
   !__test__ && logger.info('[mongoose:connect] The connection with the database has been established successfully.');
 };
 
-export { clearConnection, createConnection };
+export { closeConnection, createConnection };

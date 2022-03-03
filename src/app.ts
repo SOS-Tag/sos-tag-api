@@ -7,6 +7,7 @@ import UserModel from '@models/user.model';
 import validateEnv from '@utils/validate-env';
 import 'dotenv/config';
 import { Container } from 'typedi';
+import { __test__ } from './constants/env';
 
 validateEnv();
 
@@ -16,6 +17,6 @@ Container.set({ id: 'USER', factory: () => UserModel });
 
 const server = new Server();
 
-server.listen();
+if (!__test__) server.listen();
 
 export default server;
