@@ -9,7 +9,7 @@ import 'dotenv/config';
 import { Container } from 'typedi';
 import { __test__ } from './constants/env';
 
-validateEnv();
+if (!__test__) validateEnv();
 
 Container.set({ id: 'QRCODE', factory: () => QRCodeModel });
 Container.set({ id: 'SHEET', factory: () => SheetModel });
