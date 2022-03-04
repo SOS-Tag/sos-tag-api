@@ -1,6 +1,7 @@
 import dbConfig from '@interfaces/db.interface';
 import config from 'config';
-import 'dotenv-safe/config';
+import { __test__ } from '../constants/env';
+if (!__test__) require('dotenv-safe/config');
 
 const { user, database }: dbConfig = config.get('dbConfig');
 const password = process.env.DB_PASSWORD;

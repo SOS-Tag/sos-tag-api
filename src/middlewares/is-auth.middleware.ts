@@ -1,5 +1,6 @@
 import Context from '@interfaces/context.interface';
-import 'dotenv-safe/config';
+import { __test__ } from '../constants/env';
+if (!__test__) require('dotenv-safe/config');
 import { verify } from 'jsonwebtoken';
 import { MiddlewareFn } from 'type-graphql';
 
