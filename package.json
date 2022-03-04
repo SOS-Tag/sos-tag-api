@@ -9,6 +9,7 @@
     "compile": "tsc",
     "test": "jest --detectOpenHandles",
     "test:watch": "yarn test --watch --maxWorkers=25%",
+    "test:clearCache": "jest --clearCache",
     "build": "tsc && npx tsc-alias",
     "lint": "eslint --ignore-path .gitignore --ext .ts src/",
     "lint:fix": "yarn lint --fix",

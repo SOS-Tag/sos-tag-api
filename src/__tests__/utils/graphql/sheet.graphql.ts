@@ -1,16 +1,29 @@
 import { gql } from 'apollo-server-express';
 
 const CREATE_SHEET = gql`
-  mutation CreateSheet($createSheetInput: CreateSheetInput) {
-    createSheet(createSheetInput: $createSheetInput) {
+  mutation CreateSheet($sheetId: String) {
+    createSheet(sheetId: $sheetId) {
       response {
         _id
-        fname
-        lname
-        bloodType
+        enabled
       }
       errors {
         field
+        message
+      }
+    }
+  }
+`;
+
+const ASSIGN_SHEET_TO_USER = gql`
+  mutation AssignSheetToUser($assignSheetToUserInput: AssignSheetToUserInput) {
+    assignSheetToUser(assignSheetToUserInput: $assignSheetToUserInput) {
+      response {
+        _id
+        enabled
+        user
+      }
+      errors {
         message
       }
     }
@@ -76,4 +89,4 @@ const UPDATE_SHEET = gql`
   }
 `;
 
-export { CREATE_SHEET, SHEET_BY_ID, SHEETS, SHEETS_CURRENT_USER, UPDATE_SHEET };
+export { CREATE_SHEET, ASSIGN_SHEET_TO_USER, SHEET_BY_ID, SHEETS, SHEETS_CURRENT_USER, UPDATE_SHEET };

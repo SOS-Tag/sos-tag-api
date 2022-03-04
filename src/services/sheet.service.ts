@@ -48,6 +48,7 @@ class SheetService {
     sheet.set({
       ...sheetData,
       user: userId,
+      enabled: true,
     });
     return { response: transformSheet(await sheet.save()) };
   }
@@ -101,7 +102,7 @@ class SheetService {
       return {
         errors: [
           {
-            message: 'Medical sheet not found.',
+            message: 'Sheet not found.',
           },
         ],
       };

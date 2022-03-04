@@ -1,15 +1,17 @@
 import message from '@locales/en/translation.json';
+import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
-import { CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
+import { CREATE_SHEET, ASSIGN_SHEET_TO_USER, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
 import { customId, initialUserData, newBloodType, newSheetData, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
 let accessToken: string | undefined = undefined;
+let registeredUser: (IUser & { _id: string }) | null = null;
 
 beforeAll(async () => {
   await createConnection();
 
-  const registeredUser = await registerTestUser(initialUserData, password);
+  registeredUser = await registerTestUser(initialUserData, password);
 
   accessToken = await logTestUserIn({
     email: registeredUser.email,
@@ -57,10 +59,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         CREATE_SHEET,
         {
-          createSheetInput: {
-            ...newSheetData,
-            id: customId,
-          },
+          sheetId: customId,
         },
         undefined,
       );
@@ -72,10 +71,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         CREATE_SHEET,
         {
-          createSheetInput: {
-            ...newSheetData,
-            id: customId,
-          },
+          sheetId: customId,
         },
         accessToken,
       );
@@ -83,8 +79,45 @@ describe('Medical sheets service', () => {
       const errors = response.data.createSheet.errors;
       expect(errors).toBeNull();
       expect(data).toEqual({
-        ...newSheetData,
         _id: customId,
+        enabled: false,
+      });
+    });
+  });
+  describe('Assign to user', () => {
+    test('unsuccessful when no user is currently logged in', async () => {
+      const response = await graphqlTestCall(
+        ASSIGN_SHEET_TO_USER,
+        {
+          assignSheetToUserInput: {
+            id: customId,
+            ...newSheetData,
+          },
+        },
+        undefined,
+      );
+      const error = response.errors[0];
+      expect(response.data.assignSheetToUser).toBeNull();
+      expect(error.message).toEqual(message.auth.unauthorized);
+    });
+    test('successful when a user is logged in', async () => {
+      const response = await graphqlTestCall(
+        ASSIGN_SHEET_TO_USER,
+        {
+          assignSheetToUserInput: {
+            id: customId,
+            ...newSheetData,
+          },
+        },
+        accessToken,
+      );
+      const data = response.data.assignSheetToUser.response;
+      const errors = response.data.assignSheetToUser.errors;
+      expect(errors).toBeNull();
+      expect(data).toEqual({
+        _id: customId,
+        enabled: true,
+        user: registeredUser.id,
       });
     });
   });
@@ -105,7 +138,7 @@ describe('Medical sheets service', () => {
       const data = response.data.sheetById.response;
       const error = response.data.sheetById.errors[0];
       expect(data).toBeNull();
-      expect(error.message).toEqual('Medical sheet not found.');
+      expect(error.message).toEqual('Sheet not found.');
     });
     test('successful with unexisting ID in database', async () => {
       const response = await graphqlTestCall(SHEET_BY_ID, {
@@ -161,7 +194,7 @@ describe('Medical sheets service', () => {
       const data = response.data.updateSheet.response;
       const error = response.data.updateSheet.errors[0];
       expect(data).toBeNull();
-      expect(error.message).toEqual('Medical sheet not found.');
+      expect(error.message).toEqual('Sheet not found.');
     });
     test('successfull with a user logged in, and a valid medical sheet id that belongs to this user', async () => {
       const response = await graphqlTestCall(
