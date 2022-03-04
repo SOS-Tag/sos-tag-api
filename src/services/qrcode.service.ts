@@ -5,10 +5,11 @@ import { transformQRCode } from '@services/utils/transform';
 import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
 
-const customNanoId = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ1234578', 8);
+const QRCODE_LENGTH = 8;
+const customNanoId = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ1234578', QRCODE_LENGTH);
 
 @Service()
-class UserService {
+class QRCodeService {
   constructor(@Inject('QRCODE') private readonly qrCodes: IQRCodeModel) {}
 
   async createQRCode(): Promise<QRCodeResponse> {
@@ -44,4 +45,5 @@ class UserService {
   }
 }
 
-export default UserService;
+export { QRCODE_LENGTH, customNanoId };
+export default QRCodeService;

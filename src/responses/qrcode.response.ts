@@ -1,6 +1,6 @@
+import { ObjectsResponse, PaginatedResponse, SingleObjectResponse } from '@responses/common.response';
 import QRCodeSchema from '@schemas/qrcode.schema';
 import { ObjectType } from 'type-graphql';
-import { ObjectsResponse, PaginatedResponse, SingleObjectResponse } from './common.response';
 
 @ObjectType({ description: 'Paginated QR Code response' })
 class PaginatedQRCodeResponse extends PaginatedResponse(QRCodeSchema) {}

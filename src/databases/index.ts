@@ -3,6 +3,7 @@ import config from 'config';
 import 'dotenv-safe/config';
 
 const { user, database }: dbConfig = config.get('dbConfig');
+const password = process.env.DB_PASSWORD;
 
 const mongooseOptions = {
   useNewUrlParser: true,
@@ -10,7 +11,7 @@ const mongooseOptions = {
 };
 
 const dbConnection = {
-  url: `mongodb+srv://${user}:${process.env.DB_PASSWORD}@cluster0.y7t9g.mongodb.net/${database}?retryWrites=true&w=majority`,
+  url: `mongodb+srv://${user}:${password}@cluster0.y7t9g.mongodb.net/${database}?retryWrites=true&w=majority`,
   options: mongooseOptions,
 };
 

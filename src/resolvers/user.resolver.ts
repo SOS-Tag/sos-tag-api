@@ -1,8 +1,9 @@
-import { UserResponse, UsersResponse } from '@responses/user.response';
 import Context from '@interfaces/context.interface';
-import { isAuth } from '@middlewares/is-auth.middleware';
+import isAuth from '@middlewares/is-auth.middleware';
+import { UserResponse, UsersResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';
+import { getErrorMessage } from '@utils/error';
 import { logger } from '@utils/logger';
 import { verify } from 'jsonwebtoken';
 import { Arg, Ctx, Query, Resolver, UseMiddleware } from 'type-graphql';
@@ -28,7 +29,7 @@ class UserResolver {
       const currentUser = await this.userById(payload.userId);
       return currentUser;
     } catch (error) {
-      logger.error(`[resolver:User:currentUser] ${error.message}.`);
+      logger.error(`[resolver:User:currentUser] ${getErrorMessage(error)}.`);
       return null;
     }
   }
@@ -40,7 +41,7 @@ class UserResolver {
       const user = await this.userService.findUserById(userId);
       return user;
     } catch (error) {
-      logger.error(`[resolver:User:userByID] ${error.message}.`);
+      logger.error(`[resolver:User:userByID] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -52,7 +53,7 @@ class UserResolver {
       const users = await this.userService.findUsers();
       return users;
     } catch (error) {
-      logger.error(`[resolver:User:users] ${error.message}.`);
+      logger.error(`[resolver:User:users] ${getErrorMessage(error)}.`);
       throw error;
     }
   }

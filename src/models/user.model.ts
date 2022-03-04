@@ -2,14 +2,18 @@ import mongoose from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
 
 export interface IUser extends mongoose.Document {
-  _id: string;
-  firstname: string;
-  lastname: string;
+  fname: string;
+  lname: string;
+  address: string;
+  zipCode: string;
+  city: string;
   email: string;
   phone: string;
+  nationality: string;
   password: string;
-  confirmed: boolean;
   tokenVersion: number;
+  activated: boolean;
+  confirmed: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,14 +22,34 @@ export type IUserModel = mongoose.Model<IUser>;
 
 const userModel: mongoose.Schema = new mongoose.Schema(
   {
-    firstname: {
+    fname: {
       type: String,
       required: true,
+      minLength: 1,
       trim: true,
     },
-    lastname: {
+    lname: {
       type: String,
       required: true,
+      minLength: 1,
+      trim: true,
+    },
+    address: {
+      type: String,
+      //TODO  required: true,
+      minLength: 1,
+      trim: true,
+    },
+    zipCode: {
+      type: String,
+      //TODO  required: true,
+      minLength: 1,
+      trim: true,
+    },
+    city: {
+      type: String,
+      //TODO  required: true,
+      minLength: 1,
       trim: true,
     },
     email: {
@@ -37,20 +61,32 @@ const userModel: mongoose.Schema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true,
+      //TODO  required: true,
+      minLength: 1,
+      trim: true,
+    },
+    nationality: {
+      type: String,
+      //TODO  required: true,
+      minLength: 2,
+      maxLength: 2,
       trim: true,
     },
     password: {
       type: String,
       required: true,
-    },
-    confirmed: {
-      type: Boolean,
+      minLength: 1,
     },
     tokenVersion: {
       type: Number,
       required: false,
       default: 0,
+    },
+    activated: {
+      type: Boolean,
+    },
+    confirmed: {
+      type: Boolean,
     },
   },
   { timestamps: true },
