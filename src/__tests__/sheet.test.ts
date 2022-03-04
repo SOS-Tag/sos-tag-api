@@ -82,6 +82,18 @@ describe('Medical sheets service', () => {
         enabled: false,
       });
     });
+    test('unsuccessful when the sheet already exists', async () => {
+      const response = await graphqlTestCall(
+        CREATE_SHEET,
+        {
+          sheetId: customId,
+        },
+        accessToken,
+      );
+      const [error] = response.data.createSheet.errors;
+      expect(response.data.createSheet.response).toBeNull();
+      expect(error.message).toEqual('Sheet with this id already exists.');
+    });
   });
   describe('Assign to user', () => {
     test('unsuccessful when no user is currently logged in', async () => {
@@ -118,6 +130,34 @@ describe('Medical sheets service', () => {
         enabled: true,
         user: registeredUser.id,
       });
+    });
+    test('unsuccessful with unexisting ID in database', async () => {
+      const response = await graphqlTestCall(
+        ASSIGN_SHEET_TO_USER,
+        {
+          assignSheetToUserInput: {
+            id: 'AAAAAAAA',
+          },
+        },
+        accessToken,
+      );
+      const [error] = response.data.assignSheetToUser.errors;
+      expect(response.data.assignSheetToUser.response).toBeNull();
+      expect(error.message).toEqual('Sheet not found.');
+    });
+    test('unsuccessful when sheet is already assigned to a user', async () => {
+      const response = await graphqlTestCall(
+        ASSIGN_SHEET_TO_USER,
+        {
+          assignSheetToUserInput: {
+            id: customId,
+          },
+        },
+        accessToken,
+      );
+      const [error] = response.data.assignSheetToUser.errors;
+      expect(response.data.assignSheetToUser.response).toBeNull();
+      expect(error.message).toEqual('Sheet with this id is already assigned to a user.');
     });
   });
   describe('Retrieve by ID', () => {
