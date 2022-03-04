@@ -1,4 +1,5 @@
 import { GoogleTokens, GoogleUser } from '@interfaces/oauth.interface';
+import { getErrorMessage } from '@utils/error';
 import { logger } from '@utils/logger';
 import axios from 'axios';
 import { Request, Response } from 'express';
@@ -24,7 +25,7 @@ const getGoogleOAuthTokens = async ({ code }: { code: string }): Promise<GoogleT
 
     return res.data;
   } catch (error) {
-    logger.error(`[util:oauth:getGoogleOAuthTokens] ${error.message}`);
+    logger.error(`[util:oauth:getGoogleOAuthTokens] ${getErrorMessage(error)}`);
     throw error;
   }
 };
@@ -38,7 +39,7 @@ const getGoogleUser = async ({ tokenId, token }): Promise<GoogleUser> => {
     });
     return res.data;
   } catch (error: any) {
-    logger.error(`[util:oauth:getGoogleUser] ${error.message}`);
+    logger.error(`[util:oauth:getGoogleUser] ${getErrorMessage(error)}`);
     throw error;
   }
 };
@@ -55,7 +56,7 @@ const googleOauthHandler = async (req: Request, res: Response) => {
     // They will be used as mutation parameters to handle the login with Google using GraphQL.
     res.redirect(googleOauthRedirectRoute);
   } catch (error) {
-    logger.error(`[util:oauth:googleOauthHandler] ${error.message}`);
+    logger.error(`[util:oauth:googleOauthHandler] ${getErrorMessage(error)}`);
     throw error;
   }
 };

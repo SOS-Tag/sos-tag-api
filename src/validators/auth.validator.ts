@@ -8,7 +8,6 @@ const checkChangePasswordValidity = (changePasswordInput: ChangePasswordInput) =
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 
   const { password } = changePasswordInput;
-
   const invalidArgs = invalidArgsExist({ password });
   if (!isEmpty(invalidArgs)) return generateFieldErrors(invalidArgs);
 };
@@ -38,7 +37,6 @@ const checkRegisterValidity = (registerInput: RegisterInput) => {
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 
   const { email, phone, password } = registerInput;
-
   const invalidArgs = invalidArgsExist({ email, phone, password });
   if (!isEmpty(invalidArgs)) return generateFieldErrors(invalidArgs);
 };

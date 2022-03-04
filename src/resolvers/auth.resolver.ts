@@ -1,10 +1,11 @@
-import { UserResponse } from '@responses/user.response';
 import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import Context from '@interfaces/context.interface';
 import { LoginResponse } from '@responses/auth.response';
 import { BooleanResponse } from '@responses/common.response';
+import { UserResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import AuthService from '@services/auth.service';
+import { getErrorMessage } from '@utils/error';
 import { logger } from '@utils/logger';
 import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
@@ -32,7 +33,7 @@ class AuthResolver {
       const changePasswordResponse = await this.authService.changePassword(changePasswordInput);
       return changePasswordResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:changePassword] ${error.message}`);
+      logger.error(`[resolver:Auth:changePassword] ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -45,7 +46,7 @@ class AuthResolver {
       const confirmationResponse = await this.authService.confirmUser(token);
       return confirmationResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:confirmUser] ${error.message}`);
+      logger.error(`[resolver:Auth:confirmUser] ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -59,7 +60,7 @@ class AuthResolver {
       const forgotPasswordResponse = await this.authService.forgotPassword(userEmail);
       return forgotPasswordResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:forgotPassword] ${error.message}`);
+      logger.error(`[resolver:Auth:forgotPassword] ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -70,7 +71,7 @@ class AuthResolver {
       const loginResponse: LoginResponse = await this.authService.login(loginInput, res);
       return loginResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:login] ${error.message}`);
+      logger.error(`[resolver:Auth:login] ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -81,7 +82,7 @@ class AuthResolver {
       const loginResponse: LoginResponse = await this.authService.loginWithGoogle(loginWithGoogleInput, res);
       return loginResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:loginWithGoogle] ${error.message}`);
+      logger.error(`[resolver:Auth:loginWithGoogle] ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -94,7 +95,7 @@ class AuthResolver {
       const logoutResponse = await this.authService.logout(res);
       return logoutResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:logout] ${error.message}.`);
+      logger.error(`[resolver:Auth:logout] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -108,7 +109,7 @@ class AuthResolver {
       const registerResponse = await this.authService.register(registerInput);
       return registerResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:register] ${error.message}`);
+      logger.error(`[resolver:Auth:register] ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -122,7 +123,7 @@ class AuthResolver {
       const resendConfirmationLinkResponse = await this.authService.resendConfirmationLink(userEmail);
       return resendConfirmationLinkResponse;
     } catch (error) {
-      logger.error(`[resolver:Auth:resendConfirmationLink] ${error.message}`);
+      logger.error(`[resolver:Auth:resendConfirmationLink] ${getErrorMessage(error)}`);
       throw error;
     }
   }

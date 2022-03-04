@@ -1,5 +1,6 @@
 import { __dev__, __test__ } from '@constants/env';
 import dbConnection from '@databases';
+import { getErrorMessage } from '@utils/error';
 import { logger } from '@utils/logger';
 import { connect, ConnectOptions, disconnect, set } from 'mongoose';
 
@@ -7,7 +8,7 @@ const closeConnection = async () => {
   try {
     await disconnect();
   } catch (error) {
-    !__test__ && logger.error(`[mongoose:disconnect] ${error.message}.`);
+    !__test__ && logger.error(`[mongoose:disconnect] ${getErrorMessage(error)}.`);
     throw error;
   }
 
@@ -20,7 +21,7 @@ const createConnection = async () => {
   try {
     await connect(dbConnection.url, dbConnection.options as ConnectOptions);
   } catch (error) {
-    !__test__ && logger.error(`[mongoose:connect] ${error.message}.`);
+    !__test__ && logger.error(`[mongoose:connect] ${getErrorMessage(error)}.`);
     throw error;
   }
 

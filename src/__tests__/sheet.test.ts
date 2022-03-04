@@ -26,7 +26,7 @@ describe('Medical sheets service', () => {
   describe('Retrieve all', () => {
     test('unsuccessful when user is not logged in', async () => {
       const response = await graphqlTestCall(SHEETS);
-      const error = response.errors[0];
+      const [error] = response.errors;
       expect(response.data.sheets).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
@@ -41,7 +41,7 @@ describe('Medical sheets service', () => {
   describe('Retrieve from current user', () => {
     test('unsuccessful when no user is currently logged in', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER);
-      const error = response.errors[0];
+      const [error] = response.errors;
       expect(response.data.sheetsCurrentUser).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
@@ -62,7 +62,7 @@ describe('Medical sheets service', () => {
         },
         undefined,
       );
-      const error = response.errors[0];
+      const [error] = response.errors;
       expect(response.data.createSheet).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
@@ -95,7 +95,7 @@ describe('Medical sheets service', () => {
         },
         undefined,
       );
-      const error = response.errors[0];
+      const [error] = response.errors;
       expect(response.data.assignSheetToUser).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
@@ -126,7 +126,7 @@ describe('Medical sheets service', () => {
         sheetId: null,
       });
       const data = response.data.sheetById.response;
-      const error = response.data.sheetById.errors[0];
+      const [error] = response.data.sheetById.errors;
       expect(data).toBeNull();
       expect(error.message).toEqual('Empty userId parameter.');
     });
@@ -135,7 +135,7 @@ describe('Medical sheets service', () => {
         sheetId: 'AAAAAAAA',
       });
       const data = response.data.sheetById.response;
-      const error = response.data.sheetById.errors[0];
+      const [error] = response.data.sheetById.errors;
       expect(data).toBeNull();
       expect(error.message).toEqual('Sheet not found.');
     });
@@ -173,7 +173,7 @@ describe('Medical sheets service', () => {
         undefined,
       );
       const data = response.data.updateSheet;
-      const error = response.errors[0];
+      const [error] = response.errors;
       expect(data).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
@@ -182,7 +182,7 @@ describe('Medical sheets service', () => {
         UPDATE_SHEET,
         {
           updateSheetInput: {
-            id: `UNKNOWN-${customId}`,
+            id: `UNKNOWN:${customId}`,
             changes: {
               bloodType: newBloodType,
             },
@@ -191,7 +191,7 @@ describe('Medical sheets service', () => {
         accessToken,
       );
       const data = response.data.updateSheet.response;
-      const error = response.data.updateSheet.errors[0];
+      const [error] = response.data.updateSheet.errors;
       expect(data).toBeNull();
       expect(error.message).toEqual('Sheet not found.');
     });

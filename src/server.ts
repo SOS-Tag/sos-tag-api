@@ -2,7 +2,7 @@ process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
 
 import 'reflect-metadata';
 
-import { __prod__ } from '@constants/env';
+import { NodeEnvironment, __prod__ } from '@constants/env';
 import Context from '@interfaces/context.interface';
 import AuthResolver from '@resolvers/auth.resolver';
 import QRCodeResolver from '@resolvers/qrcode.resolver';
@@ -18,7 +18,7 @@ import config from 'config';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import 'dotenv-safe/config';
-import express from 'express';
+import express, { Application } from 'express';
 import { GraphQLSchema } from 'graphql';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -27,7 +27,7 @@ import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 
 class Server {
-  public express: express.Application;
+  public express: Application;
   public apollo: ApolloServer<ExpressContext>;
   public port: string | number;
   public env: string;
@@ -37,7 +37,7 @@ class Server {
     this.express = express();
 
     this.port = process.env.PORT || 8080;
-    this.env = process.env.NODE_ENV || 'development';
+    this.env = process.env.NODE_ENV || NodeEnvironment.development;
 
     this.initialize();
   }

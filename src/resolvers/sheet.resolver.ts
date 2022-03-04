@@ -1,12 +1,13 @@
-import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { AssignSheetToUserInput, UpdateSheetInput } from '@dtos/sheet.dto';
+import Context from '@interfaces/context.interface';
+import isAuth from '@middlewares/is-auth.middleware';
+import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
+import { getErrorMessage } from '@utils/error';
 import { logger } from '@utils/logger';
-import isAuth from '@middlewares/is-auth.middleware';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Service } from 'typedi';
-import Context from '@interfaces/context.interface';
 
 @Service()
 @Resolver(() => SheetSchema)
@@ -20,7 +21,7 @@ class SheetResolver {
       const createSheetResponse = await this.sheetService.createSheet(sheetId);
       return createSheetResponse;
     } catch (error) {
-      logger.error(`[resolver:Sheet:createSheet] ${error.message}.`);
+      logger.error(`[resolver:Sheet:createSheet] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -35,7 +36,7 @@ class SheetResolver {
       const assignSheetToUserResponse = await this.sheetService.assignSheetToUser(assignSheetToUserInput, payload.userId);
       return assignSheetToUserResponse;
     } catch (error) {
-      logger.error(`[resolver:Sheet:assignSheetToUser] ${error.message}.`);
+      logger.error(`[resolver:Sheet:assignSheetToUser] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -47,7 +48,7 @@ class SheetResolver {
       const updateSheetResponse = await this.sheetService.updateSheet(updateSheetInput, payload.userId);
       return updateSheetResponse;
     } catch (error) {
-      logger.error(`[resolver:Sheet:updateSheet] ${error.message}.`);
+      logger.error(`[resolver:Sheet:updateSheet] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -58,7 +59,7 @@ class SheetResolver {
       const sheet = await this.sheetService.findSheetById(sheetId);
       return sheet;
     } catch (error) {
-      logger.error(`[resolver:Sheet:sheetById] ${error.message}.`);
+      logger.error(`[resolver:Sheet:sheetById] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -70,7 +71,7 @@ class SheetResolver {
       const sheets = await this.sheetService.findSheetsByUser(payload.userId);
       return sheets;
     } catch (error) {
-      logger.error(`[resolver:Sheet:sheetsCurrentUser] ${error.message}.`);
+      logger.error(`[resolver:Sheet:sheetsCurrentUser] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -82,7 +83,7 @@ class SheetResolver {
       const sheets = await this.sheetService.findSheets();
       return sheets;
     } catch (error) {
-      logger.error(`[resolver:Sheet:sheets] ${error.message}.`);
+      logger.error(`[resolver:Sheet:sheets] ${getErrorMessage(error)}.`);
       throw error;
     }
   }

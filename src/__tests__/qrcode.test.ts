@@ -37,7 +37,7 @@ describe('QR Code service', () => {
   describe('Retrieve all', () => {
     test('unsuccessful when user is not logged in', async () => {
       const response = await graphqlTestCall(QRCODES, undefined, undefined);
-      const error = response.errors[0];
+      const [error] = response.errors;
       expect(response.data.qrCodes).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
@@ -53,7 +53,7 @@ describe('QR Code service', () => {
   describe('Retrieve with pagination', () => {
     test('unsuccessful when user is not logged in', async () => {
       const response = await graphqlTestCall(PAGINATED_QRCODES, undefined, undefined);
-      const error = response.errors[0];
+      const [error] = response.errors;
       expect(response.data.qrCodesWithPagination).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
