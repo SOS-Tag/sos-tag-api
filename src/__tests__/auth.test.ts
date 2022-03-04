@@ -17,12 +17,12 @@ import {
 import { graphqlTestCall, registerTestUser, teardown } from '@__tests__/utils/set-up';
 import { nanoid } from 'nanoid';
 
-let confirmedUserData: (IUser & { _id: string }) | null = null;
-let unconfirmedUserData: (IUser & { _id: string }) | null = null;
+let confirmedUser: (IUser & { _id: string }) | null = null;
+let unconfirmedUser: (IUser & { _id: string }) | null = null;
 
 beforeAll(async () => {
   await createConnection();
-  unconfirmedUserData = await registerTestUser(initialUserData, password, false);
+  unconfirmedUser = await registerTestUser(initialUserData, password, false);
 });
 
 afterAll(async () => {
@@ -130,7 +130,7 @@ describe('Authentication service', () => {
   describe('Login', () => {
     test('unsuccessful with unconfirmed user account', async () => {
       const loginInput = {
-        email: unconfirmedUserData.email,
+        email: unconfirmedUser.email,
         password,
       };
       const response = await graphqlTestCall(LOGIN, { loginInput });
@@ -138,7 +138,7 @@ describe('Authentication service', () => {
       const [error] = response.data.login.errors;
       expect(data).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(`Account must be validated by clicking the link sent to ${unconfirmedUserData.email}.`);
+      expect(error.message).toEqual(`Account must be validated by clicking the link sent to ${unconfirmedUser.email}.`);
     });
 
     test('unsuccessful with unknown user email', async () => {
@@ -202,13 +202,13 @@ describe('Authentication service', () => {
     });
 
     test('successful with a user who can then confirm his account and log in', async () => {
-      const resendConfirmationResponse = await graphqlTestCall(RESEND_CONFIRMATION, { userEmail: unconfirmedUserData.email });
+      const resendConfirmationResponse = await graphqlTestCall(RESEND_CONFIRMATION, { userEmail: unconfirmedUser.email });
       const resendConfirmationSuccess = resendConfirmationResponse.data.resendConfirmationLink.response;
       const resendConfirmationErrors = resendConfirmationResponse.data.resendConfirmationLink.errors;
       expect(resendConfirmationErrors).toBeNull();
       expect(resendConfirmationSuccess).toBeTruthy();
 
-      setConfirmationToken(unconfirmedUserData.id, confirmationToken);
+      setConfirmationToken(unconfirmedUser.id, confirmationToken);
 
       const confirmationResponse = await graphqlTestCall(CONFIRMATION, { token: confirmationToken });
       const confirmationSuccess = confirmationResponse.data.confirmUser.response;
@@ -216,10 +216,10 @@ describe('Authentication service', () => {
       expect(confirmationErrors).toBeNull();
       expect(confirmationSuccess).toBeTruthy();
 
-      confirmedUserData = unconfirmedUserData;
+      confirmedUser = unconfirmedUser;
 
       const loginInput = {
-        email: confirmedUserData.email,
+        email: confirmedUser.email,
         password,
       };
       const loginResponse = await graphqlTestCall(LOGIN, { loginInput });
@@ -228,7 +228,7 @@ describe('Authentication service', () => {
       expect(loginErrors).toBeNull();
       expect(loginData.accessToken).toBeDefined();
       expect(loginData.accessToken.length).toBeGreaterThan(0);
-      expect(loginData.user.email).toEqual(confirmedUserData.email.toLowerCase());
+      expect(loginData.user.email).toEqual(confirmedUser.email.toLowerCase());
     });
   });
 
@@ -257,7 +257,7 @@ describe('Authentication service', () => {
       const errors = response.data.forgotPassword.errors;
       expect(errors).toBeNull();
       expect(success).toBeTruthy();
-      setForgotPasswordToken(confirmedUserData.id, forgotPasswordToken);
+      setForgotPasswordToken(confirmedUser.id, forgotPasswordToken);
     });
   });
 
@@ -319,7 +319,7 @@ describe('Authentication service', () => {
       const oldPassword = password;
       const failedLoginResponse = await graphqlTestCall(LOGIN, {
         loginInput: {
-          email: confirmedUserData.email,
+          email: confirmedUser.email,
           password: oldPassword,
         },
       });
@@ -331,7 +331,7 @@ describe('Authentication service', () => {
 
       const successLoginResponse = await graphqlTestCall(LOGIN, {
         loginInput: {
-          email: confirmedUserData.email,
+          email: confirmedUser.email,
           password: newPassword,
         },
       });
@@ -340,7 +340,7 @@ describe('Authentication service', () => {
       expect(successLoginErrors).toBeNull();
       expect(successLoginData.accessToken).toBeDefined();
       expect(successLoginData.accessToken.length).toBeGreaterThan(0);
-      expect(successLoginData.user.email).toEqual(confirmedUserData.email.toLowerCase());
+      expect(successLoginData.user.email).toEqual(confirmedUser.email.toLowerCase());
     });
   });
 });
