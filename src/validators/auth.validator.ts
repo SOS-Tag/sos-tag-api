@@ -2,50 +2,49 @@ import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } 
 import { isEmpty } from '@utils/object';
 import { generateFieldErrors } from '@validators/utils/errors';
 import { emptyArgsExist, invalidArgsExist } from '@validators/utils/validate';
-import { Request } from 'express';
 
-const checkChangePasswordValidity = (changePasswordInput: ChangePasswordInput, req: Request) => {
-  const emptyArgs = emptyArgsExist(changePasswordInput, req);
+const checkChangePasswordValidity = (changePasswordInput: ChangePasswordInput) => {
+  const emptyArgs = emptyArgsExist(changePasswordInput);
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 
   const { password } = changePasswordInput;
 
-  const invalidArgs = invalidArgsExist({ password }, req);
+  const invalidArgs = invalidArgsExist({ password });
   if (!isEmpty(invalidArgs)) return generateFieldErrors(invalidArgs);
 };
 
-const checkConfirmUserValidity = (token: string, req: Request) => {
-  const emptyArgs = emptyArgsExist({ token }, req);
+const checkConfirmUserValidity = (token: string) => {
+  const emptyArgs = emptyArgsExist({ token });
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 };
 
-const checkForgotPasswordValidity = (email: string, req: Request) => {
-  const emptyArgs = emptyArgsExist({ email }, req);
+const checkForgotPasswordValidity = (email: string) => {
+  const emptyArgs = emptyArgsExist({ email });
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 };
 
-const checkLoginValidity = (loginInput: LoginInput, req: Request) => {
-  const emptyArgs = emptyArgsExist(loginInput, req);
+const checkLoginValidity = (loginInput: LoginInput) => {
+  const emptyArgs = emptyArgsExist(loginInput);
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 };
 
-const checkLoginWithGoogleValidity = (loginWithGoogleInput: LoginWithGoogleInput, req: Request) => {
-  const emptyArgs = emptyArgsExist(loginWithGoogleInput, req);
+const checkLoginWithGoogleValidity = (loginWithGoogleInput: LoginWithGoogleInput) => {
+  const emptyArgs = emptyArgsExist(loginWithGoogleInput);
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 };
 
-const checkRegisterValidity = (registerInput: RegisterInput, req: Request) => {
-  const emptyArgs = emptyArgsExist(registerInput, req);
+const checkRegisterValidity = (registerInput: RegisterInput) => {
+  const emptyArgs = emptyArgsExist(registerInput);
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 
   const { email, phone, password } = registerInput;
 
-  const invalidArgs = invalidArgsExist({ email, phone, password }, req);
+  const invalidArgs = invalidArgsExist({ email, phone, password });
   if (!isEmpty(invalidArgs)) return generateFieldErrors(invalidArgs);
 };
 
-const checkResendConfirmationLinkValidity = (email: string, req: Request) => {
-  const emptyArgs = emptyArgsExist({ email }, req);
+const checkResendConfirmationLinkValidity = (email: string) => {
+  const emptyArgs = emptyArgsExist({ email });
   if (!isEmpty(emptyArgs)) return generateFieldErrors(emptyArgs);
 };
 

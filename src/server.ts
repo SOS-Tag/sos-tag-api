@@ -22,9 +22,6 @@ import express from 'express';
 import { GraphQLSchema } from 'graphql';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import i18next from 'i18next';
-import Backend from 'i18next-fs-backend';
-import middleware from 'i18next-http-middleware';
 import morgan from 'morgan';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
@@ -50,7 +47,6 @@ class Server {
 
     await this.connectToDatabase();
     await this.buildGraphQLSchema();
-    this.initializeTranslation();
     this.initializeMiddlewares();
     this.initializeRoutes();
     await this.initializeApolloServer();
@@ -91,25 +87,12 @@ class Server {
     this.express.use(hpp());
     this.express.use(helmet({ contentSecurityPolicy: __prod__ ? undefined : false }));
     this.express.use(compression());
-    this.express.use(middleware.handle(i18next));
   }
 
   private initializeRoutes() {
     this.express.get('/', (_, res) => res.send(`SOS-Tag API (alpha version)`));
     this.express.post('/refresh_token', (req, res) => refreshToken(req, res));
     this.express.get('/oauth/google', (req, res) => googleOauthHandler(req, res));
-  }
-
-  private initializeTranslation() {
-    i18next
-      .use(Backend)
-      .use(middleware.LanguageDetector)
-      .init({
-        fallbackLng: 'en',
-        backend: {
-          loadPath: `${__dirname}/locales/{{lng}}/translation.json`,
-        },
-      });
   }
 
   public listen() {

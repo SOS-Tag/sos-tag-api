@@ -8,7 +8,7 @@ import { LoginResponse } from '@responses/auth.response';
 import { BooleanResponse } from '@responses/common.response';
 import { UserResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
-import { createConfirmationUrl, createForgotPasswordUrl, sendEmail } from '@utils/email';
+import { createConfirmationUrl, createForgotPasswordUrl, emailAim, generateEmailContent, sendEmail } from '@utils/email';
 import { getGoogleUser } from '@utils/oauth';
 import { createAccessToken, createRefreshToken, sendRefreshToken } from '@utils/token';
 import {
@@ -21,15 +21,15 @@ import {
   checkResendConfirmationLinkValidity,
 } from '@validators/auth.validator';
 import { compare, hash } from 'bcryptjs';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Inject, Service } from 'typedi';
 
 @Service()
 class AuthService {
   constructor(@Inject('USER') private readonly users: IUserModel) {}
 
-  async changePassword({ token, password }: ChangePasswordInput, req: Request): Promise<UserResponse> {
-    const errors = checkChangePasswordValidity({ token, password }, req);
+  async changePassword({ token, password }: ChangePasswordInput): Promise<UserResponse> {
+    const errors = checkChangePasswordValidity({ token, password });
     if (errors) return errors;
 
     const userId = await redis.get(forgotPasswordPrefix + token);
@@ -37,7 +37,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.password_modification_expired'),
+            message: 'Password modification link has expired. A new email needs to be sent to change this account password.',
           },
         ],
       };
@@ -47,7 +47,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.account_does_not_exist'),
+            message: 'This account does not exist.',
           },
         ],
       };
@@ -59,8 +59,8 @@ class AuthService {
     return { response: transformUser(await user.save()) };
   }
 
-  async confirmUser(token: string, req: Request): Promise<BooleanResponse> {
-    const errors = checkConfirmUserValidity(token, req);
+  async confirmUser(token: string): Promise<BooleanResponse> {
+    const errors = checkConfirmUserValidity(token);
     if (errors) return errors;
 
     const userId = await redis.get(confirmUserPrefix + token);
@@ -68,7 +68,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.account_confirmation_expired'),
+            message: 'Account confirmation link has expired. A new email needs to be sent to confirm this account.',
           },
         ],
       };
@@ -80,8 +80,8 @@ class AuthService {
     return { response: true };
   }
 
-  async forgotPassword(userEmail: string, req: Request): Promise<BooleanResponse> {
-    const errors = checkForgotPasswordValidity(userEmail, req);
+  async forgotPassword(userEmail: string): Promise<BooleanResponse> {
+    const errors = checkForgotPasswordValidity(userEmail);
     if (errors) return errors;
 
     const user: IUser = await this.users.findOne({ email: userEmail });
@@ -89,18 +89,28 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.account_does_not_exist'),
+            message: 'This account does not exist.',
           },
         ],
       };
 
-    if (!__test__) await sendEmail('change_password', user.fname, userEmail, await createForgotPasswordUrl(user.id), req);
+    if (!__test__)
+      await sendEmail(
+        generateEmailContent({
+          aim: emailAim.changePassword,
+          user: {
+            name: user.fname,
+            email: userEmail,
+          },
+          url: await createForgotPasswordUrl(user.id),
+        }),
+      );
 
     return { response: true };
   }
 
-  async login({ email, password }: LoginInput, req: Request, res: Response): Promise<LoginResponse> {
-    const errors = checkLoginValidity({ email, password }, req);
+  async login({ email, password }: LoginInput, res: Response): Promise<LoginResponse> {
+    const errors = checkLoginValidity({ email, password });
     if (errors) return errors;
 
     const user = await this.users.findOne({ email });
@@ -108,7 +118,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.account_does_not_exist'),
+            message: 'This account does not exist.',
           },
         ],
       };
@@ -117,7 +127,8 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.incorrect_login_method'),
+            message:
+              "The account exists but was created using your Google account, this is why there is no password associated with it. Login by using 'Login with Google'.",
           },
         ],
       };
@@ -127,7 +138,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.incorrect_password'),
+            message: 'Password is incorrect.',
           },
         ],
       };
@@ -136,7 +147,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.unvalidated_account', { email }),
+            message: `Account must be validated by clicking the link sent to ${email}.`,
           },
         ],
       };
@@ -154,8 +165,8 @@ class AuthService {
     };
   }
 
-  async loginWithGoogle({ tokenId, token }: LoginWithGoogleInput, req: Request, res: Response): Promise<LoginResponse> {
-    const errors = checkLoginWithGoogleValidity({ tokenId, token }, req);
+  async loginWithGoogle({ tokenId, token }: LoginWithGoogleInput, res: Response): Promise<LoginResponse> {
+    const errors = checkLoginWithGoogleValidity({ tokenId, token });
     if (errors) return errors;
 
     // Get the Google user asking for connection using OAuth 2.0 client credentials (token id and access token previously
@@ -167,7 +178,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.unvalidated_account', { email: googleUser.email }),
+            message: `Your Google email (${googleUser.email}) has not be verified. Please verify it and try to log in again`,
           },
         ],
       };
@@ -209,8 +220,8 @@ class AuthService {
     return { response: true };
   }
 
-  async register({ fname, lname, email, phone, password }: RegisterInput, req: Request): Promise<UserResponse> {
-    const errors = checkRegisterValidity({ fname, lname, email, phone, password }, req);
+  async register({ fname, lname, email, phone, password }: RegisterInput): Promise<UserResponse> {
+    const errors = checkRegisterValidity({ fname, lname, email, phone, password });
     if (errors) return errors;
 
     const userFound = await this.users.findOne({ email });
@@ -218,7 +229,7 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.account_already_exist', { email }),
+            message: `An account associated to ${email} already exists.`,
           },
         ],
       };
@@ -233,13 +244,23 @@ class AuthService {
       password: hashedPassword,
     });
 
-    if (!__test__) await sendEmail('confirm_user', fname, email, await createConfirmationUrl(user.id), req);
+    if (!__test__)
+      await sendEmail(
+        generateEmailContent({
+          aim: emailAim.confirmUser,
+          user: {
+            name: user.fname,
+            email,
+          },
+          url: await createConfirmationUrl(user.id),
+        }),
+      );
 
     return { response: transformUser(await user.save()) };
   }
 
-  async resendConfirmationLink(userEmail: string, req: Request): Promise<BooleanResponse> {
-    const errors = checkResendConfirmationLinkValidity(userEmail, req);
+  async resendConfirmationLink(userEmail: string): Promise<BooleanResponse> {
+    const errors = checkResendConfirmationLinkValidity(userEmail);
     if (errors) return errors;
 
     const user: IUser = await this.users.findOne({ email: userEmail });
@@ -247,12 +268,22 @@ class AuthService {
       return {
         errors: [
           {
-            message: req.t('auth.account_does_not_exist'),
+            message: 'This account does not exist.',
           },
         ],
       };
 
-    if (!__test__) await sendEmail('confirm_user', user.fname, userEmail, await createConfirmationUrl(user.id), req);
+    if (!__test__)
+      await sendEmail(
+        generateEmailContent({
+          aim: emailAim.confirmUser,
+          user: {
+            name: user.fname,
+            email: userEmail,
+          },
+          url: await createConfirmationUrl(user.id),
+        }),
+      );
 
     return { response: true };
   }

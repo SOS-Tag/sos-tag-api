@@ -8,7 +8,7 @@ const validateEnv = () => {
     ACCESS_TOKEN_SECRET: str(),
     REFRESH_TOKEN_SECRET: str(),
     SMTP_SERVICE: str(),
-    GOOGLE_OAUTH_CLIENT_USER: str(),
+    GOOGLE_CLIENT_USER: str(),
     GOOGLE_CLIENT_ID: str(),
     GOOGLE_CLIENT_SECRET: str(),
     GOOGLE_CLIENT_REFRESH_TOKEN: str(),

@@ -1,7 +1,5 @@
-import message from '@locales/en/translation.json';
 import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
-import { applyVariable } from '@utils/object';
 import { setConfirmationToken, setForgotPasswordToken } from '@utils/token';
 import { CHANGE_PASSWORD, CONFIRMATION, FORGOT_PASSWORD, LOGIN, REGISTER, RESEND_CONFIRMATION } from '@__tests__/utils/graphql/auth.graphql';
 import {
@@ -42,7 +40,7 @@ describe('Authentication service', () => {
       const data = response.data.register.response;
       const error = response.data.register.errors[0];
       expect(data).toBeNull();
-      expect(error.message).toEqual(applyVariable(message.auth.account_already_exist, alreadyUsedEmail));
+      expect(error.message).toEqual(`An account associated to ${alreadyUsedEmail} already exists.`);
     });
 
     test('unsuccessful with invalid/weak password', async () => {
@@ -55,7 +53,9 @@ describe('Authentication service', () => {
       const error = response.data.register.errors[0];
       expect(data).toBeNull();
       expect(error.field).toEqual('password');
-      expect(error.message).toEqual(message.error.invalid_password);
+      expect(error.message).toEqual(
+        'Password must contain a minimum of eight characters, and at least one uppercase letter, one lowercase letter, one number and one special character.',
+      );
     });
 
     test('unsuccessful with invalid phone number', async () => {
@@ -68,7 +68,7 @@ describe('Authentication service', () => {
       const error = response.data.register.errors[0];
       expect(data).toBeNull();
       expect(error.field).toEqual('phone');
-      expect(error.message).toEqual(message.error.invalid_phone);
+      expect(error.message).toEqual('Phone must be a valid french phone number.');
     });
 
     test('unsuccessful with at least one empty field', async () => {
@@ -80,7 +80,7 @@ describe('Authentication service', () => {
       expect(errors.length).toEqual(5);
       for (const error of errors) {
         expect(error.field).toBeDefined();
-        expect(error.message).toContain('is required');
+        expect(error.message).toContain('is required.');
       }
     });
 
@@ -105,7 +105,7 @@ describe('Authentication service', () => {
       const error = response.data.confirmUser.errors[0];
       expect(success).toBeNull();
       expect(error.field).toEqual('token');
-      expect(error.message).toEqual('The token is required');
+      expect(error.message).toEqual('The token is required.');
     });
 
     test('unsuccessful with unknown or expired token', async () => {
@@ -114,7 +114,7 @@ describe('Authentication service', () => {
       const error = response.data.confirmUser.errors[0];
       expect(success).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(message.auth.account_confirmation_expired);
+      expect(error.message).toEqual('Account confirmation link has expired. A new email needs to be sent to confirm this account.');
     });
 
     test('successful with a valid token (containing a registered but unconfirmed user)', async () => {
@@ -137,7 +137,7 @@ describe('Authentication service', () => {
       const error = response.data.login.errors[0];
       expect(data).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(applyVariable(message.auth.unvalidated_account, unconfirmedUserData.email));
+      expect(error.message).toEqual(`Account must be validated by clicking the link sent to ${unconfirmedUserData.email}.`);
     });
 
     test('unsuccessful with unknown user email', async () => {
@@ -150,7 +150,7 @@ describe('Authentication service', () => {
       const error = response.data.login.errors[0];
       expect(data).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(message.auth.account_does_not_exist);
+      expect(error.message).toEqual('This account does not exist.');
     });
 
     test('unsuccessful with wrong password', async () => {
@@ -163,7 +163,7 @@ describe('Authentication service', () => {
       const error = response.data.login.errors[0];
       expect(data).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(message.auth.incorrect_password);
+      expect(error.message).toEqual('Password is incorrect.');
     });
 
     test('successful with accesstoken and logged in user information returned', async () => {
@@ -188,7 +188,7 @@ describe('Authentication service', () => {
       const error = response.data.resendConfirmationLink.errors[0];
       expect(success).toBeNull();
       expect(error.field).toEqual('email');
-      expect(error.message).toEqual('The email is required');
+      expect(error.message).toEqual('The email is required.');
     });
 
     test('unsuccessful with an unexisting email', async () => {
@@ -197,7 +197,7 @@ describe('Authentication service', () => {
       const error = response.data.resendConfirmationLink.errors[0];
       expect(success).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(message.auth.account_does_not_exist);
+      expect(error.message).toEqual('This account does not exist.');
     });
 
     test('successful with a user who can then confirm his account and log in', async () => {
@@ -207,7 +207,7 @@ describe('Authentication service', () => {
       expect(resendConfirmationErrors).toBeNull();
       expect(resendConfirmationSuccess).toBeTruthy();
 
-      setConfirmationToken(unconfirmedUserData._id, confirmationToken);
+      setConfirmationToken(unconfirmedUserData.id, confirmationToken);
 
       const confirmationResponse = await graphqlTestCall(CONFIRMATION, { token: confirmationToken });
       const confirmationSuccess = confirmationResponse.data.confirmUser.response;
@@ -238,7 +238,7 @@ describe('Authentication service', () => {
       const error = response.data.forgotPassword.errors[0];
       expect(success).toBeNull();
       expect(error.field).toEqual('email');
-      expect(error.message).toEqual('The email is required');
+      expect(error.message).toEqual('The email is required.');
     });
 
     test('unsuccessful with an unexisting email', async () => {
@@ -247,7 +247,7 @@ describe('Authentication service', () => {
       const error = response.data.forgotPassword.errors[0];
       expect(success).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(message.auth.account_does_not_exist);
+      expect(error.message).toEqual('This account does not exist.');
     });
 
     test('successful with a token that has been set which will allow to identify the user when he will try to update his password', async () => {
@@ -269,7 +269,7 @@ describe('Authentication service', () => {
       expect(errors.length).toEqual(2);
       for (const error of errors) {
         expect(error.field).toBeDefined();
-        expect(error.message).toContain('is required');
+        expect(error.message).toContain('is required.');
       }
     });
 
@@ -284,7 +284,9 @@ describe('Authentication service', () => {
       const error = response.data.changePassword.errors[0];
       expect(success).toBeNull();
       expect(error.field).toEqual('password');
-      expect(error.message).toEqual(message.error.invalid_password);
+      expect(error.message).toEqual(
+        'Password must contain a minimum of eight characters, and at least one uppercase letter, one lowercase letter, one number and one special character.',
+      );
     });
 
     test('unsuccessful with unknown or expired token', async () => {
@@ -298,7 +300,7 @@ describe('Authentication service', () => {
       const error = response.data.changePassword.errors[0];
       expect(success).toBeNull();
       expect(error.field).toBeNull();
-      expect(error.message).toEqual(message.auth.password_modification_expired);
+      expect(error.message).toEqual('Password modification link has expired. A new email needs to be sent to change this account password.');
     });
 
     test('successful with a user who cannot log in using his old password but who can log in using his new one', async () => {
@@ -324,7 +326,7 @@ describe('Authentication service', () => {
       const failedLoginError = failedLoginResponse.data.login.errors[0];
       expect(failedLoginData).toBeNull();
       expect(failedLoginError.field).toBeNull();
-      expect(failedLoginError.message).toEqual(message.auth.incorrect_password);
+      expect(failedLoginError.message).toEqual('Password is incorrect.');
 
       const successLoginResponse = await graphqlTestCall(LOGIN, {
         loginInput: {

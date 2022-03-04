@@ -1,4 +1,3 @@
-import message from '@locales/en/translation.json';
 import { QRCODE_LENGTH } from '@services/qrcode.service';
 import { createConnection } from '@utils/mongoose';
 import { CREATE_QRCODE, PAGINATED_QRCODES, QRCODES } from '@__tests__/utils/graphql/qrcode.graphql';
@@ -40,7 +39,7 @@ describe('QR Code service', () => {
       const response = await graphqlTestCall(QRCODES, undefined, undefined);
       const error = response.errors[0];
       expect(response.data.qrCodes).toBeNull();
-      expect(error.message).toEqual(message.auth.unauthorized);
+      expect(error.message).toEqual('Unauthenticated');
     });
     test('successful when user is logged in', async () => {
       const response = await graphqlTestCall(QRCODES, undefined, accessToken);
@@ -56,7 +55,7 @@ describe('QR Code service', () => {
       const response = await graphqlTestCall(PAGINATED_QRCODES, undefined, undefined);
       const error = response.errors[0];
       expect(response.data.qrCodesWithPagination).toBeNull();
-      expect(error.message).toEqual(message.auth.unauthorized);
+      expect(error.message).toEqual('Unauthenticated');
     });
     test('successful when user is logged in, with expected current page, total pages, has more information and total QR codes by page', async () => {
       const response = await graphqlTestCall(

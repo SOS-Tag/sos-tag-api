@@ -15,9 +15,9 @@ class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Query(() => String, { description: 'Return a simple welcoming message.' })
-  async welcome(@Ctx() { req }: Context): Promise<string> {
+  async welcome(): Promise<string> {
     try {
-      return req.t('greetings.welcome', { what: 'SOS-Tag API (alpha version)' });
+      return 'Welcome o SOS-Tag API (alpha version)';
     } catch (error) {
       throw error;
     }
@@ -27,9 +27,9 @@ class AuthResolver {
     description:
       'Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.',
   })
-  async changePassword(@Arg('changePasswordInput') changePasswordInput: ChangePasswordInput, @Ctx() { req }: Context): Promise<UserResponse> {
+  async changePassword(@Arg('changePasswordInput') changePasswordInput: ChangePasswordInput): Promise<UserResponse> {
     try {
-      const changePasswordResponse = await this.authService.changePassword(changePasswordInput, req);
+      const changePasswordResponse = await this.authService.changePassword(changePasswordInput);
       return changePasswordResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:changePassword] ${error.message}`);
@@ -40,9 +40,9 @@ class AuthResolver {
   @Mutation(() => BooleanResponse, {
     description: 'Confirm and validate a user. Validation is based on the existence of the email address used during the registration process.',
   })
-  async confirmUser(@Arg('token') token: string, @Ctx() { req }: Context): Promise<BooleanResponse> {
+  async confirmUser(@Arg('token') token: string): Promise<BooleanResponse> {
     try {
-      const confirmationResponse = await this.authService.confirmUser(token, req);
+      const confirmationResponse = await this.authService.confirmUser(token);
       return confirmationResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:confirmUser] ${error.message}`);
@@ -54,9 +54,9 @@ class AuthResolver {
     description:
       'Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.',
   })
-  async forgotPassword(@Arg('userEmail') userEmail: string, @Ctx() { req }: Context): Promise<BooleanResponse> {
+  async forgotPassword(@Arg('userEmail') userEmail: string): Promise<BooleanResponse> {
     try {
-      const forgotPasswordResponse = await this.authService.forgotPassword(userEmail, req);
+      const forgotPasswordResponse = await this.authService.forgotPassword(userEmail);
       return forgotPasswordResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:forgotPassword] ${error.message}`);
@@ -65,9 +65,9 @@ class AuthResolver {
   }
 
   @Mutation(() => LoginResponse, { description: 'Log the user in using his email address and his password.' })
-  async login(@Arg('loginInput') loginInput: LoginInput, @Ctx() { req, res }: Context): Promise<LoginResponse> {
+  async login(@Arg('loginInput') loginInput: LoginInput, @Ctx() { res }: Context): Promise<LoginResponse> {
     try {
-      const loginResponse: LoginResponse = await this.authService.login(loginInput, req, res);
+      const loginResponse: LoginResponse = await this.authService.login(loginInput, res);
       return loginResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:login] ${error.message}`);
@@ -76,9 +76,9 @@ class AuthResolver {
   }
 
   @Mutation(() => LoginResponse, { description: 'Log the user in using his google account.' })
-  async loginWithGoogle(@Arg('loginInput') loginWithGoogleInput: LoginWithGoogleInput, @Ctx() { req, res }: Context): Promise<LoginResponse> {
+  async loginWithGoogle(@Arg('loginInput') loginWithGoogleInput: LoginWithGoogleInput, @Ctx() { res }: Context): Promise<LoginResponse> {
     try {
-      const loginResponse: LoginResponse = await this.authService.loginWithGoogle(loginWithGoogleInput, req, res);
+      const loginResponse: LoginResponse = await this.authService.loginWithGoogle(loginWithGoogleInput, res);
       return loginResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:loginWithGoogle] ${error.message}`);
@@ -103,9 +103,9 @@ class AuthResolver {
     description:
       'Register a new user. To complete the registration, the user will have to confirm his account by following the link that has been sent to him by email.',
   })
-  async register(@Arg('registerInput') registerInput: RegisterInput, @Ctx() { req }: Context): Promise<UserResponse> {
+  async register(@Arg('registerInput') registerInput: RegisterInput): Promise<UserResponse> {
     try {
-      const registerResponse = await this.authService.register(registerInput, req);
+      const registerResponse = await this.authService.register(registerInput);
       return registerResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:register] ${error.message}`);
@@ -117,9 +117,9 @@ class AuthResolver {
     description:
       'Resend an email containing a link to confirm the account of a specific user. The previous confirmation link sent to him when he registered can indeed be expired.',
   })
-  async resendConfirmationLink(@Arg('userEmail') userEmail: string, @Ctx() { req }: Context): Promise<BooleanResponse> {
+  async resendConfirmationLink(@Arg('userEmail') userEmail: string): Promise<BooleanResponse> {
     try {
-      const resendConfirmationLinkResponse = await this.authService.resendConfirmationLink(userEmail, req);
+      const resendConfirmationLinkResponse = await this.authService.resendConfirmationLink(userEmail);
       return resendConfirmationLinkResponse;
     } catch (error) {
       logger.error(`[resolver:Auth:resendConfirmationLink] ${error.message}`);

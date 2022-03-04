@@ -8,7 +8,6 @@ import { closeConnection } from '@utils/mongoose';
 import { LOGIN } from '@__tests__/utils/graphql/auth.graphql';
 import { hash } from 'bcryptjs';
 import { DocumentNode, graphql } from 'graphql';
-import { t } from 'i18next';
 import { connection } from 'mongoose';
 
 const clearCollections = async () => {
@@ -35,7 +34,6 @@ const graphqlTestCall = async (query: DocumentNode, variables?: any, token?: str
         headers: {
           authorization: `Bearer ${token}`,
         },
-        t,
       },
     },
     variables,
