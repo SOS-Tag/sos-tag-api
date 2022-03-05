@@ -1,11 +1,13 @@
 import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
 import { ASSIGN_SHEET_TO_USER, CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
-import { customId, initialUserData, newSheetData, password } from '@__tests__/utils/mock-data';
+import { initialUserData, newSheetData, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
 let accessToken: string | undefined = undefined;
 let registeredUser: (IUser & { _id: string }) | null = null;
+
+let sheetId;
 
 beforeAll(async () => {
   await createConnection();
@@ -58,7 +60,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         CREATE_SHEET,
         {
-          sheetId: customId,
+          count: 1,
         },
         undefined,
       );
@@ -70,29 +72,16 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         CREATE_SHEET,
         {
-          sheetId: customId,
+          count: 1,
         },
         accessToken,
       );
       const data = response.data.createSheet.response;
       const errors = response.data.createSheet.errors;
       expect(errors).toBeNull();
-      expect(data).toEqual({
-        _id: customId,
-        enabled: false,
-      });
-    });
-    test('unsuccessful when the sheet already exists', async () => {
-      const response = await graphqlTestCall(
-        CREATE_SHEET,
-        {
-          sheetId: customId,
-        },
-        accessToken,
-      );
-      const [error] = response.data.createSheet.errors;
-      expect(response.data.createSheet.response).toBeNull();
-      expect(error.message).toEqual('Sheet with this id already exists.');
+      expect(typeof data[0]._id).toBe('string');
+      expect(data[0].enabled).toBeFalsy();
+      sheetId = data[0]._id;
     });
   });
   describe('Assign to user', () => {
@@ -101,7 +90,7 @@ describe('Medical sheets service', () => {
         ASSIGN_SHEET_TO_USER,
         {
           assignSheetToUserInput: {
-            id: customId,
+            id: sheetId,
             ...newSheetData,
           },
         },
@@ -116,7 +105,7 @@ describe('Medical sheets service', () => {
         ASSIGN_SHEET_TO_USER,
         {
           assignSheetToUserInput: {
-            id: customId,
+            id: sheetId,
           },
         },
         accessToken,
@@ -125,7 +114,7 @@ describe('Medical sheets service', () => {
       const errors = response.data.assignSheetToUser.errors;
       expect(errors).toBeNull();
       expect(data).toEqual({
-        _id: customId,
+        _id: sheetId,
         enabled: true,
         user: registeredUser.id,
       });
@@ -149,7 +138,7 @@ describe('Medical sheets service', () => {
         ASSIGN_SHEET_TO_USER,
         {
           assignSheetToUserInput: {
-            id: customId,
+            id: sheetId,
           },
         },
         accessToken,
@@ -180,12 +169,12 @@ describe('Medical sheets service', () => {
     });
     test('successful', async () => {
       const response = await graphqlTestCall(SHEET_BY_ID, {
-        sheetId: customId,
+        sheetId: sheetId,
       });
       const data = response.data.sheetById.response;
       const errors = response.data.sheetById.errors;
       expect(errors).toBeNull();
-      expect(data._id).toEqual(customId);
+      expect(data._id).toEqual(sheetId);
     });
   });
   describe('Update', () => {
@@ -194,7 +183,7 @@ describe('Medical sheets service', () => {
         UPDATE_SHEET,
         {
           updateSheetInput: {
-            id: customId,
+            id: sheetId,
             changes: {
               ...newSheetData,
             },
@@ -212,7 +201,7 @@ describe('Medical sheets service', () => {
         UPDATE_SHEET,
         {
           updateSheetInput: {
-            id: `UNKNOWN:${customId}`,
+            id: `UNKNOWN:${sheetId}`,
             changes: {
               ...newSheetData,
             },
@@ -230,7 +219,7 @@ describe('Medical sheets service', () => {
         UPDATE_SHEET,
         {
           updateSheetInput: {
-            id: customId,
+            id: sheetId,
             changes: {
               ...newSheetData,
             },

@@ -4,8 +4,6 @@ import { nanoid } from 'nanoid';
 
 const phoneNumberPattern = '07########';
 
-const customId = customNanoId();
-
 const confirmationToken = nanoid();
 const forgotPasswordToken = nanoid();
 
@@ -86,7 +84,6 @@ const newUserData = {
 export {
   alreadyUsedEmail,
   confirmationToken,
-  customId,
   forgotPasswordToken,
   initialUserData,
   invalidPhoneNumber,

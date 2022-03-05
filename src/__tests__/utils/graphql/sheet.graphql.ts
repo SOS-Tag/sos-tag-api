@@ -16,8 +16,8 @@ const ASSIGN_SHEET_TO_USER = gql`
 `;
 
 const CREATE_SHEET = gql`
-  mutation CreateSheet($sheetId: String) {
-    createSheet(sheetId: $sheetId) {
+  mutation CreateSheet($count: Float) {
+    createSheet(count: $count) {
       response {
         _id
         enabled

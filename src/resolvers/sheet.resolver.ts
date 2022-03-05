@@ -14,11 +14,11 @@ import { Service } from 'typedi';
 class SheetResolver {
   constructor(private readonly sheetService: SheetService) {}
 
-  @Mutation(() => SheetResponse, { description: 'Create an empty sheet.' })
+  @Mutation(() => SheetsResponse, { description: 'Create an empty sheet.' })
   @UseMiddleware(isAuth) //TODO isAuthenticatedAsAdmin
-  async createSheet(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
+  async createSheet(@Arg('count') count: number): Promise<SheetsResponse> {
     try {
-      const createSheetResponse = await this.sheetService.createSheet(sheetId);
+      const createSheetResponse = await this.sheetService.createSheet(count);
       return createSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:createSheet] ${getErrorMessage(error)}.`);

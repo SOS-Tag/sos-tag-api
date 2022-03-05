@@ -4,24 +4,26 @@ import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { transformSheet } from '@services/utils/transform';
 import { isEmpty } from '@utils/object';
 import { Inject, Service } from 'typedi';
+import { customNanoId } from './qrcode.service';
 
 @Service()
 class SheetService {
   constructor(@Inject('SHEET') private readonly sheets: ISheetModel) {}
 
-  async createSheet(sheetId: string): Promise<SheetResponse> {
-    const sheetFound = await this.sheets.findById(sheetId);
-    if (sheetFound)
-      return {
-        errors: [
-          {
-            message: 'Sheet with this id already exists.',
-          },
-        ],
-      };
+  async createSheet(count: number): Promise<SheetsResponse> {
+    const sheetId = [];
+    for (let i = 0; i < count; ++i) {
+      let generatedId;
+      let docsCount;
+      do {
+        generatedId = customNanoId();
+        docsCount = await this.sheets.countDocuments({ _id: generatedId });
+      } while (docsCount > 0);
+      sheetId.push(generatedId);
+    }
 
-    const sheet = await this.sheets.create({ _id: sheetId });
-    return { response: transformSheet(await sheet.save()) };
+    const sheets = await this.sheets.insertMany(sheetId.map(id => ({ _id: id })));
+    return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
   async assignSheetToUser(sheetData: AssignSheetToUserInput, userId: string): Promise<SheetResponse> {

@@ -90,7 +90,7 @@ type Mutation {
   createQRCode: QRCodeResponse
 
   """Create an empty sheet."""
-  createSheet(sheetId: String): SheetResponse
+  createSheet(count: Float): SheetsResponse
 
   """
   Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.
