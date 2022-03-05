@@ -65,8 +65,7 @@ export interface ISheet extends mongoose.Document {
   medicalHistory: string;
   currentTreatment: string;
   treatingDoctor: IDoctorContact;
-  emergencyContact1: IContact;
-  emergencyContact2: IContact;
+  emergencyContacts: IContact[];
   user: string;
   createdAt: string;
   updatedAt: string;
@@ -143,8 +142,7 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
       trim: true,
     },
     treatingDoctor: DoctorContactSchema,
-    emergencyContact1: ContactSchema,
-    emergencyContact2: ContactSchema,
+    emergencyContacts: [ContactSchema],
     user: {
       type: Schema.Types.ObjectId,
     },

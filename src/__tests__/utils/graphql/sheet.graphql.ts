@@ -53,13 +53,7 @@ const SHEET_BY_ID = gql`
           lname
           phone
         }
-        emergencyContact1 {
-          fname
-          lname
-          role
-          phone
-        }
-        emergencyContact2 {
+        emergencyContacts {
           fname
           lname
           role
@@ -124,13 +118,7 @@ const UPDATE_SHEET = gql`
           lname
           phone
         }
-        emergencyContact1 {
-          fname
-          lname
-          role
-          phone
-        }
-        emergencyContact2 {
+        emergencyContacts {
           fname
           lname
           role

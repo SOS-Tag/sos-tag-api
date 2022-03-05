@@ -10,8 +10,7 @@ input AssignSheetToUserInput {
   bloodType: String
   currentTreatment: String
   dateOfBirth: DateTime
-  emergencyContact1: SheetContactInput
-  emergencyContact2: SheetContactInput
+  emergencyContacts: [SheetContactInput]
   enabled: Boolean
   fname: String
   id: String
@@ -207,8 +206,7 @@ type Sheet {
   createdAt: String
   currentTreatment: String
   dateOfBirth: String
-  emergencyContact1: SheetContact
-  emergencyContact2: SheetContact
+  emergencyContacts: [SheetContact]
   enabled: Boolean
   fname: String
   lname: String
@@ -271,8 +269,7 @@ input UpdateSheetChangesInput {
   bloodType: String
   currentTreatment: String
   dateOfBirth: DateTime
-  emergencyContact1: SheetContactInput
-  emergencyContact2: SheetContactInput
+  emergencyContacts: [SheetContactInput]
   enabled: Boolean
   fname: String
   lname: String

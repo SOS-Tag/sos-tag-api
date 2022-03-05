@@ -4,23 +4,23 @@ import { IsDate } from 'class-validator';
 @InputType({ description: 'Sheet doctor contact field to be changed with an update operation' })
 class SheetDoctorContactInput {
   @Field()
-  fname: String;
+  fname: string;
   @Field()
-  lname: String;
+  lname: string;
   @Field()
-  phone: String;
+  phone: string;
 }
 
 @InputType({ description: 'Sheet emergency contact field to be changed with an update operation' })
 class SheetContactInput {
   @Field()
-  fname: String;
+  fname: string;
   @Field()
-  lname: String;
+  lname: string;
   @Field()
-  role: String;
+  role: string;
   @Field()
-  phone: String;
+  phone: string;
 }
 
 @InputType({ description: 'Assign sheet to user input' })
@@ -56,10 +56,8 @@ class AssignSheetToUserInput {
   currentTreatment: string;
   @Field()
   treatingDoctor: SheetDoctorContactInput;
-  @Field()
-  emergencyContact1: SheetContactInput;
-  @Field()
-  emergencyContact2: SheetContactInput;
+  @Field(() => [SheetContactInput])
+  emergencyContacts: SheetContactInput[];
 }
 
 @InputType({ description: 'Sheet fields to be changed with an update operation' })
@@ -93,10 +91,8 @@ class UpdateSheetChangesInput {
   currentTreatment: string;
   @Field()
   treatingDoctor: SheetDoctorContactInput;
-  @Field()
-  emergencyContact1: SheetContactInput;
-  @Field()
-  emergencyContact2: SheetContactInput;
+  @Field(() => [SheetContactInput])
+  emergencyContacts: SheetContactInput[];
 }
 
 @InputType({ description: 'Update Sheet input' })

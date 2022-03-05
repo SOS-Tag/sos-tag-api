@@ -60,18 +60,20 @@ const newSheetData = {
     lname: 'Sanchez',
     phone: '',
   },
-  emergencyContact1: {
-    fname: 'Clément',
-    lname: 'Robert',
-    role: 'Compagnon',
-    phone: '0309792080',
-  },
-  emergencyContact2: {
-    fname: 'Thomas',
-    lname: 'Robert',
-    role: 'Frère',
-    phone: '0354215688',
-  },
+  emergencyContacts: [
+    {
+      fname: 'Clément',
+      lname: 'Robert',
+      role: 'Compagnon',
+      phone: '0309792080',
+    },
+    {
+      fname: 'Thomas',
+      lname: 'Robert',
+      role: 'Frère',
+      phone: '0354215688',
+    },
+  ],
 };
 
 const newUserData = {

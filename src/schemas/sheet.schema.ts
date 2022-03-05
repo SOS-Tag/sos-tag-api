@@ -69,11 +69,8 @@ class Sheet {
   @Field()
   treatingDoctor: SheetDoctorContact;
 
-  @Field()
-  emergencyContact1: SheetContact;
-
-  @Field()
-  emergencyContact2: SheetContact;
+  @Field(() => [SheetContact])
+  emergencyContacts: [SheetContact];
 
   @Field()
   user: String;
