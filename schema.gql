@@ -10,8 +10,8 @@ input AssignSheetToUserInput {
   bloodType: String
   currentTreatment: String
   dateOfBirth: DateTime
-  emergencyContact1: String
-  emergencyContact2: String
+  emergencyContact1: SheetContactInput
+  emergencyContact2: SheetContactInput
   enabled: Boolean
   fname: String
   id: String
@@ -21,7 +21,7 @@ input AssignSheetToUserInput {
   organDonor: Boolean
   sex: String
   smoker: Boolean
-  treatingDoctor: String
+  treatingDoctor: SheetDoctorContactInput
 }
 
 """Boolean response"""
@@ -207,8 +207,8 @@ type Sheet {
   createdAt: String
   currentTreatment: String
   dateOfBirth: String
-  emergencyContact1: String
-  emergencyContact2: String
+  emergencyContact1: SheetContact
+  emergencyContact2: SheetContact
   enabled: Boolean
   fname: String
   lname: String
@@ -217,9 +217,39 @@ type Sheet {
   organDonor: Boolean
   sex: String
   smoker: Boolean
-  treatingDoctor: String
+  treatingDoctor: SheetDoctorContact
   updatedAt: String
   user: String
+}
+
+"""Sheet Contact Schema"""
+type SheetContact {
+  fname: String
+  lname: String
+  phone: String
+  role: String
+}
+
+"""Sheet emergency contact field to be changed with an update operation"""
+input SheetContactInput {
+  fname: String
+  lname: String
+  phone: String
+  role: String
+}
+
+"""Sheet Treating Doctor Contact Schema"""
+type SheetDoctorContact {
+  fname: String
+  lname: String
+  phone: String
+}
+
+"""Sheet doctor contact field to be changed with an update operation"""
+input SheetDoctorContactInput {
+  fname: String
+  lname: String
+  phone: String
 }
 
 """Sheet response"""
@@ -241,8 +271,8 @@ input UpdateSheetChangesInput {
   bloodType: String
   currentTreatment: String
   dateOfBirth: DateTime
-  emergencyContact1: String
-  emergencyContact2: String
+  emergencyContact1: SheetContactInput
+  emergencyContact2: SheetContactInput
   enabled: Boolean
   fname: String
   lname: String
@@ -251,7 +281,7 @@ input UpdateSheetChangesInput {
   organDonor: Boolean
   sex: String
   smoker: Boolean
-  treatingDoctor: String
+  treatingDoctor: SheetDoctorContactInput
 }
 
 """Update Sheet input"""

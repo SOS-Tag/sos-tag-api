@@ -1,6 +1,28 @@
 import { Field, InputType } from 'type-graphql';
 import { IsDate } from 'class-validator';
 
+@InputType({ description: 'Sheet doctor contact field to be changed with an update operation' })
+class SheetDoctorContactInput {
+  @Field()
+  fname: String;
+  @Field()
+  lname: String;
+  @Field()
+  phone: String;
+}
+
+@InputType({ description: 'Sheet emergency contact field to be changed with an update operation' })
+class SheetContactInput {
+  @Field()
+  fname: String;
+  @Field()
+  lname: String;
+  @Field()
+  role: String;
+  @Field()
+  phone: String;
+}
+
 @InputType({ description: 'Assign sheet to user input' })
 class AssignSheetToUserInput {
   @Field()
@@ -33,11 +55,11 @@ class AssignSheetToUserInput {
   @Field()
   currentTreatment: string;
   @Field()
-  treatingDoctor: string;
+  treatingDoctor: SheetDoctorContactInput;
   @Field()
-  emergencyContact1: string;
+  emergencyContact1: SheetContactInput;
   @Field()
-  emergencyContact2: string;
+  emergencyContact2: SheetContactInput;
 }
 
 @InputType({ description: 'Sheet fields to be changed with an update operation' })
@@ -70,11 +92,11 @@ class UpdateSheetChangesInput {
   @Field()
   currentTreatment: string;
   @Field()
-  treatingDoctor: string;
+  treatingDoctor: SheetDoctorContactInput;
   @Field()
-  emergencyContact1: string;
+  emergencyContact1: SheetContactInput;
   @Field()
-  emergencyContact2: string;
+  emergencyContact2: SheetContactInput;
 }
 
 @InputType({ description: 'Update Sheet input' })

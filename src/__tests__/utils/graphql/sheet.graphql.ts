@@ -48,9 +48,23 @@ const SHEET_BY_ID = gql`
         allergies
         medicalHistory
         currentTreatment
-        treatingDoctor
-        emergencyContact1
-        emergencyContact2
+        treatingDoctor {
+          fname
+          lname
+          phone
+        }
+        emergencyContact1 {
+          fname
+          lname
+          role
+          phone
+        }
+        emergencyContact2 {
+          fname
+          lname
+          role
+          phone
+        }
       }
       errors {
         field
@@ -105,9 +119,23 @@ const UPDATE_SHEET = gql`
         allergies
         medicalHistory
         currentTreatment
-        treatingDoctor
-        emergencyContact1
-        emergencyContact2
+        treatingDoctor {
+          fname
+          lname
+          phone
+        }
+        emergencyContact1 {
+          fname
+          lname
+          role
+          phone
+        }
+        emergencyContact2 {
+          fname
+          lname
+          role
+          phone
+        }
       }
       errors {
         field

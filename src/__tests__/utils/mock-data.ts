@@ -55,9 +55,23 @@ const newSheetData = {
   allergies: 'Pollen',
   medicalHistory: 'Anomalie cardiaque repérée',
   currentTreatment: 'Radiothérapie',
-  treatingDoctor: 'M. Antonio Sanchez',
-  emergencyContact1: 'Clément Robert (Compagnon) - 0309792080',
-  emergencyContact2: 'Thomas Robert (Frère) - 0354215688',
+  treatingDoctor: {
+    fname: 'Antonio',
+    lname: 'Sanchez',
+    phone: '',
+  },
+  emergencyContact1: {
+    fname: 'Clément',
+    lname: 'Robert',
+    role: 'Compagnon',
+    phone: '0309792080',
+  },
+  emergencyContact2: {
+    fname: 'Thomas',
+    lname: 'Robert',
+    role: 'Frère',
+    phone: '0354215688',
+  },
 };
 
 const newUserData = {
