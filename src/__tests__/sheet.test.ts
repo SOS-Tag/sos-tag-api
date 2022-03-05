@@ -1,7 +1,7 @@
 import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
 import { ASSIGN_SHEET_TO_USER, CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
-import { customId, initialUserData, newBloodType, newSheetData, password } from '@__tests__/utils/mock-data';
+import { customId, initialUserData, newSheetData, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
 let accessToken: string | undefined = undefined;
@@ -117,7 +117,6 @@ describe('Medical sheets service', () => {
         {
           assignSheetToUserInput: {
             id: customId,
-            ...newSheetData,
           },
         },
         accessToken,
@@ -179,26 +178,17 @@ describe('Medical sheets service', () => {
       expect(data).toBeNull();
       expect(error.message).toEqual('Sheet not found.');
     });
-    test('successful with unexisting ID in database', async () => {
+    test('successful', async () => {
       const response = await graphqlTestCall(SHEET_BY_ID, {
         sheetId: customId,
       });
       const data = response.data.sheetById.response;
       const errors = response.data.sheetById.errors;
       expect(errors).toBeNull();
-      expect(data).toEqual({
-        ...newSheetData,
-        _id: customId,
-      });
+      expect(data._id).toEqual(customId);
     });
   });
   describe('Update', () => {
-    if (newBloodType === newSheetData.bloodType) {
-      throw new Error(
-        'To perform the update on the sheet, you tried to update a value with the same value as the old one. In the context of a test, this does not make sense and cannot ensure a valid result.',
-      );
-    }
-
     test('unsuccessfull with a user not logged in', async () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
@@ -206,7 +196,7 @@ describe('Medical sheets service', () => {
           updateSheetInput: {
             id: customId,
             changes: {
-              bloodType: newBloodType,
+              ...newSheetData,
             },
           },
         },
@@ -224,7 +214,7 @@ describe('Medical sheets service', () => {
           updateSheetInput: {
             id: `UNKNOWN:${customId}`,
             changes: {
-              bloodType: newBloodType,
+              ...newSheetData,
             },
           },
         },
@@ -242,7 +232,7 @@ describe('Medical sheets service', () => {
           updateSheetInput: {
             id: customId,
             changes: {
-              bloodType: newBloodType,
+              ...newSheetData,
             },
           },
         },
@@ -251,7 +241,9 @@ describe('Medical sheets service', () => {
       const data = response.data.updateSheet.response;
       const errors = response.data.updateSheet.errors;
       expect(errors).toBeNull();
-      expect(data.bloodType).toEqual(newBloodType);
+      expect(data).toEqual({
+        ...newSheetData,
+      });
     });
   });
 });

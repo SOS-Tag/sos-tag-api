@@ -34,10 +34,23 @@ const SHEET_BY_ID = gql`
   query SheetById($sheetId: String) {
     sheetById(sheetId: $sheetId) {
       response {
+        enabled
         _id
         fname
         lname
+        sex
+        dateOfBirth
+        nationality
         bloodType
+        smoker
+        organDonor
+        advanceDirectives
+        allergies
+        medicalHistory
+        currentTreatment
+        treatingDoctor
+        emergencyContact1
+        emergencyContact2
       }
       errors {
         field
@@ -79,7 +92,22 @@ const UPDATE_SHEET = gql`
   mutation UpdateSheet($updateSheetInput: UpdateSheetInput) {
     updateSheet(updateSheetInput: $updateSheetInput) {
       response {
+        enabled
+        fname
+        lname
+        sex
+        dateOfBirth
+        nationality
         bloodType
+        smoker
+        organDonor
+        advanceDirectives
+        allergies
+        medicalHistory
+        currentTreatment
+        treatingDoctor
+        emergencyContact1
+        emergencyContact2
       }
       errors {
         field

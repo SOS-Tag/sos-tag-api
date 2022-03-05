@@ -20,9 +20,6 @@ const weakPassword = '1234';
 const phoneNumber = faker.phone.phoneNumber(phoneNumberPattern);
 const invalidPhoneNumber = '1234567890';
 
-const bloodType = 'O-';
-const newBloodType = 'A+';
-
 const nbOfQRCodes = faker.datatype.number({ min: 1, max: 20 });
 const paginatedQRCodesOptions = {
   currentPage: 1,
@@ -46,8 +43,21 @@ const initialUserData = {
 };
 
 const newSheetData = {
+  enabled: true,
   ...initialUserFullName,
-  bloodType,
+  sex: 'F',
+  dateOfBirth: '1980-11-20T00:00:00.000Z',
+  nationality: 'FR',
+  bloodType: 'A-',
+  smoker: false,
+  organDonor: false,
+  advanceDirectives: false,
+  allergies: 'Pollen',
+  medicalHistory: 'Anomalie cardiaque repérée',
+  currentTreatment: 'Radiothérapie',
+  treatingDoctor: 'M. Antonio Sanchez',
+  emergencyContact1: 'Clément Robert (Compagnon) - 0309792080',
+  emergencyContact2: 'Thomas Robert (Frère) - 0354215688',
 };
 
 const newUserData = {
@@ -65,7 +75,6 @@ export {
   initialUserData,
   invalidPhoneNumber,
   nbOfQRCodes,
-  newBloodType,
   newPassword,
   newSheetData,
   newUserData,
