@@ -2,7 +2,7 @@ import { AssignSheetToUserInput, UpdateSheetInput } from 'dtos/sheet.dto';
 import { ISheet, ISheetModel } from '@models/sheet.model';
 import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { transformSheet } from '@services/utils/transform';
-import { isEmpty } from '@utils/object';
+import { isEmpty, denest } from '@utils/object';
 import { Inject, Service } from 'typedi';
 import { customNanoId } from './qrcode.service';
 
@@ -94,7 +94,7 @@ class SheetService {
         _id: updateSheetInput.id,
         user: userId,
       },
-      updateSheetInput.changes,
+      denest(updateSheetInput.changes),
       {
         new: true,
       },
