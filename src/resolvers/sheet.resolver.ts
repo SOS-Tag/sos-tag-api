@@ -53,8 +53,8 @@ class SheetResolver {
     }
   }
 
-  @Query(() => SheetResponse, { description: 'Get a sheet by its id.' })
-  @UseMiddleware(isAuth)
+  @Query(() => SheetResponse, { description: 'Get a sheet by its id as an admin.' })
+  @UseMiddleware(isAuth) //TODO isAuthenticatedAsAdmin
   async sheetById(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
       const sheet = await this.sheetService.findSheetById(sheetId);
@@ -65,7 +65,7 @@ class SheetResolver {
     }
   }
 
-  @Query(() => SheetResponse, { description: 'Get a sheet by its id.' })
+  @Query(() => SheetResponse, { description: 'Get an active sheet by its id.' })
   async sheetByScanning(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
       const sheet = await this.sheetService.sheetByScanning(sheetId);

@@ -172,10 +172,10 @@ type Query {
   """
   qrCodesWithPagination(paginatorInput: PaginatorInput): PaginatedQRCodeResponse
 
-  """Get a sheet by its id."""
+  """Get a sheet by its id as an admin."""
   sheetById(sheetId: String): SheetResponse
 
-  """Get a sheet by its id."""
+  """Get an active sheet by its id."""
   sheetByScanning(sheetId: String): SheetResponse
 
   """Get all sheets."""
