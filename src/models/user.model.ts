@@ -84,6 +84,7 @@ const userModel: mongoose.Schema = new mongoose.Schema(
     },
     activated: {
       type: Boolean,
+      default: true,
     },
     confirmed: {
       type: Boolean,

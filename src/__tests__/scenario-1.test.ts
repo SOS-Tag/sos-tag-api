@@ -3,14 +3,8 @@ import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
 import { setConfirmationToken } from '@utils/token';
 import { REGISTER, CONFIRMATION, LOGIN } from '@__tests__/utils/graphql/auth.graphql';
-import {
-  ASSIGN_SHEET_TO_USER,
-  CREATE_SHEET,
-  SHEETS,
-  SHEETS_CURRENT_USER,
-  SHEET_BY_SCANNING,
-  UPDATE_SHEET,
-} from '@__tests__/utils/graphql/sheet.graphql';
+import { ASSIGN_SHEET_TO_USER, CREATE_SHEET, SHEETS_CURRENT_USER, SHEET_BY_SCANNING, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
+import { UPDATE_CURRENT_USER } from '@__tests__/utils/graphql/user.graphql';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 import { nanoid } from 'nanoid';
 
@@ -104,7 +98,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Signing up', () => {
+  describe('Sign up', () => {
     describe('Registration', () => {
       test('successful with new user data returned', async () => {
         const response = await graphqlTestCall(REGISTER, { registerInput: { ...user, password } });
@@ -143,12 +137,39 @@ describe('Scenario 1', () => {
       accessToken = data.accessToken;
     });
   });
-  /*
-  describe('Updating user account data', () => {
 
+  describe('Update current user account data', () => {
+    test('successful', async () => {
+      const changes = {
+        address: '43 rue Léon Cladel',
+        zipCode: '07000',
+        city: 'Privas',
+        phone: '0125463002',
+      };
+      const response = await graphqlTestCall(
+        UPDATE_CURRENT_USER,
+        {
+          updateCurrentUserInput: {
+            ...changes,
+          },
+        },
+        accessToken,
+      );
+      const data = response.data.updateCurrentUser.response;
+      const errors = response.data.updateCurrentUser.errors;
+      expect(errors).toBeNull();
+      expect(data).toEqual({
+        activated: true,
+        confirmed: true,
+        nationality: null,
+        ...user,
+        ...changes,
+        password: null,
+      });
+    });
   });
-  */
-  describe("Retrieving current user's sheets #1", () => {
+
+  describe("Retrieve current user's sheets #1", () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, {}, accessToken);
       const data = response.data.sheetsCurrentUser.response;
@@ -158,7 +179,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Assigning 1st sheet', () => {
+  describe('Assign 1st sheet', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(
         ASSIGN_SHEET_TO_USER,
@@ -177,7 +198,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Updating 1st sheet data #1', () => {
+  describe('Update 1st sheet data #1', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
@@ -200,7 +221,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Updating 1st sheet data #2', () => {
+  describe('Update 1st sheet data #2', () => {
     test('successful with nested data', async () => {
       const changes = {
         organDonor: true,
@@ -246,7 +267,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe("Retrieving current user's sheets #2", () => {
+  describe("Retrieve current user's sheets #2", () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, {}, accessToken);
       const data = response.data.sheetsCurrentUser.response;
@@ -257,7 +278,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Retrieve 1st sheet by scanning', () => {
+  describe('Retrieve 1st sheet by scanning #1', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[0],
@@ -269,7 +290,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Retrieve 2nd sheet by scanning', () => {
+  describe('Retrieve 2nd sheet by scanning #1', () => {
     test('unsuccessful because it is not assigned to a user', async () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[1],
@@ -281,7 +302,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Assigning 2nd sheet', () => {
+  describe('Assign 2nd sheet', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(
         ASSIGN_SHEET_TO_USER,
@@ -300,7 +321,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe("Retrieving current user's sheets #3", () => {
+  describe("Retrieve current user's sheets #3", () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, {}, accessToken);
       const data = response.data.sheetsCurrentUser.response;
@@ -312,7 +333,7 @@ describe('Scenario 1', () => {
     });
   });
 
-  describe('Retrieve 2nd sheet by scanning', () => {
+  describe('Retrieve 2nd sheet by scanning #2', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[1],
@@ -321,6 +342,68 @@ describe('Scenario 1', () => {
       const errors = response.data.sheetByScanning.errors;
       expect(errors).toBeNull();
       expect(data._id).toEqual(sheetIds[1]);
+    });
+  });
+
+  describe('Update 1st sheet data #3: disabling the sheet', () => {
+    test('successful', async () => {
+      const changes = { enabled: false };
+      const response = await graphqlTestCall(
+        UPDATE_SHEET,
+        {
+          updateSheetInput: {
+            id: sheetIds[0],
+            changes,
+          },
+        },
+        accessToken,
+      );
+      const data = response.data.updateSheet.response;
+      const errors = response.data.updateSheet.errors;
+      expect(errors).toBeNull();
+      expect(data.enabled).toEqual(false);
+    });
+  });
+
+  describe('Retrieve 1st sheet by scanning #2', () => {
+    test('unsuccessful because sheet is disabled', async () => {
+      const response = await graphqlTestCall(SHEET_BY_SCANNING, {
+        sheetId: sheetIds[0],
+      });
+      const data = response.data.sheetByScanning.response;
+      const errors = response.data.sheetByScanning.errors;
+      expect(errors[0].message).toEqual('Sheet not found.');
+      expect(data).toBeNull();
+    });
+  });
+
+  describe('Update current user: deactivating account', () => {
+    test('successful', async () => {
+      const response = await graphqlTestCall(
+        UPDATE_CURRENT_USER,
+        {
+          updateCurrentUserInput: {
+            activated: false,
+          },
+        },
+        accessToken,
+      );
+      const data = response.data.updateCurrentUser.response;
+      const errors = response.data.updateCurrentUser.errors;
+      expect(errors).toBeNull();
+      expect(data.activated).toEqual(false);
+    });
+  });
+
+  describe('Retrieve 2nd sheet by scanning #3', () => {
+    test('unsuccessful because user account is deactivated', async () => {
+      const response = await graphqlTestCall(SHEET_BY_SCANNING, {
+        sheetId: sheetIds[1],
+      });
+      const data = response.data.sheetByScanning.response;
+      const errors = response.data.sheetByScanning.errors;
+      expect(errors[0].message).toEqual('Sheet not found.');
+      expect(data).toBeNull();
     });
   });
 });

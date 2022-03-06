@@ -118,6 +118,9 @@ type Mutation {
   """
   resendConfirmationLink(userEmail: String): BooleanResponse
 
+  """Update the currently logged in user."""
+  updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput): UserResponse
+
   """Update a sheet."""
   updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse
 }
@@ -263,6 +266,20 @@ type SheetResponse {
 type SheetsResponse {
   errors: [FieldError!]
   response: [Sheet!]
+}
+
+"""Update currently logged in user input"""
+input UpdateCurrentUserInput {
+  activated: Boolean
+  address: String
+  city: String
+  email: String
+  fname: String
+  lname: String
+  nationality: String
+  password: String
+  phone: String
+  zipCode: String
 }
 
 """Sheet fields to be changed with an update operation"""

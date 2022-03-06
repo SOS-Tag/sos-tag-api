@@ -1,3 +1,4 @@
+import { UpdateCurrentUserInput } from '@/dtos/user.dto';
 import Context from '@interfaces/context.interface';
 import isAuth from '@middlewares/is-auth.middleware';
 import { UserResponse, UsersResponse } from '@responses/user.response';
@@ -6,7 +7,7 @@ import UserService from '@services/user.service';
 import { getErrorMessage } from '@utils/error';
 import { logger } from '@utils/logger';
 import { verify } from 'jsonwebtoken';
-import { Arg, Ctx, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Service } from 'typedi';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -31,6 +32,21 @@ class UserResolver {
     } catch (error) {
       logger.error(`[resolver:User:currentUser] ${getErrorMessage(error)}.`);
       return null;
+    }
+  }
+
+  @Mutation(() => UserResponse, { description: 'Update the currently logged in user.' })
+  @UseMiddleware(isAuth)
+  async updateCurrentUser(
+    @Ctx() { payload }: Context,
+    @Arg('updateCurrentUserInput') updateCurrentUserInput: UpdateCurrentUserInput,
+  ): Promise<UserResponse> {
+    try {
+      const updateCurrentUserResponse = await this.userService.updateCurrentUser(updateCurrentUserInput, payload.userId);
+      return updateCurrentUserResponse;
+    } catch (error) {
+      logger.error(`[resolver:User:updateCurrentUser] ${getErrorMessage(error)}.`);
+      throw error;
     }
   }
 
