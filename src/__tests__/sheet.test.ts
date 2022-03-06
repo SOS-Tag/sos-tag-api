@@ -1,6 +1,14 @@
 import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
-import { ASSIGN_SHEET_TO_USER, CREATE_SHEET, SHEETS, SHEETS_CURRENT_USER, SHEET_BY_ID, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
+import {
+  ASSIGN_SHEET_TO_USER,
+  CREATE_SHEET,
+  SHEETS,
+  SHEETS_CURRENT_USER,
+  SHEET_BY_ID,
+  SHEET_BY_SCANNING,
+  UPDATE_SHEET,
+} from '@__tests__/utils/graphql/sheet.graphql';
 import { initialUserData, newSheetData, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
@@ -148,30 +156,83 @@ describe('Medical sheets service', () => {
     });
   });
   describe('Retrieve by ID', () => {
+    test('unsuccessful when user is not authenticated', async () => {
+      const response = await graphqlTestCall(
+        SHEET_BY_ID,
+        {
+          sheetId,
+        },
+        undefined,
+      );
+      const [error] = response.errors;
+      expect(response.data.sheetById).toBeNull();
+      expect(error.message).toEqual('Unauthenticated');
+    });
     test('unsuccessful with empty ID parameter', async () => {
-      const response = await graphqlTestCall(SHEET_BY_ID, {
-        sheetId: null,
-      });
+      const response = await graphqlTestCall(
+        SHEET_BY_ID,
+        {
+          sheetId: null,
+        },
+        accessToken,
+      );
       const data = response.data.sheetById.response;
       const [error] = response.data.sheetById.errors;
       expect(data).toBeNull();
-      expect(error.message).toEqual('Empty userId parameter.');
+      expect(error.message).toEqual('Empty sheetId parameter.');
     });
     test('unsuccessful with unexisting ID in database', async () => {
-      const response = await graphqlTestCall(SHEET_BY_ID, {
-        sheetId: 'AAAAAAAA',
-      });
+      const response = await graphqlTestCall(
+        SHEET_BY_ID,
+        {
+          sheetId: 'AAAAAAAA',
+        },
+        accessToken,
+      );
       const data = response.data.sheetById.response;
       const [error] = response.data.sheetById.errors;
       expect(data).toBeNull();
       expect(error.message).toEqual('Sheet not found.');
     });
     test('successful', async () => {
-      const response = await graphqlTestCall(SHEET_BY_ID, {
-        sheetId: sheetId,
-      });
+      const response = await graphqlTestCall(
+        SHEET_BY_ID,
+        {
+          sheetId,
+        },
+        accessToken,
+      );
       const data = response.data.sheetById.response;
       const errors = response.data.sheetById.errors;
+      expect(errors).toBeNull();
+      expect(data._id).toEqual(sheetId);
+    });
+  });
+  describe('Retrieve by scanning', () => {
+    test('unsuccessful with empty ID parameter', async () => {
+      const response = await graphqlTestCall(SHEET_BY_SCANNING, {
+        sheetId: null,
+      });
+      const data = response.data.sheetByScanning.response;
+      const [error] = response.data.sheetByScanning.errors;
+      expect(data).toBeNull();
+      expect(error.message).toEqual('Empty sheetId parameter.');
+    });
+    test('unsuccessful with unexisting ID in database', async () => {
+      const response = await graphqlTestCall(SHEET_BY_SCANNING, {
+        sheetId: 'AAAAAAAA',
+      });
+      const data = response.data.sheetByScanning.response;
+      const [error] = response.data.sheetByScanning.errors;
+      expect(data).toBeNull();
+      expect(error.message).toEqual('Sheet not found.');
+    });
+    test('successful', async () => {
+      const response = await graphqlTestCall(SHEET_BY_SCANNING, {
+        sheetId: sheetId,
+      });
+      const data = response.data.sheetByScanning.response;
+      const errors = response.data.sheetByScanning.errors;
       expect(errors).toBeNull();
       expect(data._id).toEqual(sheetId);
     });

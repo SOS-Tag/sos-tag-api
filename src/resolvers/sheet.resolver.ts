@@ -54,12 +54,24 @@ class SheetResolver {
   }
 
   @Query(() => SheetResponse, { description: 'Get a sheet by its id.' })
+  @UseMiddleware(isAuth)
   async sheetById(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
       const sheet = await this.sheetService.findSheetById(sheetId);
       return sheet;
     } catch (error) {
       logger.error(`[resolver:Sheet:sheetById] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
+  @Query(() => SheetResponse, { description: 'Get a sheet by its id.' })
+  async sheetByScanning(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
+    try {
+      const sheet = await this.sheetService.sheetByScanning(sheetId);
+      return sheet;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:sheetByScanning] ${getErrorMessage(error)}.`);
       throw error;
     }
   }

@@ -60,13 +60,36 @@ class SheetService {
       return {
         errors: [
           {
-            message: 'Empty userId parameter.',
+            message: 'Empty sheetId parameter.',
           },
         ],
       };
 
     const sheet = await this.sheets.findById(sheetId);
     if (!sheet)
+      return {
+        errors: [
+          {
+            message: 'Sheet not found.',
+          },
+        ],
+      };
+
+    return { response: transformSheet(sheet) };
+  }
+
+  async sheetByScanning(sheetId: string): Promise<SheetResponse> {
+    if (isEmpty(sheetId))
+      return {
+        errors: [
+          {
+            message: 'Empty sheetId parameter.',
+          },
+        ],
+      };
+
+    const sheet = await this.sheets.findOne({ _id: sheetId, enabled: true });
+    if (!sheet || !sheet.user)
       return {
         errors: [
           {

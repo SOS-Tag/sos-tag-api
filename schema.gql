@@ -172,6 +172,9 @@ type Query {
   """Get a sheet by its id."""
   sheetById(sheetId: String): SheetResponse
 
+  """Get a sheet by its id."""
+  sheetByScanning(sheetId: String): SheetResponse
+
   """Get all sheets."""
   sheets: SheetsResponse
 
