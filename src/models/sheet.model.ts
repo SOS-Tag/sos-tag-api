@@ -85,8 +85,6 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
     },
     enabled: {
       type: Boolean,
-      required: true,
-      default: false,
     },
     fname: {
       type: String,

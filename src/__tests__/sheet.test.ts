@@ -80,7 +80,6 @@ describe('Medical sheets service', () => {
       const errors = response.data.createSheet.errors;
       expect(errors).toBeNull();
       expect(typeof data[0]._id).toBe('string');
-      expect(data[0].enabled).toBeFalsy();
       sheetId = data[0]._id;
     });
   });
