@@ -1,23 +1,16 @@
 version: 2.1
 jobs:
-#  clear-cache:
-#    steps:
-#      - checkout
-#      - run:
-#          name: "Jest: Clear cache"
-#          command: "yarn test:clearCache"
-
   all-tests:
     docker:
       - image: circleci/node
     steps:
       - checkout
       - run:
-          name: "Test env var"
-          command: "echo $PORT"
-      - run:
-          name: "Install packages"
+          name: "Install package"
           command: "yarn install"
+      - run:
+          name: "Clear Jest cache"
+          command: "yarn test:clearCache"
       - run:
           name: "Run tests"
           command: "yarn test"
@@ -25,6 +18,5 @@ jobs:
 workflows:
   all-tests-workflow:
     jobs:
-#      - clear-cache
       - all-tests:
           context: sos-tag-api
