@@ -121,8 +121,8 @@ type Mutation {
   """Update the currently logged in user."""
   updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput): UserResponse
 
-  """Update a sheet."""
-  updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse
+  """Update one of the current user sheets."""
+  updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput): SheetResponse
 }
 
 """Paginated QR Code response"""
@@ -283,7 +283,7 @@ input UpdateCurrentUserInput {
 }
 
 """Sheet fields to be changed with an update operation"""
-input UpdateSheetChangesInput {
+input UpdateCurrentUserSheetChangesInput {
   advanceDirectives: Boolean
   allergies: String
   bloodType: String
@@ -302,8 +302,8 @@ input UpdateSheetChangesInput {
 }
 
 """Update Sheet input"""
-input UpdateSheetInput {
-  changes: UpdateSheetChangesInput
+input UpdateCurrentUserSheetInput {
+  changes: UpdateCurrentUserSheetChangesInput
   id: String
 }
 

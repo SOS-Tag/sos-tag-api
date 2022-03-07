@@ -1,4 +1,4 @@
-import { AssignSheetToUserInput, UpdateSheetInput } from 'dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from 'dtos/sheet.dto';
 import { ISheet, ISheetModel } from '@models/sheet.model';
 import { IUserModel } from '@models/user.model';
 import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
@@ -122,13 +122,13 @@ class SheetService {
     return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
-  async updateSheet(updateSheetInput: UpdateSheetInput, userId: string): Promise<SheetResponse> {
+  async updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput, userId: string): Promise<SheetResponse> {
     const sheet = await this.sheets.findOneAndUpdate(
       {
-        _id: updateSheetInput.id,
+        _id: updateCurrentUserSheetInput.id,
         user: userId,
       },
-      denest(updateSheetInput.changes),
+      denest(updateCurrentUserSheetInput.changes),
       {
         new: true,
       },

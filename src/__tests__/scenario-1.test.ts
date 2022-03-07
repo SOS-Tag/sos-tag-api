@@ -203,7 +203,7 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateSheetInput: {
+          updateCurrentUserSheetInput: {
             id: sheetIds[0],
             changes: {
               ...sheetData,
@@ -212,8 +212,8 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
-      const data = response.data.updateSheet.response;
-      const errors = response.data.updateSheet.errors;
+      const data = response.data.updateCurrentUserSheet.response;
+      const errors = response.data.updateCurrentUserSheet.errors;
       expect(errors).toBeNull();
       expect(data).toEqual({
         ...sheetData,
@@ -246,15 +246,15 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateSheetInput: {
+          updateCurrentUserSheetInput: {
             id: sheetIds[0],
             changes,
           },
         },
         accessToken,
       );
-      const data = response.data.updateSheet.response;
-      const errors = response.data.updateSheet.errors;
+      const data = response.data.updateCurrentUserSheet.response;
+      const errors = response.data.updateCurrentUserSheet.errors;
       expect(errors).toBeNull();
       expect(data).toEqual({
         ...sheetData,
@@ -351,15 +351,15 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateSheetInput: {
+          updateCurrentUserSheetInput: {
             id: sheetIds[0],
             changes,
           },
         },
         accessToken,
       );
-      const data = response.data.updateSheet.response;
-      const errors = response.data.updateSheet.errors;
+      const data = response.data.updateCurrentUserSheet.response;
+      const errors = response.data.updateCurrentUserSheet.errors;
       expect(errors).toBeNull();
       expect(data.enabled).toEqual(false);
     });

@@ -61,7 +61,7 @@ class AssignSheetToUserInput {
 }
 
 @InputType({ description: 'Sheet fields to be changed with an update operation' })
-class UpdateSheetChangesInput {
+class UpdateCurrentUserSheetChangesInput {
   @Field()
   enabled: boolean;
   @Field()
@@ -96,11 +96,11 @@ class UpdateSheetChangesInput {
 }
 
 @InputType({ description: 'Update Sheet input' })
-class UpdateSheetInput {
+class UpdateCurrentUserSheetInput {
   @Field()
   id: string;
   @Field()
-  changes: UpdateSheetChangesInput;
+  changes: UpdateCurrentUserSheetChangesInput;
 }
 
-export { AssignSheetToUserInput, UpdateSheetInput };
+export { AssignSheetToUserInput, UpdateCurrentUserSheetInput };

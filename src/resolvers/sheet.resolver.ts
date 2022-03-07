@@ -1,4 +1,4 @@
-import { AssignSheetToUserInput, UpdateSheetInput } from '@dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
 import isAuth from '@middlewares/is-auth.middleware';
 import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
@@ -41,14 +41,17 @@ class SheetResolver {
     }
   }
 
-  @Mutation(() => SheetResponse, { description: 'Update a sheet.' })
+  @Mutation(() => SheetResponse, { description: 'Update one of the current user sheets.' })
   @UseMiddleware(isAuth)
-  async updateSheet(@Ctx() { payload }: Context, @Arg('updateSheetInput') updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
+  async updateCurrentUserSheet(
+    @Ctx() { payload }: Context,
+    @Arg('updateCurrentUserSheetInput') updateCurrentUserSheetInput: UpdateCurrentUserSheetInput,
+  ): Promise<SheetResponse> {
     try {
-      const updateSheetResponse = await this.sheetService.updateSheet(updateSheetInput, payload.userId);
-      return updateSheetResponse;
+      const updateCurrentUserSheetResponse = await this.sheetService.updateCurrentUserSheet(updateCurrentUserSheetInput, payload.userId);
+      return updateCurrentUserSheetResponse;
     } catch (error) {
-      logger.error(`[resolver:Sheet:updateSheet] ${getErrorMessage(error)}.`);
+      logger.error(`[resolver:Sheet:updateCurrentUserSheet] ${getErrorMessage(error)}.`);
       throw error;
     }
   }

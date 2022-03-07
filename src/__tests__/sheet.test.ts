@@ -242,7 +242,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateSheetInput: {
+          updateCurrentUserSheetInput: {
             id: sheetId,
             changes: {
               ...newSheetData,
@@ -251,7 +251,7 @@ describe('Medical sheets service', () => {
         },
         undefined,
       );
-      const data = response.data.updateSheet;
+      const data = response.data.updateCurrentUserSheet;
       const [error] = response.errors;
       expect(data).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
@@ -260,7 +260,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateSheetInput: {
+          updateCurrentUserSheetInput: {
             id: `UNKNOWN:${sheetId}`,
             changes: {
               ...newSheetData,
@@ -269,8 +269,8 @@ describe('Medical sheets service', () => {
         },
         accessToken,
       );
-      const data = response.data.updateSheet.response;
-      const [error] = response.data.updateSheet.errors;
+      const data = response.data.updateCurrentUserSheet.response;
+      const [error] = response.data.updateCurrentUserSheet.errors;
       expect(data).toBeNull();
       expect(error.message).toEqual('Sheet not found.');
     });
@@ -278,7 +278,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateSheetInput: {
+          updateCurrentUserSheetInput: {
             id: sheetId,
             changes: {
               ...newSheetData,
@@ -287,8 +287,8 @@ describe('Medical sheets service', () => {
         },
         accessToken,
       );
-      const data = response.data.updateSheet.response;
-      const errors = response.data.updateSheet.errors;
+      const data = response.data.updateCurrentUserSheet.response;
+      const errors = response.data.updateCurrentUserSheet.errors;
       expect(errors).toBeNull();
       expect(data).toEqual({
         ...newSheetData,

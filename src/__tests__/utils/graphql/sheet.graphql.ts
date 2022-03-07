@@ -135,8 +135,8 @@ const SHEETS_CURRENT_USER = gql`
 `;
 
 const UPDATE_SHEET = gql`
-  mutation UpdateSheet($updateSheetInput: UpdateSheetInput) {
-    updateSheet(updateSheetInput: $updateSheetInput) {
+  mutation UpdateCurrentUserSheet($updateCurrentUserSheetInput: UpdateCurrentUserSheetInput) {
+    updateCurrentUserSheet(updateCurrentUserSheetInput: $updateCurrentUserSheetInput) {
       response {
         enabled
         fname
