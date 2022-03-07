@@ -41,7 +41,6 @@ const initialUserData = {
 };
 
 const newSheetData = {
-  enabled: true,
   ...initialUserFullName,
   sex: 'F',
   dateOfBirth: '1980-11-20T00:00:00.000Z',
@@ -74,6 +73,12 @@ const newSheetData = {
   ],
 };
 
+const sheetDataChanges = {
+  smoker: true,
+  allergies: 'Poil de chats',
+  treatingDoctor: { phone: '0269887410' },
+};
+
 const newUserData = {
   ...newUserFullName,
   email,
@@ -90,6 +95,7 @@ export {
   nbOfQRCodes,
   newPassword,
   newSheetData,
+  sheetDataChanges,
   newUserData,
   paginatedQRCodesOptions,
   password,

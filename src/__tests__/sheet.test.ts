@@ -9,7 +9,7 @@ import {
   SHEET_BY_SCANNING,
   UPDATE_SHEET,
 } from '@__tests__/utils/graphql/sheet.graphql';
-import { initialUserData, newSheetData, password } from '@__tests__/utils/mock-data';
+import { initialUserData, newSheetData, sheetDataChanges, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
 let accessToken: string | undefined = undefined;
@@ -98,7 +98,6 @@ describe('Medical sheets service', () => {
         {
           assignSheetToUserInput: {
             id: sheetId,
-            ...newSheetData,
           },
         },
         undefined,
@@ -237,7 +236,7 @@ describe('Medical sheets service', () => {
       expect(data._id).toEqual(sheetId);
     });
   });
-  describe('Update', () => {
+  describe('Update #1', () => {
     test('unsuccessfull with a user not logged in', async () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
@@ -274,7 +273,7 @@ describe('Medical sheets service', () => {
       expect(data).toBeNull();
       expect(error.message).toEqual('Sheet not found.');
     });
-    test('successfull with a user logged in, and a valid medical sheet id that belongs to this user', async () => {
+    test('successful with a user logged in, and a valid medical sheet id that belongs to this user', async () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
@@ -291,7 +290,36 @@ describe('Medical sheets service', () => {
       const errors = response.data.updateCurrentUserSheet.errors;
       expect(errors).toBeNull();
       expect(data).toEqual({
+        enabled: true,
         ...newSheetData,
+      });
+    });
+  });
+  describe('Update #2', () => {
+    test('successful', async () => {
+      const response = await graphqlTestCall(
+        UPDATE_SHEET,
+        {
+          updateCurrentUserSheetInput: {
+            id: sheetId,
+            changes: {
+              ...sheetDataChanges,
+            },
+          },
+        },
+        accessToken,
+      );
+      const data = response.data.updateCurrentUserSheet.response;
+      const errors = response.data.updateCurrentUserSheet.errors;
+      expect(errors).toBeNull();
+      expect(data).toEqual({
+        enabled: true,
+        ...newSheetData,
+        ...sheetDataChanges,
+        treatingDoctor: {
+          ...newSheetData.treatingDoctor,
+          ...sheetDataChanges.treatingDoctor,
+        },
       });
     });
   });
