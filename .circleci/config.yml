@@ -3,6 +3,7 @@ jobs:
   all-tests:
     docker:
       - image: circleci/node
+      - image: circleci/redis
     steps:
       - checkout
       - run:
