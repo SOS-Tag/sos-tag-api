@@ -1,5 +1,18 @@
 version: 2.1
 jobs:
+  lint:
+    docker:
+      - image: circleci/node
+      - image: circleci/redis
+    steps:
+      - checkout
+      - run:
+          name: "Install packages"
+          command: "yarn install"
+      - run:
+          name: "Run tests"
+          command: "yarn lint"
+
   all-tests:
     docker:
       - image: circleci/node
@@ -17,7 +30,8 @@ jobs:
           command: "yarn test"
 
 workflows:
-  all-tests-workflow:
+  lint-and-all-tests-workflow:
     jobs:
+      - lint
       - all-tests:
           context: sos-tag-api
