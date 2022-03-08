@@ -5,7 +5,7 @@ import { MiddlewareFn } from 'type-graphql';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
-const isAuth: MiddlewareFn<Context> = ({ context }, next) => {
+const isAuthenticated: MiddlewareFn<Context> = ({ context }, next) => {
   const authorization = context.req.headers['authorization'];
 
   if (!authorization) {
@@ -23,4 +23,4 @@ const isAuth: MiddlewareFn<Context> = ({ context }, next) => {
   return next();
 };
 
-export default isAuth;
+export default isAuthenticated;

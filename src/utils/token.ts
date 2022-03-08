@@ -20,6 +20,7 @@ const createAccessToken = (user: IUser) => {
   return sign(
     {
       userId: user.id,
+      roles: user.roles,
     },
     accessTokenSecret,
     {

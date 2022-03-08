@@ -1,3 +1,4 @@
+import faker from '@faker-js/faker';
 import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
 import {
@@ -12,6 +13,9 @@ import {
 import { initialUserData, newSheetData, sheetDataChanges, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 
+let registeredAdmin: (IUser & { _id: string }) | null = null;
+let adminAccessToken: string | undefined = undefined;
+
 let accessToken: string | undefined = undefined;
 let registeredUser: (IUser & { _id: string }) | null = null;
 
@@ -19,6 +23,21 @@ let sheetId;
 
 beforeAll(async () => {
   await createConnection();
+
+  const admin = {
+    fname: faker.name.firstName(),
+    lname: faker.name.lastName(),
+    email: faker.internet.email().toLowerCase(),
+    phone: faker.phone.phoneNumber('07########'),
+  };
+  const adminPassword = 'k"KM@2#x';
+
+  registeredAdmin = await registerTestUser(admin, adminPassword, ['admin']);
+
+  adminAccessToken = await logTestUserIn({
+    email: registeredAdmin.email,
+    password: adminPassword,
+  });
 
   registeredUser = await registerTestUser(initialUserData, password);
 
@@ -40,8 +59,14 @@ describe('Medical sheets service', () => {
       expect(response.data.sheets).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
-    test('successful when user is logged in', async () => {
+    test('unsuccessful when user is not authorized', async () => {
       const response = await graphqlTestCall(SHEETS, undefined, accessToken);
+      const [error] = response.errors;
+      expect(response.data.sheets).toBeNull();
+      expect(error.message).toEqual('Unauthorized');
+    });
+    test('successful when user is logged in', async () => {
+      const response = await graphqlTestCall(SHEETS, undefined, adminAccessToken);
       const data = response.data.sheets.response;
       const errors = response.data.sheets.errors;
       expect(errors).toBeNull();
@@ -76,13 +101,25 @@ describe('Medical sheets service', () => {
       expect(response.data.createSheet).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
-    test('successful when a user is logged in', async () => {
+    test('unsuccessful user is not authorized', async () => {
       const response = await graphqlTestCall(
         CREATE_SHEET,
         {
           count: 1,
         },
         accessToken,
+      );
+      const [error] = response.errors;
+      expect(response.data.createSheet).toBeNull();
+      expect(error.message).toEqual('Unauthorized');
+    });
+    test('successful when a user is logged in', async () => {
+      const response = await graphqlTestCall(
+        CREATE_SHEET,
+        {
+          count: 1,
+        },
+        adminAccessToken,
       );
       const data = response.data.createSheet.response;
       const errors = response.data.createSheet.errors;
@@ -167,13 +204,25 @@ describe('Medical sheets service', () => {
       expect(response.data.sheetById).toBeNull();
       expect(error.message).toEqual('Unauthenticated');
     });
+    test('unsuccessful when user is not authorized', async () => {
+      const response = await graphqlTestCall(
+        SHEET_BY_ID,
+        {
+          sheetId,
+        },
+        accessToken,
+      );
+      const [error] = response.errors;
+      expect(response.data.sheetById).toBeNull();
+      expect(error.message).toEqual('Unauthorized');
+    });
     test('unsuccessful with empty ID parameter', async () => {
       const response = await graphqlTestCall(
         SHEET_BY_ID,
         {
           sheetId: null,
         },
-        accessToken,
+        adminAccessToken,
       );
       const data = response.data.sheetById.response;
       const [error] = response.data.sheetById.errors;
@@ -186,7 +235,7 @@ describe('Medical sheets service', () => {
         {
           sheetId: 'AAAAAAAA',
         },
-        accessToken,
+        adminAccessToken,
       );
       const data = response.data.sheetById.response;
       const [error] = response.data.sheetById.errors;
@@ -199,7 +248,7 @@ describe('Medical sheets service', () => {
         {
           sheetId,
         },
-        accessToken,
+        adminAccessToken,
       );
       const data = response.data.sheetById.response;
       const errors = response.data.sheetById.errors;

@@ -1,4 +1,4 @@
-import { UpdateCurrentUserInput } from '@/dtos/user.dto';
+import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
 import { IUser, IUserModel } from '@models/user.model';
 import { BooleanResponse } from '@responses/common.response';
 import { UserResponse, UsersResponse } from '@responses/user.response';
@@ -61,7 +61,30 @@ class UserService {
     return { response: true };
   }
 
-  async updateCurrentUser(updateUserInput: UpdateCurrentUserInput, userId: string): Promise<UserResponse> {
+  async updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput, userId: string): Promise<UserResponse> {
+    const user = await this.users.findOneAndUpdate(
+      {
+        _id: userId,
+      },
+      denest(updateCurrentUserInput),
+      {
+        new: true,
+      },
+    );
+
+    if (!user)
+      return {
+        errors: [
+          {
+            message: 'User not found.',
+          },
+        ],
+      };
+
+    return { response: transformUser(user) };
+  }
+
+  async updateUser(updateUserInput: UpdateUserInput, userId: string): Promise<UserResponse> {
     const user = await this.users.findOneAndUpdate(
       {
         _id: userId,

@@ -21,7 +21,7 @@ beforeAll(async () => {
     phone: faker.phone.phoneNumber('07########'),
   };
   const adminPassword = 'k"KM@2#x';
-  registeredAdmin = await registerTestUser(admin, adminPassword);
+  registeredAdmin = await registerTestUser(admin, adminPassword, ['admin']);
 
   adminAccessToken = await logTestUserIn({
     email: registeredAdmin.email,

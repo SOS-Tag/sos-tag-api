@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 
 interface ContextPayload {
   userId: string;
+  roles: string[];
   tokenVersion: number;
 }
 

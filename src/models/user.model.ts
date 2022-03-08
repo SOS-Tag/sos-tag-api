@@ -10,6 +10,7 @@ export interface IUser extends mongoose.Document {
   email: string;
   phone: string;
   nationality: string;
+  roles: string[];
   password: string;
   tokenVersion: number;
   activated: boolean;
@@ -70,6 +71,12 @@ const userModel: mongoose.Schema = new mongoose.Schema(
       //TODO  required: true,
       minLength: 2,
       maxLength: 2,
+      trim: true,
+    },
+    roles: {
+      type: [String],
+      required: true,
+      default: ['client'],
       trim: true,
     },
     password: {

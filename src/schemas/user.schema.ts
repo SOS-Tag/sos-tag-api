@@ -29,6 +29,9 @@ class User {
   @Field()
   nationality: String;
 
+  @Field(() => [String])
+  roles: [String];
+
   @Field()
   password: String;
 

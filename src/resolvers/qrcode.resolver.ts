@@ -1,5 +1,5 @@
 import { PaginatorInput } from '@dtos/common.dto';
-import isAuth from '@middlewares/is-auth.middleware';
+import isAuthenticated from '@/middlewares/is-authenticated.middleware';
 import { PaginatedQRCodeResponse, QRCodeResponse, QRCodesResponse } from '@responses/qrcode.response';
 import QRCodeSchema from '@schemas/qrcode.schema';
 import QRCodeService from '@services/qrcode.service';
@@ -25,7 +25,7 @@ class QRCodeResolver {
   }
 
   @Query(() => QRCodesResponse, { description: 'Get all QR Codes.' })
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAuthenticated)
   async qrCodes(): Promise<QRCodesResponse> {
     try {
       const qrCodes = await this.qrCodeService.getQRCodes();
@@ -37,7 +37,7 @@ class QRCodeResolver {
   }
 
   @Query(() => PaginatedQRCodeResponse, { description: 'Get QR Codes page by page (by fixing the page and the limit of QR Codes by page).' })
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAuthenticated)
   async qrCodesWithPagination(@Arg('paginatorInput') paginatorInput: PaginatorInput): Promise<PaginatedQRCodeResponse> {
     try {
       const qrCodes = await this.qrCodeService.getQRCodesWithPagination(paginatorInput);

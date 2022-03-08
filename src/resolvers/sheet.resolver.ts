@@ -1,6 +1,7 @@
 import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
-import isAuth from '@middlewares/is-auth.middleware';
+import isAuthenticated from '@/middlewares/is-authenticated.middleware';
+import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
 import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
@@ -15,7 +16,7 @@ class SheetResolver {
   constructor(private readonly sheetService: SheetService) {}
 
   @Mutation(() => SheetsResponse, { description: 'Create an empty sheet.' })
-  @UseMiddleware(isAuth) //TODO isAuthenticatedAsAdmin
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async createSheet(@Arg('count') count: number): Promise<SheetsResponse> {
     try {
       const createSheetResponse = await this.sheetService.createSheet(count);
@@ -27,7 +28,7 @@ class SheetResolver {
   }
 
   @Mutation(() => SheetResponse, { description: 'Assign an unassigned sheet to the current user.' })
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAuthenticated)
   async assignSheetToUser(
     @Ctx() { payload }: Context,
     @Arg('assignSheetToUserInput') assignSheetToUserInput: AssignSheetToUserInput,
@@ -42,7 +43,7 @@ class SheetResolver {
   }
 
   @Mutation(() => SheetResponse, { description: 'Update one of the current user sheets.' })
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAuthenticated)
   async updateCurrentUserSheet(
     @Ctx() { payload }: Context,
     @Arg('updateCurrentUserSheetInput') updateCurrentUserSheetInput: UpdateCurrentUserSheetInput,
@@ -57,7 +58,7 @@ class SheetResolver {
   }
 
   @Query(() => SheetResponse, { description: 'Get a sheet by its id as an admin.' })
-  @UseMiddleware(isAuth) //TODO isAuthenticatedAsAdmin
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async sheetById(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
       const sheet = await this.sheetService.findSheetById(sheetId);
@@ -80,7 +81,7 @@ class SheetResolver {
   }
 
   @Query(() => SheetsResponse, { description: 'Get the sheets of the specified user.' })
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAuthenticated)
   async sheetsCurrentUser(@Ctx() { payload }: Context): Promise<SheetsResponse> {
     try {
       const sheets = await this.sheetService.findSheetsByUser(payload.userId);
@@ -92,7 +93,7 @@ class SheetResolver {
   }
 
   @Query(() => SheetsResponse, { description: 'Get all sheets.' })
-  @UseMiddleware(isAuth) //TODO isAuthenticatedAsAdmin
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async sheets(): Promise<SheetsResponse> {
     try {
       const sheets = await this.sheetService.findSheets();

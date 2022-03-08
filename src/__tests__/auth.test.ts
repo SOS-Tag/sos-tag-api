@@ -22,7 +22,7 @@ let unconfirmedUser: (IUser & { _id: string }) | null = null;
 
 beforeAll(async () => {
   await createConnection();
-  unconfirmedUser = await registerTestUser(initialUserData, password, false);
+  unconfirmedUser = await registerTestUser(initialUserData, password, ['client'], false);
 });
 
 afterAll(async () => {

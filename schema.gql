@@ -123,6 +123,9 @@ type Mutation {
 
   """Update one of the current user sheets."""
   updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput): SheetResponse
+
+  """Update user."""
+  updateUser(updateUserInput: UpdateUserInput): UserResponse
 }
 
 """Paginated QR Code response"""
@@ -307,6 +310,23 @@ input UpdateCurrentUserSheetInput {
   id: String
 }
 
+"""Update user input"""
+input UpdateUserInput {
+  activated: Boolean
+  address: String
+  city: String
+  confirmed: Boolean
+  email: String
+  fname: String
+  lname: String
+  nationality: String
+  password: String
+  phone: String
+  roles: [String]
+  tokenVersion: Float
+  zipCode: String
+}
+
 """User Schema"""
 type User {
   _id: ID
@@ -321,6 +341,7 @@ type User {
   nationality: String
   password: String
   phone: String
+  roles: [String]
   tokenVersion: Int
   updatedAt: String
   zipCode: String
