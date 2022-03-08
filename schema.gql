@@ -25,7 +25,7 @@ input AssignSheetToUserInput {
 
 """Boolean response"""
 type BooleanResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: Boolean
 }
 
@@ -41,9 +41,22 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 """Error with message and the associated field"""
-type FieldError {
-  field: String
+type ExtendedError {
+  code: Float
+  fields: [InputError]
   message: String
+  retryAfter: Float
+  timestamp: String
+  title: String
+  type: String
+  wwwAuthenticate: String
+}
+
+"""Error with message"""
+type InputError {
+  detail: String
+  name: String
+  type: String
 }
 
 """Login input"""
@@ -54,7 +67,7 @@ input LoginInput {
 
 """Login response"""
 type LoginResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: LoginResponseData
 }
 
@@ -131,7 +144,7 @@ type Mutation {
 """Paginated QR Code response"""
 type PaginatedQRCodeResponse {
   currentPage: Int
-  errors: [FieldError!]
+  error: ExtendedError
   hasMore: Boolean
   items: [QRCode]
   totalPages: Int
@@ -153,13 +166,13 @@ type QRCode {
 
 """QR Code response"""
 type QRCodeResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: QRCode
 }
 
 """QR Codes response"""
 type QRCodesResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [QRCode!]
 }
 
@@ -261,13 +274,13 @@ input SheetDoctorContactInput {
 
 """Sheet response"""
 type SheetResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: Sheet
 }
 
 """Sheets response"""
 type SheetsResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [Sheet!]
 }
 
@@ -349,12 +362,12 @@ type User {
 
 """User response"""
 type UserResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: User
 }
 
 """Users response"""
 type UsersResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [User!]
 }

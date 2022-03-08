@@ -19,12 +19,13 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import 'dotenv-safe/config';
 import express, { Application } from 'express';
-import { GraphQLSchema } from 'graphql';
+import { GraphQLError, GraphQLSchema } from 'graphql';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
+import { generateExtendedApolloError } from '@utils/apollo-error';
 
 class Server {
   public express: Application;
@@ -73,6 +74,9 @@ class Server {
     this.apollo = new ApolloServer({
       schema: this.schema,
       context: ({ req, res }) => ({ req, res } as Context),
+      formatError: (error: GraphQLError) => {
+        return generateExtendedApolloError(error);
+      },
     });
 
     await this.apollo.start();

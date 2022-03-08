@@ -18,7 +18,7 @@ class AuthResolver {
   @Query(() => String, { description: 'Return a simple welcoming message.' })
   async welcome(): Promise<string> {
     try {
-      return 'Welcome o SOS-Tag API (alpha version)';
+      return 'Welcome on SOS-Tag API (alpha version)';
     } catch (error) {
       throw error;
     }

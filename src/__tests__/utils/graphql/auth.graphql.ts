@@ -6,9 +6,17 @@ const CHANGE_PASSWORD = gql`
       response {
         email
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -18,9 +26,17 @@ const CONFIRMATION = gql`
   mutation ConfirmUser($token: String) {
     confirmUser(token: $token) {
       response
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -30,9 +46,17 @@ const FORGOT_PASSWORD = gql`
   mutation ForgotPassword($userEmail: String) {
     forgotPassword(userEmail: $userEmail) {
       response
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -47,9 +71,17 @@ const LOGIN = gql`
           email
         }
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -64,9 +96,17 @@ const REGISTER = gql`
         lname
         email
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -76,9 +116,17 @@ const RESEND_CONFIRMATION = gql`
   mutation ResendConfirmationLink($userEmail: String) {
     resendConfirmationLink(userEmail: $userEmail) {
       response
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
