@@ -1,16 +1,24 @@
+import { ErrorTypes, generateUnauthorizedError } from '@/utils/error';
 import Context from '@interfaces/context.interface';
 import 'dotenv-safe/config';
 import { MiddlewareFn } from 'type-graphql';
 
 const isAuthorized = ({ context }, role: string) => {
-  if (!context.payload.roles.includes(role)) {
-    throw new Error('Unauthorized');
-  }
+  return context.payload.roles.includes(role);
 };
 
 const isAuthorizedAsAdmin: MiddlewareFn<Context> = ({ context }, next) => {
-  isAuthorized({ context }, 'admin');
-  return next();
+  if (isAuthorized({ context }, 'admin')) {
+    return next();
+  } else {
+    return Promise.resolve({
+      error: generateUnauthorizedError(
+        ErrorTypes.unauthorized,
+        'You need to be authenticated and authorized to access the requested resource.',
+        'Bearer',
+      ),
+    });
+  }
 };
 
 export { isAuthorizedAsAdmin };

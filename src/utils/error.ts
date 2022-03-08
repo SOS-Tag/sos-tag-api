@@ -16,6 +16,7 @@ enum ErrorTypes {
   changePasswordValidation = 'CHANGE_PASSWORD_VALIDATION_ERROR',
   confirmationValidation = 'CONFIRMATION_VALIDATION_ERROR',
   emailAlreadyExists = 'EMAIL_ALREADY_EXISTS',
+  emptyArgs = 'EMPTY_ARGS',
   forgotPasswordValidation = 'FORGOT_PASSWORD_VALIDATION_ERROR',
   googleLoginValidation = 'GOOGLE_LOGIN_VALIDATION_ERROR',
   incorrectPasword = 'INCORRECT_PASSWORD',
@@ -23,7 +24,12 @@ enum ErrorTypes {
   passwordLinkExpired = 'PASSWORD_LINK_EXPIRED',
   registrationValidation = 'REGISTRATION_VALIDATION_ERROR',
   resendConfirmationValidation = 'RESEND_CONFIRMATION_VALIDATION_ERROR',
+  sheetNotFound = 'SHEET_NOT_FOUND',
+  sheetAlreadyAssigned = 'SHEET_ALREADY_ASSIGNED',
+  unauthenticated = 'UNAUTHENTICATED',
+  unauthorized = 'UNAUTHORIZED',
   unConfirmedAccount = 'UNCONFIRMED_ACCOUNT',
+  userNotFound = 'USER_NOT_FOUND',
 }
 
 type FieldErrorType = `${FieldErrorTypes}`;

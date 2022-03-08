@@ -8,8 +8,17 @@ const ASSIGN_SHEET_TO_USER = gql`
         enabled
         user
       }
-      errors {
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -22,9 +31,17 @@ const CREATE_SHEET = gql`
         _id
         enabled
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -60,9 +77,17 @@ const SHEET_BY_ID = gql`
           phone
         }
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -98,9 +123,17 @@ const SHEET_BY_SCANNING = gql`
           phone
         }
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -112,9 +145,17 @@ const SHEETS = gql`
       response {
         _id
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -126,9 +167,17 @@ const SHEETS_CURRENT_USER = gql`
       response {
         _id
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }
@@ -163,9 +212,17 @@ const UPDATE_SHEET = gql`
           phone
         }
       }
-      errors {
-        field
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }

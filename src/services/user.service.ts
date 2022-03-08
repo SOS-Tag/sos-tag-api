@@ -1,4 +1,6 @@
 import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
+import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
+import { emptyArgsExist } from '@/validators/utils/validate';
 import { IUser, IUserModel } from '@models/user.model';
 import { BooleanResponse } from '@responses/common.response';
 import { UserResponse, UsersResponse } from '@responses/user.response';
@@ -11,24 +13,12 @@ class UserService {
   constructor(@Inject('USER') private readonly users: IUserModel) {}
 
   async findUserById(userId: string): Promise<UserResponse> {
-    if (isEmpty(userId))
-      return {
-        errors: [
-          {
-            message: 'Empty userId parameter.',
-          },
-        ],
-      };
+    const emptyArgs = emptyArgsExist({ userId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The userId is missing.', generateFieldErrors(emptyArgs)) };
 
     const user: IUser = await this.users.findById(userId);
-    if (!user)
-      return {
-        errors: [
-          {
-            message: 'User not found.',
-          },
-        ],
-      };
+    if (!user) return { error: generateNotFoundError(ErrorTypes.userNotFound, 'This user does not exist.') };
 
     return { response: transformUser(user) };
   }
@@ -39,24 +29,12 @@ class UserService {
   }
 
   async revokeRefreshTokensByUserId(userId: string): Promise<BooleanResponse> {
-    if (isEmpty(userId))
-      return {
-        errors: [
-          {
-            message: 'Empty userId parameter.',
-          },
-        ],
-      };
+    const emptyArgs = emptyArgsExist({ userId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The userId is missing.', generateFieldErrors(emptyArgs)) };
 
     const updatedUser = await this.users.findByIdAndUpdate(userId, { $inc: { tokenVersion: 1 } });
-    if (!updatedUser)
-      return {
-        errors: [
-          {
-            message: 'User not found.',
-          },
-        ],
-      };
+    if (!updatedUser) return { error: generateNotFoundError(ErrorTypes.userNotFound, 'This user does not exist.') };
 
     return { response: true };
   }
@@ -72,14 +50,7 @@ class UserService {
       },
     );
 
-    if (!user)
-      return {
-        errors: [
-          {
-            message: 'User not found.',
-          },
-        ],
-      };
+    if (!user) return { error: generateNotFoundError(ErrorTypes.userNotFound, 'This user does not exist.') };
 
     return { response: transformUser(user) };
   }
@@ -95,14 +66,7 @@ class UserService {
       },
     );
 
-    if (!user)
-      return {
-        errors: [
-          {
-            message: 'User not found.',
-          },
-        ],
-      };
+    if (!user) return { error: generateNotFoundError(ErrorTypes.userNotFound, 'This user does not exist.') };
 
     return { response: transformUser(user) };
   }

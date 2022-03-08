@@ -16,8 +16,17 @@ const UPDATE_CURRENT_USER = gql`
         activated
         confirmed
       }
-      errors {
+      error {
+        type
+        code
+        title
         message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
       }
     }
   }

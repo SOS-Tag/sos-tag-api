@@ -6,6 +6,8 @@ import { transformSheet } from '@services/utils/transform';
 import { isEmpty, denest } from '@utils/object';
 import { Inject, Service } from 'typedi';
 import { customNanoId } from './qrcode.service';
+import { ErrorTypes, generateBadRequestError, generateConflictError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
+import { emptyArgsExist } from '@/validators/utils/validate';
 
 @Service()
 class SheetService {
@@ -29,23 +31,8 @@ class SheetService {
 
   async assignSheetToUser(sheetData: AssignSheetToUserInput, userId: string): Promise<SheetResponse> {
     const sheetFound = await this.sheets.findById(sheetData.id);
-    if (!sheetFound)
-      return {
-        errors: [
-          {
-            message: 'Sheet not found.',
-          },
-        ],
-      };
-
-    if (sheetFound.user)
-      return {
-        errors: [
-          {
-            message: 'Sheet with this id is already assigned to a user.',
-          },
-        ],
-      };
+    if (!sheetFound) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };
+    if (sheetFound.user) return { error: generateConflictError(ErrorTypes.sheetAlreadyAssigned, 'This sheet is already assigned to a user.') };
 
     const sheet = sheetFound;
     sheet.set({
@@ -57,57 +44,26 @@ class SheetService {
   }
 
   async findSheetById(sheetId: string): Promise<SheetResponse> {
-    if (isEmpty(sheetId))
-      return {
-        errors: [
-          {
-            message: 'Empty sheetId parameter.',
-          },
-        ],
-      };
+    const emptyArgs = emptyArgsExist({ sheetId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The sheetId is missing.', generateFieldErrors(emptyArgs)) };
 
     const sheet = await this.sheets.findById(sheetId);
-    if (!sheet)
-      return {
-        errors: [
-          {
-            message: 'Sheet not found.',
-          },
-        ],
-      };
+    if (!sheet) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };
 
     return { response: transformSheet(sheet) };
   }
 
   async sheetByScanning(sheetId: string): Promise<SheetResponse> {
-    if (isEmpty(sheetId))
-      return {
-        errors: [
-          {
-            message: 'Empty sheetId parameter.',
-          },
-        ],
-      };
+    const emptyArgs = emptyArgsExist({ sheetId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The sheetId is missing.', generateFieldErrors(emptyArgs)) };
 
     const sheet = await this.sheets.findOne({ _id: sheetId, enabled: true });
-    if (!sheet || !sheet.user)
-      return {
-        errors: [
-          {
-            message: 'Sheet not found.',
-          },
-        ],
-      };
+    if (!sheet || !sheet.user) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };
 
     const user = await this.users.findById(sheet.user);
-    if (!user || !user.activated)
-      return {
-        errors: [
-          {
-            message: 'Sheet not found.',
-          },
-        ],
-      };
+    if (!user || !user.activated) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };
 
     return { response: transformSheet(sheet) };
   }
@@ -134,14 +90,7 @@ class SheetService {
       },
     );
 
-    if (!sheet)
-      return {
-        errors: [
-          {
-            message: 'Sheet not found.',
-          },
-        ],
-      };
+    if (!sheet) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };
 
     return { response: transformSheet(sheet) };
   }

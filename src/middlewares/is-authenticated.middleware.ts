@@ -1,5 +1,5 @@
 import Context from '@interfaces/context.interface';
-import { generateUnauthorizedError } from '@utils/error';
+import { ErrorTypes, generateUnauthorizedError } from '@utils/error';
 import 'dotenv-safe/config';
 import { verify } from 'jsonwebtoken';
 import { MiddlewareFn } from 'type-graphql';
@@ -11,7 +11,7 @@ const isAuthenticated: MiddlewareFn<Context> = ({ context }, next) => {
 
   if (!authorization) {
     return Promise.resolve({
-      error: generateUnauthorizedError('You need to be authenticated to access the requested resource.', 'Bearer'),
+      error: generateUnauthorizedError(ErrorTypes.unauthenticated, 'You need to be authenticated to access the requested resource.', 'Bearer'),
     });
   }
 
@@ -21,7 +21,7 @@ const isAuthenticated: MiddlewareFn<Context> = ({ context }, next) => {
     context.payload = payload as any;
   } catch (err) {
     return Promise.resolve({
-      error: generateUnauthorizedError('You need to be authenticated to access the requested resource.', 'Bearer'),
+      error: generateUnauthorizedError(ErrorTypes.unauthenticated, 'You need to be authenticated to access the requested resource.', 'Bearer'),
     });
   }
 

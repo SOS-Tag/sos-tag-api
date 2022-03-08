@@ -5,7 +5,15 @@ import { isEmpty } from '@utils/object';
 import { capitalizeFirstLetter, containsOnlySpaces, nullableString } from '@utils/string';
 import { emailRegex, passwordRegex, phoneRegex } from '@validators/utils/regex';
 
-type PotentialyEmptyArgs = ChangePasswordInput | LoginInput | LoginWithGoogleInput | RegisterInput | { token: string } | { email: string };
+type PotentialyEmptyArgs =
+  | ChangePasswordInput
+  | LoginInput
+  | LoginWithGoogleInput
+  | RegisterInput
+  | { token: string }
+  | { email: string }
+  | { sheetId: string }
+  | { userId: string };
 type PotentialyInvalidArgs = Pick<ChangePasswordInput, 'password'> | LoginInput | Omit<RegisterInput, 'fname' | 'lname'>;
 
 const validators = {

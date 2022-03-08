@@ -1,3 +1,4 @@
+import { ErrorTypes } from '@/utils/error';
 import { faker } from '@faker-js/faker';
 import { IUser } from '@models/user.model';
 import { createConnection } from '@utils/mongoose';
@@ -88,9 +89,11 @@ describe('Scenario 1', () => {
         },
         adminAccessToken,
       );
+
       const data = response.data.createSheet.response;
-      const errors = response.data.createSheet.errors;
-      expect(errors).toBeNull();
+      const error = response.data.createSheet.error;
+
+      expect(error).toBeNull();
       expect(typeof data[0]._id).toBe('string');
       expect(typeof data[1]._id).toBe('string');
       sheetIds[0] = data[0]._id;
@@ -103,8 +106,10 @@ describe('Scenario 1', () => {
       test('successful with new user data returned', async () => {
         const response = await graphqlTestCall(REGISTER, { registerInput: { ...user, password } });
         const { _id: registeredUserId, ...registeredUserData } = response.data.register.response;
-        const errors = response.data.register.errors;
-        expect(errors).toBeNull();
+
+        const error = response.data.register.error;
+
+        expect(error).toBeNull();
         expect(registeredUserData).toEqual({
           fname: user.fname,
           lname: user.lname,
@@ -118,8 +123,10 @@ describe('Scenario 1', () => {
       test('successful with a valid token (containing a registered but unconfirmed user)', async () => {
         const response = await graphqlTestCall(CONFIRMATION, { token: confirmationToken });
         const success = response.data.confirmUser.response;
-        const errors = response.data.confirmUser.errors;
-        expect(errors).toBeNull();
+
+        const error = response.data.confirmUser.error;
+
+        expect(error).toBeNull();
         expect(success).toBeTruthy();
       });
     });
@@ -128,9 +135,11 @@ describe('Scenario 1', () => {
   describe('Sign in', () => {
     test('successful with accesstoken and logged in user information returned', async () => {
       const response = await graphqlTestCall(LOGIN, { loginInput: { email: user.email, password } });
+
       const data = response.data.login.response;
-      const errors = response.data.login.errors;
-      expect(errors).toBeNull();
+      const error = response.data.login.error;
+
+      expect(error).toBeNull();
       expect(data.accessToken).toBeDefined();
       expect(data.accessToken.length).toBeGreaterThan(0);
       expect(data.user.email).toEqual(user.email);
@@ -155,9 +164,11 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
+
       const data = response.data.updateCurrentUser.response;
-      const errors = response.data.updateCurrentUser.errors;
-      expect(errors).toBeNull();
+      const error = response.data.updateCurrentUser.error;
+
+      expect(error).toBeNull();
       expect(data).toEqual({
         activated: true,
         confirmed: true,
@@ -172,9 +183,11 @@ describe('Scenario 1', () => {
   describe("Retrieve current user's sheets #1", () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, {}, accessToken);
+
       const data = response.data.sheetsCurrentUser.response;
-      const errors = response.data.sheetsCurrentUser.errors;
-      expect(errors).toBeNull();
+      const error = response.data.sheetsCurrentUser.error;
+
+      expect(error).toBeNull();
       expect(data.length).toEqual(0);
     });
   });
@@ -190,9 +203,11 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
+
       const data = response.data.assignSheetToUser.response;
-      const errors = response.data.assignSheetToUser.errors;
-      expect(errors).toBeNull();
+      const error = response.data.assignSheetToUser.error;
+
+      expect(error).toBeNull();
       expect(data._id).toEqual(sheetIds[0]);
       expect(data.enabled).toEqual(true);
     });
@@ -212,9 +227,11 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
+
       const data = response.data.updateCurrentUserSheet.response;
-      const errors = response.data.updateCurrentUserSheet.errors;
-      expect(errors).toBeNull();
+      const error = response.data.updateCurrentUserSheet.error;
+
+      expect(error).toBeNull();
       expect(data).toEqual({
         ...sheetData,
       });
@@ -253,9 +270,11 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
+
       const data = response.data.updateCurrentUserSheet.response;
-      const errors = response.data.updateCurrentUserSheet.errors;
-      expect(errors).toBeNull();
+      const error = response.data.updateCurrentUserSheet.error;
+
+      expect(error).toBeNull();
       expect(data).toEqual({
         ...sheetData,
         ...changes,
@@ -270,9 +289,11 @@ describe('Scenario 1', () => {
   describe("Retrieve current user's sheets #2", () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, {}, accessToken);
+
       const data = response.data.sheetsCurrentUser.response;
-      const errors = response.data.sheetsCurrentUser.errors;
-      expect(errors).toBeNull();
+      const error = response.data.sheetsCurrentUser.error;
+
+      expect(error).toBeNull();
       expect(data.length).toEqual(1);
       expect(data[0]._id).toEqual(sheetIds[0]);
     });
@@ -283,9 +304,11 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[0],
       });
+
       const data = response.data.sheetByScanning.response;
-      const errors = response.data.sheetByScanning.errors;
-      expect(errors).toBeNull();
+      const error = response.data.sheetByScanning.error;
+
+      expect(error).toBeNull();
       expect(data._id).toEqual(sheetIds[0]);
     });
   });
@@ -295,10 +318,16 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[1],
       });
+
       const data = response.data.sheetByScanning.response;
-      const errors = response.data.sheetByScanning.errors;
+      const error = response.data.sheetByScanning.error;
+
       expect(data).toBeNull();
-      expect(errors[0].message).toEqual('Sheet not found.');
+      expect(error.type).toEqual(ErrorTypes.sheetNotFound);
+      expect(error.code).toEqual(404);
+      expect(error.title).toEqual('Not found');
+      expect(error.message).toEqual('This sheet does not exist.');
+      expect(error.fields).toBeNull();
     });
   });
 
@@ -313,9 +342,11 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
+
       const data = response.data.assignSheetToUser.response;
-      const errors = response.data.assignSheetToUser.errors;
-      expect(errors).toBeNull();
+      const error = response.data.assignSheetToUser.error;
+
+      expect(error).toBeNull();
       expect(data._id).toEqual(sheetIds[1]);
       expect(data.enabled).toEqual(true);
     });
@@ -324,9 +355,11 @@ describe('Scenario 1', () => {
   describe("Retrieve current user's sheets #3", () => {
     test('successful', async () => {
       const response = await graphqlTestCall(SHEETS_CURRENT_USER, {}, accessToken);
+
       const data = response.data.sheetsCurrentUser.response;
-      const errors = response.data.sheetsCurrentUser.errors;
-      expect(errors).toBeNull();
+      const error = response.data.sheetsCurrentUser.error;
+
+      expect(error).toBeNull();
       expect(data.length).toEqual(2);
       expect(data[0]._id).toEqual(sheetIds[0]);
       expect(data[1]._id).toEqual(sheetIds[1]);
@@ -338,9 +371,11 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[1],
       });
+
       const data = response.data.sheetByScanning.response;
-      const errors = response.data.sheetByScanning.errors;
-      expect(errors).toBeNull();
+      const error = response.data.sheetByScanning.error;
+
+      expect(error).toBeNull();
       expect(data._id).toEqual(sheetIds[1]);
     });
   });
@@ -358,9 +393,11 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
+
       const data = response.data.updateCurrentUserSheet.response;
-      const errors = response.data.updateCurrentUserSheet.errors;
-      expect(errors).toBeNull();
+      const error = response.data.updateCurrentUserSheet.error;
+
+      expect(error).toBeNull();
       expect(data.enabled).toEqual(false);
     });
   });
@@ -370,10 +407,16 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[0],
       });
+
       const data = response.data.sheetByScanning.response;
-      const errors = response.data.sheetByScanning.errors;
-      expect(errors[0].message).toEqual('Sheet not found.');
+      const error = response.data.sheetByScanning.error;
+
       expect(data).toBeNull();
+      expect(error.type).toEqual(ErrorTypes.sheetNotFound);
+      expect(error.code).toEqual(404);
+      expect(error.title).toEqual('Not found');
+      expect(error.message).toEqual('This sheet does not exist.');
+      expect(error.fields).toBeNull();
     });
   });
 
@@ -388,9 +431,11 @@ describe('Scenario 1', () => {
         },
         accessToken,
       );
+
       const data = response.data.updateCurrentUser.response;
-      const errors = response.data.updateCurrentUser.errors;
-      expect(errors).toBeNull();
+      const error = response.data.updateCurrentUser.error;
+
+      expect(error).toBeNull();
       expect(data.activated).toEqual(false);
     });
   });
@@ -400,10 +445,16 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(SHEET_BY_SCANNING, {
         sheetId: sheetIds[1],
       });
+
       const data = response.data.sheetByScanning.response;
-      const errors = response.data.sheetByScanning.errors;
-      expect(errors[0].message).toEqual('Sheet not found.');
+      const error = response.data.sheetByScanning.error;
+
       expect(data).toBeNull();
+      expect(error.type).toEqual(ErrorTypes.sheetNotFound);
+      expect(error.code).toEqual(404);
+      expect(error.title).toEqual('Not found');
+      expect(error.message).toEqual('This sheet does not exist.');
+      expect(error.fields).toBeNull();
     });
   });
 });
