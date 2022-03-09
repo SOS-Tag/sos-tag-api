@@ -20,6 +20,7 @@ const createAccessToken = (user: IUser) => {
   return sign(
     {
       userId: user.id,
+      roles: user.roles,
     },
     accessTokenSecret,
     {
@@ -75,13 +76,13 @@ const sendRefreshToken = (res: Response, token: string) => {
   });
 };
 
-const setConfirmationToken = async (userId: string, token = nanoid()) => {
-  await redis.set(confirmUserPrefix + token, userId, 'ex', oneDay);
+const setConfirmationToken = async (userId: string, token = nanoid(), expirationTime = oneDay) => {
+  await redis.set(confirmUserPrefix + token, userId, 'ex', expirationTime);
   return token;
 };
 
-const setForgotPasswordToken = async (userId: string, token = nanoid()) => {
-  await redis.set(forgotPasswordPrefix + token, userId, 'ex', oneDay);
+const setForgotPasswordToken = async (userId: string, token = nanoid(), expirationTime = oneDay) => {
+  await redis.set(forgotPasswordPrefix + token, userId, 'ex', expirationTime);
   return token;
 };
 

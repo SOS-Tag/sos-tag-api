@@ -1,6 +1,28 @@
 import { Field, InputType } from 'type-graphql';
 import { IsDate } from 'class-validator';
 
+@InputType({ description: 'Sheet doctor contact field to be changed with an update operation' })
+class SheetDoctorContactInput {
+  @Field()
+  fname: string;
+  @Field()
+  lname: string;
+  @Field()
+  phone: string;
+}
+
+@InputType({ description: 'Sheet emergency contact field to be changed with an update operation' })
+class SheetContactInput {
+  @Field()
+  fname: string;
+  @Field()
+  lname: string;
+  @Field()
+  role: string;
+  @Field()
+  phone: string;
+}
+
 @InputType({ description: 'Assign sheet to user input' })
 class AssignSheetToUserInput {
   @Field()
@@ -33,15 +55,13 @@ class AssignSheetToUserInput {
   @Field()
   currentTreatment: string;
   @Field()
-  treatingDoctor: string;
-  @Field()
-  emergencyContact1: string;
-  @Field()
-  emergencyContact2: string;
+  treatingDoctor: SheetDoctorContactInput;
+  @Field(() => [SheetContactInput])
+  emergencyContacts: SheetContactInput[];
 }
 
 @InputType({ description: 'Sheet fields to be changed with an update operation' })
-class UpdateSheetChangesInput {
+class UpdateCurrentUserSheetChangesInput {
   @Field()
   enabled: boolean;
   @Field()
@@ -70,19 +90,17 @@ class UpdateSheetChangesInput {
   @Field()
   currentTreatment: string;
   @Field()
-  treatingDoctor: string;
-  @Field()
-  emergencyContact1: string;
-  @Field()
-  emergencyContact2: string;
+  treatingDoctor: SheetDoctorContactInput;
+  @Field(() => [SheetContactInput])
+  emergencyContacts: SheetContactInput[];
 }
 
 @InputType({ description: 'Update Sheet input' })
-class UpdateSheetInput {
+class UpdateCurrentUserSheetInput {
   @Field()
   id: string;
   @Field()
-  changes: UpdateSheetChangesInput;
+  changes: UpdateCurrentUserSheetChangesInput;
 }
 
-export { AssignSheetToUserInput, UpdateSheetInput };
+export { AssignSheetToUserInput, UpdateCurrentUserSheetInput };

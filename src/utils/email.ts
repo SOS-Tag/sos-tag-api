@@ -98,9 +98,9 @@ const sendEmail = async ({ options, content }): Promise<void> => {
   });
 
   const mailOptions = {
-    from: `"SOS-Tag" <${process.env.GOOGLE_CLIENT_USER}>`,
+    from: options.from,
     to: options.to,
-    subject: `[SOS-Tag] ${options.subject}`,
+    subject: options.subject,
     html: renderedTemplate,
   };
 

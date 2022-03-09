@@ -9,6 +9,7 @@ import { BooleanResponse } from '@responses/common.response';
 import { UserResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
 import { createConfirmationUrl, createForgotPasswordUrl, emailAim, generateEmailContent, sendEmail } from '@utils/email';
+import { ErrorTypes, generateConflictError, generateForbidddenError, generateGoneError, generateNotFoundError } from '@utils/error';
 import { getGoogleUser } from '@utils/oauth';
 import { createAccessToken, createRefreshToken, sendRefreshToken } from '@utils/token';
 import {
@@ -35,22 +36,14 @@ class AuthService {
     const userId = await redis.get(forgotPasswordPrefix + token);
     if (!userId)
       return {
-        errors: [
-          {
-            message: 'Password modification link has expired. A new email needs to be sent to change this account password.',
-          },
-        ],
+        error: generateGoneError(
+          ErrorTypes.passwordLinkExpired,
+          'Password modification link has expired. A new email needs to be sent to change this account password.',
+        ),
       };
 
     const user: IUser = await this.users.findOne({ _id: userId });
-    if (!user)
-      return {
-        errors: [
-          {
-            message: 'This account does not exist.',
-          },
-        ],
-      };
+    if (!user) return { error: generateNotFoundError(ErrorTypes.accountNotFound, 'This account does not exist.') };
 
     await redis.del(forgotPasswordPrefix + token);
 
@@ -66,11 +59,10 @@ class AuthService {
     const userId = await redis.get(confirmUserPrefix + token);
     if (!userId)
       return {
-        errors: [
-          {
-            message: 'Account confirmation link has expired. A new email needs to be sent to confirm this account.',
-          },
-        ],
+        error: generateGoneError(
+          ErrorTypes.accountLinkExpired,
+          'Account confirmation link has expired. A new email needs to be sent to confirm this account.',
+        ),
       };
 
     await this.users.findOneAndUpdate({ _id: userId }, { confirmed: true });
@@ -85,14 +77,7 @@ class AuthService {
     if (errors) return errors;
 
     const user: IUser = await this.users.findOne({ email: userEmail });
-    if (!user)
-      return {
-        errors: [
-          {
-            message: 'This account does not exist.',
-          },
-        ],
-      };
+    if (!user) return { error: generateNotFoundError(ErrorTypes.accountNotFound, 'This account does not exist.') };
 
     if (!__test__)
       await sendEmail(
@@ -114,43 +99,21 @@ class AuthService {
     if (errors) return errors;
 
     const user = await this.users.findOne({ email });
-    if (!user)
-      return {
-        errors: [
-          {
-            message: 'This account does not exist.',
-          },
-        ],
-      };
+    if (!user) return { error: generateNotFoundError(ErrorTypes.accountNotFound, 'This account does not exist.') };
 
     if (!user.password)
       return {
-        errors: [
-          {
-            message:
-              "The account exists but was created using your Google account, this is why there is no password associated with it. Login by using 'Login with Google'.",
-          },
-        ],
+        error: generateForbidddenError(
+          ErrorTypes.badLoginMethod,
+          `The account exists (${user.email}) but was created using your Google account, this is why there is no password associated with it. Login by using 'Login with Google'.`,
+        ),
       };
 
     const valid = await compare(password, user.password);
-    if (!valid)
-      return {
-        errors: [
-          {
-            message: 'Password is incorrect.',
-          },
-        ],
-      };
+    if (!valid) return { error: generateForbidddenError(ErrorTypes.incorrectPasword, 'Password is incorrect.') };
 
     if (!user.confirmed)
-      return {
-        errors: [
-          {
-            message: `Account must be validated by clicking the link sent to ${email}.`,
-          },
-        ],
-      };
+      return { error: generateForbidddenError(ErrorTypes.unConfirmedAccount, `Account must be validated by clicking the link sent to ${email}.`) };
 
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user);
@@ -169,18 +132,16 @@ class AuthService {
     const errors = checkLoginWithGoogleValidity({ tokenId, token });
     if (errors) return errors;
 
-    // Get the Google user asking for connection using OAuth 2.0 client credentials (token id and access token previously
-    // retrieved.
+    // Get the Google user asking for connection using OAuth 2.0 client credentials (token id and access token previously retrieved.
     const googleUser: GoogleUser = await getGoogleUser({ tokenId, token });
 
     // We check if the Google user has already confirmed his Google account. If not, we will not handle his request.
     if (!googleUser.verified_email)
       return {
-        errors: [
-          {
-            message: `Your Google email (${googleUser.email}) has not be verified. Please verify it and try to log in again`,
-          },
-        ],
+        error: generateForbidddenError(
+          ErrorTypes.unConfirmedAccount,
+          `Your Google email (${googleUser.email}) has not be verified. Please verify it and try to log in again`,
+        ),
       };
 
     const user = await this.users.findOneAndUpdate(
@@ -221,18 +182,11 @@ class AuthService {
   }
 
   async register({ fname, lname, email, phone, password }: RegisterInput): Promise<UserResponse> {
-    const errors = checkRegisterValidity({ fname, lname, email, phone, password });
-    if (errors) return errors;
+    const error = checkRegisterValidity({ fname, lname, email, phone, password });
+    if (error) return error;
 
     const userFound = await this.users.findOne({ email });
-    if (userFound)
-      return {
-        errors: [
-          {
-            message: `An account associated to ${email} already exists.`,
-          },
-        ],
-      };
+    if (userFound) return { error: generateConflictError(ErrorTypes.emailAlreadyExists, `An account associated to ${email} already exists.`) };
 
     const hashedPassword = await hash(password, 12);
 
@@ -264,14 +218,7 @@ class AuthService {
     if (errors) return errors;
 
     const user: IUser = await this.users.findOne({ email: userEmail });
-    if (!user)
-      return {
-        errors: [
-          {
-            message: 'This account does not exist.',
-          },
-        ],
-      };
+    if (!user) return { error: generateNotFoundError(ErrorTypes.accountNotFound, 'This account does not exist.') };
 
     if (!__test__)
       await sendEmail(

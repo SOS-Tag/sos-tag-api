@@ -2,7 +2,7 @@ import { ClassType, Field, Int, ObjectType } from 'type-graphql';
 
 const SingleObjectResponse = <T>(TItemSchema: ClassType<T>): any => {
   @ObjectType({ description: 'Generic single object response', isAbstract: true })
-  abstract class GenericSingleObjectResponse extends Errors {
+  abstract class GenericSingleObjectResponse extends Error {
     @Field(() => TItemSchema, { nullable: true })
     response?: T;
   }
@@ -12,7 +12,7 @@ const SingleObjectResponse = <T>(TItemSchema: ClassType<T>): any => {
 
 const ObjectsResponse = <T>(TItemSchema: ClassType<T>): any => {
   @ObjectType({ description: 'Generic multiple objects response', isAbstract: true })
-  abstract class GenericObjectsResponse extends Errors {
+  abstract class GenericObjectsResponse extends Error {
     @Field(() => [TItemSchema], { nullable: true })
     response?: T[];
   }
@@ -22,7 +22,7 @@ const ObjectsResponse = <T>(TItemSchema: ClassType<T>): any => {
 
 const PaginatedResponse = <T>(TItemClass: ClassType<T>): any => {
   @ObjectType({ description: 'Generic paginated response', isAbstract: true })
-  abstract class GenericPaginatedResponse extends Errors {
+  abstract class GenericPaginatedResponse extends Error {
     @Field(() => [TItemClass])
     items: T[];
     @Field(() => Int)
@@ -37,24 +37,42 @@ const PaginatedResponse = <T>(TItemClass: ClassType<T>): any => {
 };
 
 @ObjectType({ description: 'Error with message' })
-class SimpleError {
+class InputError {
   @Field()
-  message: string;
+  type: string;
+  @Field()
+  name: string;
+  @Field()
+  detail: string;
 }
 
 @ObjectType({ description: 'Error with message and the associated field' })
-class FieldError extends SimpleError {
+class ExtendedError {
   @Field()
-  field: string;
+  type: string;
+  @Field()
+  code: number;
+  @Field()
+  title: string;
+  @Field()
+  message: string;
+  @Field()
+  timestamp: string;
+  @Field()
+  retryAfter: number;
+  @Field()
+  wwwAuthenticate: string;
+  @Field(() => [InputError])
+  fields?: InputError[];
 }
 
-@ObjectType({ description: 'Errors (simple or with field)' })
-class Errors {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: (SimpleError | FieldError)[];
+@ObjectType({ description: 'Errors (collection of one or multiple errors)' })
+class Error {
+  @Field(() => ExtendedError, { nullable: true })
+  error?: ExtendedError;
 }
 
 @ObjectType({ description: 'Boolean response' })
 class BooleanResponse extends SingleObjectResponse(Boolean) {}
 
-export { BooleanResponse, Errors, FieldError, ObjectsResponse, PaginatedResponse, SimpleError, SingleObjectResponse };
+export { BooleanResponse, Error, ObjectsResponse, PaginatedResponse, SingleObjectResponse };

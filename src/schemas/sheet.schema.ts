@@ -1,5 +1,27 @@
 import { Field, ObjectType } from 'type-graphql';
 
+@ObjectType({ description: 'Sheet Treating Doctor Contact Schema' })
+class SheetDoctorContact {
+  @Field()
+  fname: String;
+  @Field()
+  lname: String;
+  @Field()
+  phone: String;
+}
+
+@ObjectType({ description: 'Sheet Contact Schema' })
+class SheetContact {
+  @Field()
+  fname: String;
+  @Field()
+  lname: String;
+  @Field()
+  role: String;
+  @Field()
+  phone: String;
+}
+
 @ObjectType({ description: 'Sheet Schema' })
 class Sheet {
   @Field() // This is not an ObjectID
@@ -45,13 +67,10 @@ class Sheet {
   currentTreatment: String;
 
   @Field()
-  treatingDoctor: String;
+  treatingDoctor: SheetDoctorContact;
 
-  @Field()
-  emergencyContact1: String;
-
-  @Field()
-  emergencyContact2: String;
+  @Field(() => [SheetContact])
+  emergencyContacts: [SheetContact];
 
   @Field()
   user: String;

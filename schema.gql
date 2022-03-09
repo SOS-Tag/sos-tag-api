@@ -10,8 +10,7 @@ input AssignSheetToUserInput {
   bloodType: String
   currentTreatment: String
   dateOfBirth: DateTime
-  emergencyContact1: String
-  emergencyContact2: String
+  emergencyContacts: [SheetContactInput]
   enabled: Boolean
   fname: String
   id: String
@@ -21,12 +20,12 @@ input AssignSheetToUserInput {
   organDonor: Boolean
   sex: String
   smoker: Boolean
-  treatingDoctor: String
+  treatingDoctor: SheetDoctorContactInput
 }
 
 """Boolean response"""
 type BooleanResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: Boolean
 }
 
@@ -42,9 +41,22 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 """Error with message and the associated field"""
-type FieldError {
-  field: String
+type ExtendedError {
+  code: Float
+  fields: [InputError]
   message: String
+  retryAfter: Float
+  timestamp: String
+  title: String
+  type: String
+  wwwAuthenticate: String
+}
+
+"""Error with message"""
+type InputError {
+  detail: String
+  name: String
+  type: String
 }
 
 """Login input"""
@@ -55,7 +67,7 @@ input LoginInput {
 
 """Login response"""
 type LoginResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: LoginResponseData
 }
 
@@ -91,7 +103,7 @@ type Mutation {
   createQRCode: QRCodeResponse
 
   """Create an empty sheet."""
-  createSheet(sheetId: String): SheetResponse
+  createSheet(count: Float): SheetsResponse
 
   """
   Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.
@@ -119,14 +131,20 @@ type Mutation {
   """
   resendConfirmationLink(userEmail: String): BooleanResponse
 
-  """Update a sheet."""
-  updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse
+  """Update the currently logged in user."""
+  updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput): UserResponse
+
+  """Update one of the current user sheets."""
+  updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput): SheetResponse
+
+  """Update user."""
+  updateUser(updateUserInput: UpdateUserInput): UserResponse
 }
 
 """Paginated QR Code response"""
 type PaginatedQRCodeResponse {
   currentPage: Int
-  errors: [FieldError!]
+  error: ExtendedError
   hasMore: Boolean
   items: [QRCode]
   totalPages: Int
@@ -148,13 +166,13 @@ type QRCode {
 
 """QR Code response"""
 type QRCodeResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: QRCode
 }
 
 """QR Codes response"""
 type QRCodesResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [QRCode!]
 }
 
@@ -170,8 +188,11 @@ type Query {
   """
   qrCodesWithPagination(paginatorInput: PaginatorInput): PaginatedQRCodeResponse
 
-  """Get a sheet by its id."""
+  """Get a sheet by its id as an admin."""
   sheetById(sheetId: String): SheetResponse
+
+  """Get an active sheet by its id."""
+  sheetByScanning(sheetId: String): SheetResponse
 
   """Get all sheets."""
   sheets: SheetsResponse
@@ -207,8 +228,7 @@ type Sheet {
   createdAt: String
   currentTreatment: String
   dateOfBirth: String
-  emergencyContact1: String
-  emergencyContact2: String
+  emergencyContacts: [SheetContact]
   enabled: Boolean
   fname: String
   lname: String
@@ -217,32 +237,75 @@ type Sheet {
   organDonor: Boolean
   sex: String
   smoker: Boolean
-  treatingDoctor: String
+  treatingDoctor: SheetDoctorContact
   updatedAt: String
   user: String
 }
 
+"""Sheet Contact Schema"""
+type SheetContact {
+  fname: String
+  lname: String
+  phone: String
+  role: String
+}
+
+"""Sheet emergency contact field to be changed with an update operation"""
+input SheetContactInput {
+  fname: String
+  lname: String
+  phone: String
+  role: String
+}
+
+"""Sheet Treating Doctor Contact Schema"""
+type SheetDoctorContact {
+  fname: String
+  lname: String
+  phone: String
+}
+
+"""Sheet doctor contact field to be changed with an update operation"""
+input SheetDoctorContactInput {
+  fname: String
+  lname: String
+  phone: String
+}
+
 """Sheet response"""
 type SheetResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: Sheet
 }
 
 """Sheets response"""
 type SheetsResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [Sheet!]
 }
 
+"""Update currently logged in user input"""
+input UpdateCurrentUserInput {
+  activated: Boolean
+  address: String
+  city: String
+  email: String
+  fname: String
+  lname: String
+  nationality: String
+  password: String
+  phone: String
+  zipCode: String
+}
+
 """Sheet fields to be changed with an update operation"""
-input UpdateSheetChangesInput {
+input UpdateCurrentUserSheetChangesInput {
   advanceDirectives: Boolean
   allergies: String
   bloodType: String
   currentTreatment: String
   dateOfBirth: DateTime
-  emergencyContact1: String
-  emergencyContact2: String
+  emergencyContacts: [SheetContactInput]
   enabled: Boolean
   fname: String
   lname: String
@@ -251,13 +314,30 @@ input UpdateSheetChangesInput {
   organDonor: Boolean
   sex: String
   smoker: Boolean
-  treatingDoctor: String
+  treatingDoctor: SheetDoctorContactInput
 }
 
 """Update Sheet input"""
-input UpdateSheetInput {
-  changes: UpdateSheetChangesInput
+input UpdateCurrentUserSheetInput {
+  changes: UpdateCurrentUserSheetChangesInput
   id: String
+}
+
+"""Update user input"""
+input UpdateUserInput {
+  activated: Boolean
+  address: String
+  city: String
+  confirmed: Boolean
+  email: String
+  fname: String
+  lname: String
+  nationality: String
+  password: String
+  phone: String
+  roles: [String]
+  tokenVersion: Float
+  zipCode: String
 }
 
 """User Schema"""
@@ -274,6 +354,7 @@ type User {
   nationality: String
   password: String
   phone: String
+  roles: [String]
   tokenVersion: Int
   updatedAt: String
   zipCode: String
@@ -281,12 +362,12 @@ type User {
 
 """User response"""
 type UserResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: User
 }
 
 """Users response"""
 type UsersResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [User!]
 }

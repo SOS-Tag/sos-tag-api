@@ -2,6 +2,53 @@ import { QRCODE_LENGTH } from '@services/qrcode.service';
 import mongoose, { Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
 
+type IDoctorContact = {
+  fname: string;
+  lname: string;
+  phone: string;
+};
+
+const DoctorContactSchema = {
+  fname: {
+    type: String,
+    trim: true,
+  },
+  lname: {
+    type: String,
+    trim: true,
+  },
+  phone: {
+    type: String,
+    trim: true,
+  },
+};
+
+type IContact = {
+  fname: string;
+  lname: string;
+  role: string;
+  phone: string;
+};
+
+const ContactSchema = {
+  fname: {
+    type: String,
+    trim: true,
+  },
+  lname: {
+    type: String,
+    trim: true,
+  },
+  role: {
+    type: String,
+    trim: true,
+  },
+  phone: {
+    type: String,
+    trim: true,
+  },
+};
+
 export interface ISheet extends mongoose.Document {
   _id: string;
   enabled: boolean;
@@ -17,9 +64,8 @@ export interface ISheet extends mongoose.Document {
   allergies: string;
   medicalHistory: string;
   currentTreatment: string;
-  treatingDoctor: string;
-  emergencyContact1: string;
-  emergencyContact2: string;
+  treatingDoctor: IDoctorContact;
+  emergencyContacts: IContact[];
   user: string;
   createdAt: string;
   updatedAt: string;
@@ -39,8 +85,6 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
     },
     enabled: {
       type: Boolean,
-      required: true,
-      default: false,
     },
     fname: {
       type: String,
@@ -95,18 +139,8 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    treatingDoctor: {
-      type: String,
-      trim: true,
-    },
-    emergencyContact1: {
-      type: String,
-      trim: true,
-    },
-    emergencyContact2: {
-      type: String,
-      trim: true,
-    },
+    treatingDoctor: DoctorContactSchema,
+    emergencyContacts: [ContactSchema],
     user: {
       type: Schema.Types.ObjectId,
     },

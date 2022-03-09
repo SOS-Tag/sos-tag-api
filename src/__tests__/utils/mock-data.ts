@@ -4,8 +4,6 @@ import { nanoid } from 'nanoid';
 
 const phoneNumberPattern = '07########';
 
-const customId = customNanoId();
-
 const confirmationToken = nanoid();
 const forgotPasswordToken = nanoid();
 
@@ -19,9 +17,6 @@ const weakPassword = '1234';
 
 const phoneNumber = faker.phone.phoneNumber(phoneNumberPattern);
 const invalidPhoneNumber = '1234567890';
-
-const bloodType = 'O-';
-const newBloodType = 'A+';
 
 const nbOfQRCodes = faker.datatype.number({ min: 1, max: 20 });
 const paginatedQRCodesOptions = {
@@ -47,7 +42,41 @@ const initialUserData = {
 
 const newSheetData = {
   ...initialUserFullName,
-  bloodType,
+  sex: 'F',
+  dateOfBirth: '1980-11-20T00:00:00.000Z',
+  nationality: 'FR',
+  bloodType: 'A-',
+  smoker: false,
+  organDonor: false,
+  advanceDirectives: false,
+  allergies: 'Pollen',
+  medicalHistory: 'Anomalie cardiaque repérée',
+  currentTreatment: 'Radiothérapie',
+  treatingDoctor: {
+    fname: 'Antonio',
+    lname: 'Sanchez',
+    phone: '',
+  },
+  emergencyContacts: [
+    {
+      fname: 'Clément',
+      lname: 'Robert',
+      role: 'Compagnon',
+      phone: '0309792080',
+    },
+    {
+      fname: 'Thomas',
+      lname: 'Robert',
+      role: 'Frère',
+      phone: '0354215688',
+    },
+  ],
+};
+
+const sheetDataChanges = {
+  smoker: true,
+  allergies: 'Poil de chats',
+  treatingDoctor: { phone: '0269887410' },
 };
 
 const newUserData = {
@@ -60,14 +89,13 @@ const newUserData = {
 export {
   alreadyUsedEmail,
   confirmationToken,
-  customId,
   forgotPasswordToken,
   initialUserData,
   invalidPhoneNumber,
   nbOfQRCodes,
-  newBloodType,
   newPassword,
   newSheetData,
+  sheetDataChanges,
   newUserData,
   paginatedQRCodesOptions,
   password,
