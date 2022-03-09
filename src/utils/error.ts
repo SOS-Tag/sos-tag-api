@@ -9,14 +9,13 @@ enum FieldErrorTypes {
   invalid = 'INVALID',
 }
 
-enum ErrorTypes {
+enum AuthErrorTypes {
   accountLinkExpired = 'ACCOUNT_LINK_EXPIRED',
   accountNotFound = 'ACCOUNT_NOT_FOUND',
   badLoginMethod = 'BAD_LOGIN_METHOD',
   changePasswordValidation = 'CHANGE_PASSWORD_VALIDATION_ERROR',
   confirmationValidation = 'CONFIRMATION_VALIDATION_ERROR',
   emailAlreadyExists = 'EMAIL_ALREADY_EXISTS',
-  emptyArgs = 'EMPTY_ARGS',
   forgotPasswordValidation = 'FORGOT_PASSWORD_VALIDATION_ERROR',
   googleLoginValidation = 'GOOGLE_LOGIN_VALIDATION_ERROR',
   incorrectPasword = 'INCORRECT_PASSWORD',
@@ -24,13 +23,27 @@ enum ErrorTypes {
   passwordLinkExpired = 'PASSWORD_LINK_EXPIRED',
   registrationValidation = 'REGISTRATION_VALIDATION_ERROR',
   resendConfirmationValidation = 'RESEND_CONFIRMATION_VALIDATION_ERROR',
-  sheetNotFound = 'SHEET_NOT_FOUND',
-  sheetAlreadyAssigned = 'SHEET_ALREADY_ASSIGNED',
   unauthenticated = 'UNAUTHENTICATED',
   unauthorized = 'UNAUTHORIZED',
   unConfirmedAccount = 'UNCONFIRMED_ACCOUNT',
+}
+
+enum InputErrorTypes {
+  emptyArgs = 'EMPTY_ARGS',
+}
+
+enum SheetErrorTypes {
+  sheetNotFound = 'SHEET_NOT_FOUND',
+  sheetAlreadyAssigned = 'SHEET_ALREADY_ASSIGNED',
+}
+
+enum UserErrorTypes {
   userNotFound = 'USER_NOT_FOUND',
 }
+
+const ErrorTypes = { ...AuthErrorTypes, ...InputErrorTypes, ...SheetErrorTypes, ...UserErrorTypes };
+
+type ErrorTypes = typeof ErrorTypes;
 
 type FieldErrorType = `${FieldErrorTypes}`;
 

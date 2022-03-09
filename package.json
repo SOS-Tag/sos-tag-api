@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=development nodemon",
     "compile": "tsc",
     "test": "jest --forceExit --runInBand",
-    "test:watch": "yarn test --watch --maxWorkers=25% --runInBand",
+    "test:watch": "yarn test --watch --runInBand",
     "test:clearCache": "jest --clearCache",
     "build": "tsc && npx tsc-alias",
     "lint": "eslint --ignore-path .gitignore --ext .ts src/",
