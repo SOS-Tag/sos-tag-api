@@ -1,13 +1,17 @@
-import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from 'dtos/sheet.dto';
-import { ISheet, ISheetModel } from '@models/sheet.model';
-import { IUserModel } from '@models/user.model';
-import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
-import { transformSheet } from '@services/utils/transform';
-import { isEmpty, denest } from '@utils/object';
-import { Inject, Service } from 'typedi';
-import { customNanoId } from './qrcode.service';
 import { ErrorTypes, generateBadRequestError, generateConflictError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
 import { emptyArgsExist } from '@/validators/utils/validate';
+import { QueryOptions } from '@dtos/common.dto';
+import { ISheet, ISheetModel } from '@models/sheet.model';
+import { IUserModel } from '@models/user.model';
+import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
+import { transformSheet } from '@services/utils/transform';
+import { denest, isEmpty } from '@utils/object';
+import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from 'dtos/sheet.dto';
+import { customAlphabet } from 'nanoid';
+import { Inject, Service } from 'typedi';
+
+const QRCODE_LENGTH = 8;
+const customNanoId = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ1234578', QRCODE_LENGTH);
 
 @Service()
 class SheetService {
@@ -68,9 +72,27 @@ class SheetService {
     return { response: transformSheet(sheet) };
   }
 
-  async findSheets(): Promise<SheetsResponse> {
-    const sheets: ISheet[] = await this.sheets.find();
-    return { response: sheets.map(sheet => transformSheet(sheet)) };
+  async findSheets({ pagination }: QueryOptions): Promise<PaginatedSheetsResponse> {
+    const sheets: ISheet[] = await this.sheets
+      .find()
+      .limit(pagination?.limit * 1 || 0)
+      .skip((pagination?.page - 1) * pagination?.limit || 0)
+      .exec();
+
+    const totalItems = await this.sheets.countDocuments();
+    const totalPages = Math.ceil(totalItems / pagination?.limit) || 1;
+    const currentPage = pagination?.page || 1;
+    const hasMore = pagination?.page < totalPages || false;
+
+    return {
+      response: {
+        items: sheets.map(sheet => transformSheet(sheet)),
+        totalItems,
+        totalPages,
+        currentPage,
+        hasMore,
+      },
+    };
   }
 
   async findSheetsByUser(userId: string): Promise<SheetsResponse> {
@@ -96,4 +118,5 @@ class SheetService {
   }
 }
 
+export { customNanoId, QRCODE_LENGTH };
 export default SheetService;

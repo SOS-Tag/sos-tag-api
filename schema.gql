@@ -52,6 +52,13 @@ type ExtendedError {
   wwwAuthenticate: String
 }
 
+interface IPaginationDetails {
+  currentPage: Int
+  hasMore: Boolean
+  totalItems: Int
+  totalPages: Int
+}
+
 """Error with message"""
 type InputError {
   detail: String
@@ -97,11 +104,6 @@ type Mutation {
   """
   confirmUser(token: String): BooleanResponse
 
-  """
-  Create a QR Code with a custom id. By default, the QR Code is not used.
-  """
-  createQRCode: QRCodeResponse
-
   """Create an empty sheet."""
   createSheet(count: Float): SheetsResponse
 
@@ -141,55 +143,45 @@ type Mutation {
   updateUser(updateUserInput: UpdateUserInput): UserResponse
 }
 
-"""Paginated QR Code response"""
-type PaginatedQRCodeResponse {
+"""Sheet after paginaation was applied"""
+type PaginatedSheets implements IPaginationDetails {
   currentPage: Int
-  error: ExtendedError
   hasMore: Boolean
-  items: [QRCode]
+  items: [Sheet]
+  totalItems: Int
   totalPages: Int
 }
 
-"""Paginator input"""
-input PaginatorInput {
-  limit: Float
-  page: Float
-}
-
-"""QR Code Schema"""
-type QRCode {
-  _id: ID
-  createdAt: String
-  inUse: Boolean
-  updatedAt: String
-}
-
-"""QR Code response"""
-type QRCodeResponse {
+"""Paginated sheets response"""
+type PaginatedSheetsResponse {
   error: ExtendedError
-  response: QRCode
+  response: PaginatedSheets
 }
 
-"""QR Codes response"""
-type QRCodesResponse {
+"""User after paginaation was applied"""
+type PaginatedUsers implements IPaginationDetails {
+  currentPage: Int
+  hasMore: Boolean
+  items: [User]
+  totalItems: Int
+  totalPages: Int
+}
+
+"""Paginated users response"""
+type PaginatedUsersResponse {
   error: ExtendedError
-  response: [QRCode!]
+  response: PaginatedUsers
 }
 
 type Query {
   """Get all sheets."""
-  allSheets: SheetsResponse
+  allSheets(options: QueryOptions): PaginatedSheetsResponse
+
+  """Get all users."""
+  allUsers(options: QueryOptions): PaginatedUsersResponse
 
   """Get the user currently logged in."""
   currentUser: UserResponse
-
-  """Get all QR Codes."""
-  qrCodes: QRCodesResponse
-
-  """
-  Get QR Codes page by page (by fixing the page and the limit of QR Codes by page).
-  """
-  qrCodesWithPagination(paginatorInput: PaginatorInput): PaginatedQRCodeResponse
 
   """Get a sheet by its id as an admin."""
   sheetById(sheetId: String): SheetResponse
@@ -203,11 +195,19 @@ type Query {
   """Get a user by his id."""
   userById(userId: String): UserResponse
 
-  """Get all users."""
-  users: UsersResponse
-
   """Return a simple welcoming message."""
   welcome: String
+}
+
+"""Query options to apply on list"""
+input QueryOptions {
+  pagination: QueryPaginationOptions
+}
+
+"""Pagination options"""
+input QueryPaginationOptions {
+  limit: Float
+  page: Float
 }
 
 """Register input"""
@@ -364,10 +364,4 @@ type User {
 type UserResponse {
   error: ExtendedError
   response: User
-}
-
-"""Users response"""
-type UsersResponse {
-  error: ExtendedError
-  response: [User!]
 }

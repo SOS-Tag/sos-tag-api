@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { customNanoId } from '@services/qrcode.service';
 import { nanoid } from 'nanoid';
 
 const phoneNumberPattern = '07########';

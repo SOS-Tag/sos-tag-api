@@ -1,14 +1,5 @@
 import { dateToString } from '@utils/date';
 
-const transformQRCode = qrCode => {
-  return {
-    ...qrCode._doc,
-    _id: qrCode.id,
-    createdAt: dateToString(qrCode.createdAt),
-    updatedAt: dateToString(qrCode.updatedAt),
-  };
-};
-
 const transformSheet = sheet => {
   return {
     ...sheet._doc,
@@ -31,4 +22,4 @@ const transformUser = user => {
   };
 };
 
-export { transformQRCode, transformSheet, transformUser };
+export { transformSheet, transformUser };

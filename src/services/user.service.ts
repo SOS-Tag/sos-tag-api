@@ -3,10 +3,11 @@ import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFo
 import { emptyArgsExist } from '@/validators/utils/validate';
 import { IUser, IUserModel } from '@models/user.model';
 import { BooleanResponse } from '@responses/common.response';
-import { UserResponse, UsersResponse } from '@responses/user.response';
+import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
 import { denest, isEmpty } from '@utils/object';
 import { Inject, Service } from 'typedi';
+import { QueryOptions } from '../dtos/common.dto';
 
 @Service()
 class UserService {
@@ -23,9 +24,27 @@ class UserService {
     return { response: transformUser(user) };
   }
 
-  async findUsers(): Promise<UsersResponse> {
-    const users: IUser[] = await this.users.find();
-    return { response: users.map(user => transformUser(user)) };
+  async findUsers({ pagination }: QueryOptions): Promise<PaginatedUsersResponse> {
+    const users: IUser[] = await this.users
+      .find()
+      .limit(pagination?.limit * 1 || 0)
+      .skip((pagination?.page - 1) * pagination?.limit || 0)
+      .exec();
+
+    const totalItems = await this.users.countDocuments();
+    const totalPages = Math.ceil(totalItems / pagination?.limit) || 1;
+    const currentPage = pagination?.page || 1;
+    const hasMore = pagination?.page < totalPages || false;
+
+    return {
+      response: {
+        items: users.map(user => transformUser(user)),
+        totalItems,
+        totalPages,
+        currentPage,
+        hasMore,
+      },
+    };
   }
 
   async revokeRefreshTokensByUserId(userId: string): Promise<BooleanResponse> {

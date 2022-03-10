@@ -3,9 +3,9 @@ import { IUser } from '@models/user.model';
 import { ErrorTypes } from '@utils/error';
 import { createConnection } from '@utils/mongoose';
 import {
+  ALL_SHEETS,
   ASSIGN_SHEET_TO_USER,
   CREATE_SHEET,
-  SHEETS,
   SHEETS_CURRENT_USER,
   SHEET_BY_ID,
   SHEET_BY_SCANNING,
@@ -55,11 +55,12 @@ afterAll(async () => {
 describe('Medical sheets service', () => {
   describe('Retrieve all', () => {
     test('unsuccessful when user is not logged in', async () => {
-      const response = await graphqlTestCall(SHEETS);
+      const response = await graphqlTestCall(ALL_SHEETS);
 
-      const error = response.data.sheets.error;
+      const data = response.data.allSheets.response;
+      const error = response.data.allSheets.error;
 
-      expect(response.data.sheets.response).toBeNull();
+      expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthenticated);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -68,11 +69,12 @@ describe('Medical sheets service', () => {
     });
 
     test('unsuccessful when user is not authorized', async () => {
-      const response = await graphqlTestCall(SHEETS, undefined, accessToken);
+      const response = await graphqlTestCall(ALL_SHEETS, undefined, accessToken);
 
-      const error = response.data.sheets.error;
+      const data = response.data.allSheets.response;
+      const error = response.data.allSheets.error;
 
-      expect(response.data.sheets.response).toBeNull();
+      expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthorized);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -81,13 +83,13 @@ describe('Medical sheets service', () => {
     });
 
     test('successful when user is logged in', async () => {
-      const response = await graphqlTestCall(SHEETS, undefined, adminAccessToken);
+      const response = await graphqlTestCall(ALL_SHEETS, undefined, adminAccessToken);
 
-      const data = response.data.sheets.response;
-      const error = response.data.sheets.error;
+      const data = response.data.allSheets.response;
+      const error = response.data.allSheets.error;
 
       expect(error).toBeNull();
-      expect(data).toBeInstanceOf(Array);
+      expect(data.items).toBeInstanceOf(Array);
     });
   });
   describe('Retrieve from current user', () => {

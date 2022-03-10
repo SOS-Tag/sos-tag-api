@@ -1,8 +1,9 @@
 import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
-import Context from '@interfaces/context.interface';
 import isAuthenticated from '@/middlewares/is-authenticated.middleware';
 import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
-import { UserResponse, UsersResponse } from '@responses/user.response';
+import { QueryOptions } from '@dtos/common.dto';
+import Context from '@interfaces/context.interface';
+import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';
 import { getErrorMessage } from '@utils/error';
@@ -75,11 +76,11 @@ class UserResolver {
     }
   }
 
-  @Query(() => UsersResponse, { description: 'Get all users.' })
-  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async users(): Promise<UsersResponse> {
+  @Query(() => PaginatedUsersResponse, { description: 'Get all users.' })
+  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async allUsers(@Arg('options') options?: QueryOptions): Promise<PaginatedUsersResponse> {
     try {
-      const users = await this.userService.findUsers();
+      const users = await this.userService.findUsers(options || {});
       return users;
     } catch (error) {
       logger.error(`[resolver:User:users] ${getErrorMessage(error)}.`);

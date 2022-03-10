@@ -1,8 +1,9 @@
-import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
-import Context from '@interfaces/context.interface';
 import isAuthenticated from '@/middlewares/is-authenticated.middleware';
 import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
-import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
+import { QueryOptions } from '@dtos/common.dto';
+import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
+import Context from '@interfaces/context.interface';
+import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
 import { getErrorMessage } from '@utils/error';
@@ -92,11 +93,11 @@ class SheetResolver {
     }
   }
 
-  @Query(() => SheetsResponse, { description: 'Get all sheets.' })
+  @Query(() => PaginatedSheetsResponse, { description: 'Get all sheets.' })
   // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async allSheets(): Promise<SheetsResponse> {
+  async allSheets(@Arg('options') options?: QueryOptions): Promise<PaginatedSheetsResponse> {
     try {
-      const sheets = await this.sheetService.findSheets();
+      const sheets = await this.sheetService.findSheets(options || {});
       return sheets;
     } catch (error) {
       logger.error(`[resolver:Sheet:sheets] ${getErrorMessage(error)}.`);
