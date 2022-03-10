@@ -93,8 +93,8 @@ class SheetResolver {
   }
 
   @Query(() => SheetsResponse, { description: 'Get all sheets.' })
-  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async sheets(): Promise<SheetsResponse> {
+  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async allSheets(): Promise<SheetsResponse> {
     try {
       const sheets = await this.sheetService.findSheets();
       return sheets;

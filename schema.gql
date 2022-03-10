@@ -177,6 +177,9 @@ type QRCodesResponse {
 }
 
 type Query {
+  """Get all sheets."""
+  allSheets: SheetsResponse
+
   """Get the user currently logged in."""
   currentUser: UserResponse
 
@@ -193,9 +196,6 @@ type Query {
 
   """Get an active sheet by its id."""
   sheetByScanning(sheetId: String): SheetResponse
-
-  """Get all sheets."""
-  sheets: SheetsResponse
 
   """Get the sheets of the specified user."""
   sheetsCurrentUser: SheetsResponse
