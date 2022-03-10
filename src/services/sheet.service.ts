@@ -1,11 +1,12 @@
 import { ErrorTypes, generateBadRequestError, generateConflictError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
-import { emptyArgsExist } from '@/validators/utils/validate';
+import { emptyArgsExist } from '@validators/utils/validate';
 import { QueryOptions } from '@dtos/common.dto';
 import { ISheet, ISheetModel } from '@models/sheet.model';
 import { IUserModel } from '@models/user.model';
 import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { transformSheet } from '@services/utils/transform';
 import { denest, isEmpty } from '@utils/object';
+import { SortOrder } from '@utils/sort';
 import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from 'dtos/sheet.dto';
 import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
@@ -72,11 +73,12 @@ class SheetService {
     return { response: transformSheet(sheet) };
   }
 
-  async findSheets({ pagination }: QueryOptions): Promise<PaginatedSheetsResponse> {
+  async findSheets({ pagination, sort }: QueryOptions): Promise<PaginatedSheetsResponse> {
     const sheets: ISheet[] = await this.sheets
       .find()
       .limit(pagination?.limit * 1 || 0)
       .skip((pagination?.page - 1) * pagination?.limit || 0)
+      .sort(sort && { [sort.field]: sort.order === SortOrder.ascending ? 1 : -1 })
       .exec();
 
     const totalItems = await this.sheets.countDocuments();

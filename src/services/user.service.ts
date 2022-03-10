@@ -1,11 +1,12 @@
 import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
 import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
-import { emptyArgsExist } from '@/validators/utils/validate';
 import { IUser, IUserModel } from '@models/user.model';
 import { BooleanResponse } from '@responses/common.response';
 import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
 import { denest, isEmpty } from '@utils/object';
+import { SortOrder } from '@utils/sort';
+import { emptyArgsExist } from '@validators/utils/validate';
 import { Inject, Service } from 'typedi';
 import { QueryOptions } from '../dtos/common.dto';
 
@@ -24,11 +25,12 @@ class UserService {
     return { response: transformUser(user) };
   }
 
-  async findUsers({ pagination }: QueryOptions): Promise<PaginatedUsersResponse> {
+  async findUsers({ pagination, sort }: QueryOptions): Promise<PaginatedUsersResponse> {
     const users: IUser[] = await this.users
       .find()
       .limit(pagination?.limit * 1 || 0)
       .skip((pagination?.page - 1) * pagination?.limit || 0)
+      .sort(sort && { [sort.field]: sort.order === SortOrder.ascending ? 1 : -1 })
       .exec();
 
     const totalItems = await this.users.countDocuments();

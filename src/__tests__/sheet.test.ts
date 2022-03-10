@@ -20,7 +20,7 @@ let adminAccessToken: string | undefined = undefined;
 let accessToken: string | undefined = undefined;
 let registeredUser: (IUser & { _id: string }) | null = null;
 
-let sheetId;
+let sheetId: string;
 
 beforeAll(async () => {
   await createConnection();

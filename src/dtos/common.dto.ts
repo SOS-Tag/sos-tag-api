@@ -1,12 +1,13 @@
+import { Order } from '@utils/sort';
 import { Field, InputType } from 'type-graphql';
 
-// @InputType({ description: 'Paginator input' })
-// class PaginatorInput {
-//   @Field()
-//   page: number;
-//   @Field()
-//   limit: number;
-// }
+@InputType({ description: 'Sort options' })
+class QuerySortOptions {
+  @Field()
+  field?: string;
+  @Field(() => String)
+  order?: Order;
+}
 
 @InputType({ description: 'Pagination options' })
 class QueryPaginationOptions {
@@ -20,6 +21,8 @@ class QueryPaginationOptions {
 class QueryOptions {
   @Field(() => QueryPaginationOptions)
   pagination?: QueryPaginationOptions;
+  @Field(() => QuerySortOptions)
+  sort?: QuerySortOptions;
 }
 
 export { QueryOptions };

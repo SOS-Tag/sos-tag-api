@@ -202,12 +202,19 @@ type Query {
 """Query options to apply on list"""
 input QueryOptions {
   pagination: QueryPaginationOptions
+  sort: QuerySortOptions
 }
 
 """Pagination options"""
 input QueryPaginationOptions {
   limit: Float
   page: Float
+}
+
+"""Sort options"""
+input QuerySortOptions {
+  field: String
+  order: String
 }
 
 """Register input"""
