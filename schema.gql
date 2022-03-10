@@ -199,8 +199,15 @@ type Query {
   welcome: String
 }
 
+"""Filter options"""
+input QueryFilterOptions {
+  field: String
+  value: String
+}
+
 """Query options to apply on list"""
 input QueryOptions {
+  filter: QueryFilterOptions
   pagination: QueryPaginationOptions
   sort: QuerySortOptions
 }

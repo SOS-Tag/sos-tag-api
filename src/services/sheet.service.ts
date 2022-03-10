@@ -73,15 +73,23 @@ class SheetService {
     return { response: transformSheet(sheet) };
   }
 
-  async findSheets({ pagination, sort }: QueryOptions): Promise<PaginatedSheetsResponse> {
+  async findSheets({ filter, pagination, sort }: QueryOptions): Promise<PaginatedSheetsResponse> {
     const sheets: ISheet[] = await this.sheets
-      .find()
+      .find(filter && { [filter.field]: { $regex: filter.value } })
       .limit(pagination?.limit * 1 || 0)
       .skip((pagination?.page - 1) * pagination?.limit || 0)
       .sort(sort && { [sort.field]: sort.order === SortOrder.ascending ? 1 : -1 })
       .exec();
 
-    const totalItems = await this.sheets.countDocuments();
+    let totalItems = 0;
+
+    if (!isEmpty(filter)) {
+      const matchedSheets = await this.sheets.find({ [filter.field]: { $regex: filter.value } });
+      totalItems = matchedSheets.length;
+    } else {
+      totalItems = await this.sheets.countDocuments();
+    }
+
     const totalPages = Math.ceil(totalItems / pagination?.limit) || 1;
     const currentPage = pagination?.page || 1;
     const hasMore = pagination?.page < totalPages || false;

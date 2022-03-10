@@ -25,15 +25,23 @@ class UserService {
     return { response: transformUser(user) };
   }
 
-  async findUsers({ pagination, sort }: QueryOptions): Promise<PaginatedUsersResponse> {
+  async findUsers({ filter, pagination, sort }: QueryOptions): Promise<PaginatedUsersResponse> {
     const users: IUser[] = await this.users
-      .find()
+      .find(filter && { [filter.field]: filter.value })
       .limit(pagination?.limit * 1 || 0)
       .skip((pagination?.page - 1) * pagination?.limit || 0)
       .sort(sort && { [sort.field]: sort.order === SortOrder.ascending ? 1 : -1 })
       .exec();
 
-    const totalItems = await this.users.countDocuments();
+    let totalItems = 0;
+
+    if (!isEmpty(filter)) {
+      const matchedUsers = await this.users.find({ [filter.field]: { $regex: filter.value } });
+      totalItems = matchedUsers.length;
+    } else {
+      totalItems = await this.users.countDocuments();
+    }
+
     const totalPages = Math.ceil(totalItems / pagination?.limit) || 1;
     const currentPage = pagination?.page || 1;
     const hasMore = pagination?.page < totalPages || false;
