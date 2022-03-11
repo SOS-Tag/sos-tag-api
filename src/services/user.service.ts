@@ -1,9 +1,9 @@
-import { UpdateUserInput } from '@/dtos/user.dto';
-import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
+import { UpdateUserInput } from '@dtos/user.dto';
 import { IUser, IUserModel } from '@models/user.model';
 import { BooleanResponse } from '@responses/common.response';
 import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
+import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFoundError } from '@utils/error';
 import { denest, isEmpty } from '@utils/object';
 import { SortOrder } from '@utils/sort';
 import { emptyArgsExist } from '@validators/utils/validate';

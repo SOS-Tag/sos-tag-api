@@ -1,13 +1,13 @@
-import { ErrorTypes, generateBadRequestError, generateConflictError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
-import { emptyArgsExist } from '@validators/utils/validate';
 import { QueryOptions } from '@dtos/common.dto';
 import { ISheet, ISheetModel } from '@models/sheet.model';
 import { IUserModel } from '@models/user.model';
 import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { transformSheet } from '@services/utils/transform';
+import { ErrorTypes, generateBadRequestError, generateConflictError, generateFieldErrors, generateNotFoundError } from '@utils/error';
 import { denest, isEmpty } from '@utils/object';
 import { SortOrder } from '@utils/sort';
-import { AssignSheetToUserInput, UpdateSheetInput } from 'dtos/sheet.dto';
+import { emptyArgsExist } from '@validators/utils/validate';
+import { AssignSheetToUserInput, UpdateUserSheetInput } from 'dtos/sheet.dto';
 import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
 
@@ -110,7 +110,7 @@ class SheetService {
     return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
-  async updateCurrentUserSheet(updateSheetInput: UpdateSheetInput, userId: string): Promise<SheetResponse> {
+  async updateCurrentUserSheet(updateSheetInput: UpdateUserSheetInput, userId: string): Promise<SheetResponse> {
     const sheet = await this.sheets.findOneAndUpdate(
       {
         _id: updateSheetInput.id,
@@ -127,7 +127,7 @@ class SheetService {
     return { response: transformSheet(sheet) };
   }
 
-  async updateSheet(updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
+  async updateSheet(updateSheetInput: UpdateUserSheetInput): Promise<SheetResponse> {
     const sheet = await this.sheets.findOneAndUpdate(
       {
         _id: updateSheetInput.id,

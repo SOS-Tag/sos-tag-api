@@ -1,9 +1,9 @@
-import { ErrorTypes } from '@/utils/error';
 import { faker } from '@faker-js/faker';
 import { IUser } from '@models/user.model';
+import { ErrorTypes } from '@utils/error';
 import { createConnection } from '@utils/mongoose';
 import { setConfirmationToken } from '@utils/token';
-import { REGISTER, CONFIRMATION, LOGIN } from '@__tests__/utils/graphql/auth.graphql';
+import { CONFIRMATION, LOGIN, REGISTER } from '@__tests__/utils/graphql/auth.graphql';
 import { ASSIGN_SHEET_TO_USER, CREATE_SHEET, SHEETS_CURRENT_USER, SHEET_BY_SCANNING, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
 import { UPDATE_CURRENT_USER } from '@__tests__/utils/graphql/user.graphql';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
@@ -158,8 +158,8 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_CURRENT_USER,
         {
-          updateCurrentUserInput: {
-            ...changes,
+          updateInput: {
+            changes,
           },
         },
         accessToken,
@@ -218,7 +218,7 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateCurrentUserSheetInput: {
+          updateInput: {
             id: sheetIds[0],
             changes: {
               ...sheetData,
@@ -263,7 +263,7 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateCurrentUserSheetInput: {
+          updateInput: {
             id: sheetIds[0],
             changes,
           },
@@ -386,7 +386,7 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateCurrentUserSheetInput: {
+          updateInput: {
             id: sheetIds[0],
             changes,
           },
@@ -425,8 +425,10 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_CURRENT_USER,
         {
-          updateCurrentUserInput: {
-            activated: false,
+          updateInput: {
+            changes: {
+              activated: false,
+            },
           },
         },
         accessToken,

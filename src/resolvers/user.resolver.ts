@@ -1,7 +1,7 @@
-import { UpdateUserInput } from '@/dtos/user.dto';
-import isAuthenticated from '@/middlewares/is-authenticated.middleware';
 import { QueryOptions } from '@dtos/common.dto';
+import { UpdateUserInput } from '@dtos/user.dto';
 import Context from '@interfaces/context.interface';
+import isAuthenticated from '@middlewares/is-authenticated.middleware';
 import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';

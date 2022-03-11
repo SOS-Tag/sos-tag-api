@@ -1,8 +1,8 @@
-import isAuthenticated from '@/middlewares/is-authenticated.middleware';
-import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
 import { QueryOptions } from '@dtos/common.dto';
-import { AssignSheetToUserInput, UpdateSheetInput } from '@dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateUserSheetInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
+import isAuthenticated from '@middlewares/is-authenticated.middleware';
+import { isAuthorizedAsAdmin } from '@middlewares/is-authorized.middleware';
 import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
@@ -45,7 +45,7 @@ class SheetResolver {
 
   @Mutation(() => SheetResponse, { description: 'Update one of the current user sheets.' })
   @UseMiddleware(isAuthenticated)
-  async updateCurrentUserSheet(@Ctx() { payload }: Context, @Arg('updateInput') updateInput: UpdateSheetInput): Promise<SheetResponse> {
+  async updateCurrentUserSheet(@Ctx() { payload }: Context, @Arg('updateInput') updateInput: UpdateUserSheetInput): Promise<SheetResponse> {
     try {
       const updateCurrentUserSheetResponse = await this.sheetService.updateCurrentUserSheet(updateInput, payload.userId);
       return updateCurrentUserSheetResponse;
@@ -60,7 +60,7 @@ class SheetResolver {
       'Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.',
   })
   // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async updateSheet(@Arg('updateInput') updateInput: UpdateSheetInput): Promise<SheetResponse> {
+  async updateSheet(@Arg('updateInput') updateInput: UpdateUserSheetInput): Promise<SheetResponse> {
     try {
       const updateSheetResponse = await this.sheetService.updateSheet(updateInput);
       return updateSheetResponse;

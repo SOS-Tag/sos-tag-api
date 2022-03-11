@@ -137,12 +137,12 @@ type Mutation {
   updateCurrentUser(updateInput: UpdateUserInput): UserResponse
 
   """Update one of the current user sheets."""
-  updateCurrentUserSheet(updateInput: UpdateSheetInput): SheetResponse
+  updateCurrentUserSheet(updateInput: UpdateUserSheetInput): SheetResponse
 
   """
   Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.
   """
-  updateSheet(updateInput: UpdateSheetInput): SheetResponse
+  updateSheet(updateInput: UpdateUserSheetInput): SheetResponse
 
   """Update user."""
   updateUser(updateInput: UpdateUserInput): UserResponse
@@ -303,12 +303,6 @@ type SheetsResponse {
   response: [Sheet!]
 }
 
-"""Update Sheet input"""
-input UpdateSheetInput {
-  changes: UpdateUserSheetChangesInput
-  id: String
-}
-
 """User fields to be changed with an update operation"""
 input UpdateUserChangesInput {
   activated: Boolean
@@ -346,6 +340,12 @@ input UpdateUserSheetChangesInput {
   sex: String
   smoker: Boolean
   treatingDoctor: SheetDoctorContactInput
+}
+
+"""Update Sheet input"""
+input UpdateUserSheetInput {
+  changes: UpdateUserSheetChangesInput
+  id: String
 }
 
 """User Schema"""

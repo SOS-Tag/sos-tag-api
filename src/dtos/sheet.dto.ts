@@ -96,11 +96,11 @@ class UpdateUserSheetChangesInput {
 }
 
 @InputType({ description: 'Update Sheet input' })
-class UpdateSheetInput {
+class UpdateUserSheetInput {
   @Field()
   id: string;
   @Field()
   changes: UpdateUserSheetChangesInput;
 }
 
-export { AssignSheetToUserInput, UpdateSheetInput };
+export { AssignSheetToUserInput, UpdateUserSheetInput };

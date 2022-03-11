@@ -34,7 +34,9 @@ const ASSIGN_SHEET_TO_USER = gql`
       response {
         _id
         enabled
-        user
+        user {
+          _id
+        }
       }
       error {
         type
@@ -76,8 +78,8 @@ const CREATE_SHEET = gql`
 `;
 
 const SHEET_BY_ID = gql`
-  query SheetById($sheetId: String) {
-    sheetById(sheetId: $sheetId) {
+  query Sheet($id: String) {
+    Sheet(id: $id) {
       response {
         enabled
         _id
@@ -190,8 +192,8 @@ const SHEETS_CURRENT_USER = gql`
 `;
 
 const UPDATE_SHEET = gql`
-  mutation UpdateCurrentUserSheet($updateCurrentUserSheetInput: UpdateCurrentUserSheetInput) {
-    updateCurrentUserSheet(updateCurrentUserSheetInput: $updateCurrentUserSheetInput) {
+  mutation UpdateCurrentUserSheet($updateInput: UpdateUserSheetInput) {
+    updateCurrentUserSheet(updateInput: $updateInput) {
       response {
         enabled
         fname

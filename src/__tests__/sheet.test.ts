@@ -212,7 +212,9 @@ describe('Medical sheets service', () => {
       expect(data).toEqual({
         _id: sheetId,
         enabled: true,
-        user: registeredUser.id,
+        user: {
+          _id: registeredUser.id,
+        },
       });
     });
 
@@ -263,14 +265,14 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         SHEET_BY_ID,
         {
-          sheetId,
+          id: sheetId,
         },
         undefined,
       );
 
-      const error = response.data.sheetById.error;
+      const error = response.data.Sheet.error;
 
-      expect(response.data.sheetById.response).toBeNull();
+      expect(response.data.Sheet.response).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthenticated);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -287,9 +289,9 @@ describe('Medical sheets service', () => {
         accessToken,
       );
 
-      const error = response.data.sheetById.error;
+      const error = response.data.Sheet.error;
 
-      expect(response.data.sheetById.response).toBeNull();
+      expect(response.data.Sheet.response).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthorized);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -306,8 +308,8 @@ describe('Medical sheets service', () => {
         adminAccessToken,
       );
 
-      const data = response.data.sheetById.response;
-      const error = response.data.sheetById.error;
+      const data = response.data.Sheet.response;
+      const error = response.data.Sheet.error;
 
       expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.emptyArgs);
@@ -321,13 +323,13 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         SHEET_BY_ID,
         {
-          sheetId: 'AAAAAAAA',
+          id: 'AAAAAAAA',
         },
         adminAccessToken,
       );
 
-      const data = response.data.sheetById.response;
-      const error = response.data.sheetById.error;
+      const data = response.data.Sheet.response;
+      const error = response.data.Sheet.error;
 
       expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.sheetNotFound);
@@ -341,13 +343,13 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         SHEET_BY_ID,
         {
-          sheetId,
+          id: sheetId,
         },
         adminAccessToken,
       );
 
-      const data = response.data.sheetById.response;
-      const error = response.data.sheetById.error;
+      const data = response.data.Sheet.response;
+      const error = response.data.Sheet.error;
 
       expect(error).toBeNull();
       expect(data._id).toEqual(sheetId);
@@ -403,7 +405,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateCurrentUserSheetInput: {
+          updateInput: {
             id: sheetId,
             changes: {
               ...newSheetData,
@@ -427,7 +429,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateCurrentUserSheetInput: {
+          updateInput: {
             id: `UNKNOWN:${sheetId}`,
             changes: {
               ...newSheetData,
@@ -452,7 +454,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateCurrentUserSheetInput: {
+          updateInput: {
             id: sheetId,
             changes: {
               ...newSheetData,
@@ -477,7 +479,7 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         UPDATE_SHEET,
         {
-          updateCurrentUserSheetInput: {
+          updateInput: {
             id: sheetId,
             changes: {
               ...sheetDataChanges,
