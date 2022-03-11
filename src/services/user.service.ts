@@ -27,7 +27,7 @@ class UserService {
 
   async findUsers({ filter, pagination, sort }: QueryOptions): Promise<PaginatedUsersResponse> {
     const users: IUser[] = await this.users
-      .find(filter && { [filter.field]: filter.value })
+      .find(filter && { [filter.field]: { $regex: filter.value } })
       .limit(pagination?.limit * 1 || 0)
       .skip((pagination?.page - 1) * pagination?.limit || 0)
       .sort(sort && { [sort.field]: sort.order === SortOrder.ascending ? 1 : -1 })
