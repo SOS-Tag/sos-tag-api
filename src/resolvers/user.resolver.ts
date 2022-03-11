@@ -1,6 +1,5 @@
-import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
+import { UpdateUserInput } from '@/dtos/user.dto';
 import isAuthenticated from '@/middlewares/is-authenticated.middleware';
-import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
 import { QueryOptions } from '@dtos/common.dto';
 import Context from '@interfaces/context.interface';
 import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
@@ -39,12 +38,9 @@ class UserResolver {
 
   @Mutation(() => UserResponse, { description: 'Update the currently logged in user.' })
   @UseMiddleware(isAuthenticated)
-  async updateCurrentUser(
-    @Ctx() { payload }: Context,
-    @Arg('updateCurrentUserInput') updateCurrentUserInput: UpdateCurrentUserInput,
-  ): Promise<UserResponse> {
+  async updateCurrentUser(@Ctx() { payload }: Context, @Arg('updateInput') updateInput: UpdateUserInput): Promise<UserResponse> {
     try {
-      const updateCurrentUserResponse = await this.userService.updateCurrentUser(updateCurrentUserInput, payload.userId);
+      const updateCurrentUserResponse = await this.userService.updateCurrentUser(updateInput, payload.userId);
       return updateCurrentUserResponse;
     } catch (error) {
       logger.error(`[resolver:User:updateCurrentUser] ${getErrorMessage(error)}.`);
@@ -53,10 +49,10 @@ class UserResolver {
   }
 
   @Mutation(() => UserResponse, { description: 'Update user.' })
-  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async updateUser(@Ctx() { payload }: Context, @Arg('updateUserInput') updateUserInput: UpdateUserInput): Promise<UserResponse> {
+  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async updateUser(@Arg('updateInput') updateInput: UpdateUserInput): Promise<UserResponse> {
     try {
-      const updateUserResponse = await this.userService.updateUser(updateUserInput, payload.userId);
+      const updateUserResponse = await this.userService.updateUser(updateInput);
       return updateUserResponse;
     } catch (error) {
       logger.error(`[resolver:User:updateUser] ${getErrorMessage(error)}.`);

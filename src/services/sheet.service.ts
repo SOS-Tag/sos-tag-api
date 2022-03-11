@@ -7,7 +7,7 @@ import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@respons
 import { transformSheet } from '@services/utils/transform';
 import { denest, isEmpty } from '@utils/object';
 import { SortOrder } from '@utils/sort';
-import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from 'dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateSheetInput } from 'dtos/sheet.dto';
 import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
 
@@ -110,13 +110,29 @@ class SheetService {
     return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
-  async updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput, userId: string): Promise<SheetResponse> {
+  async updateCurrentUserSheet(updateSheetInput: UpdateSheetInput, userId: string): Promise<SheetResponse> {
     const sheet = await this.sheets.findOneAndUpdate(
       {
-        _id: updateCurrentUserSheetInput.id,
+        _id: updateSheetInput.id,
         user: userId,
       },
-      denest(updateCurrentUserSheetInput.changes),
+      denest(updateSheetInput.changes),
+      {
+        new: true,
+      },
+    );
+
+    if (!sheet) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };
+
+    return { response: transformSheet(sheet) };
+  }
+
+  async updateSheet(updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
+    const sheet = await this.sheets.findOneAndUpdate(
+      {
+        _id: updateSheetInput.id,
+      },
+      denest(updateSheetInput.changes),
       {
         new: true,
       },

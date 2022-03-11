@@ -1,7 +1,7 @@
 import isAuthenticated from '@/middlewares/is-authenticated.middleware';
 import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
 import { QueryOptions } from '@dtos/common.dto';
-import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateSheetInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
 import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
@@ -45,15 +45,27 @@ class SheetResolver {
 
   @Mutation(() => SheetResponse, { description: 'Update one of the current user sheets.' })
   @UseMiddleware(isAuthenticated)
-  async updateCurrentUserSheet(
-    @Ctx() { payload }: Context,
-    @Arg('updateCurrentUserSheetInput') updateCurrentUserSheetInput: UpdateCurrentUserSheetInput,
-  ): Promise<SheetResponse> {
+  async updateCurrentUserSheet(@Ctx() { payload }: Context, @Arg('updateInput') updateInput: UpdateSheetInput): Promise<SheetResponse> {
     try {
-      const updateCurrentUserSheetResponse = await this.sheetService.updateCurrentUserSheet(updateCurrentUserSheetInput, payload.userId);
+      const updateCurrentUserSheetResponse = await this.sheetService.updateCurrentUserSheet(updateInput, payload.userId);
       return updateCurrentUserSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:updateCurrentUserSheet] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => SheetResponse, {
+    description:
+      'Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.',
+  })
+  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async updateSheet(@Arg('updateInput') updateInput: UpdateSheetInput): Promise<SheetResponse> {
+    try {
+      const updateSheetResponse = await this.sheetService.updateSheet(updateInput);
+      return updateSheetResponse;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:updateSheet] ${getErrorMessage(error)}.`);
       throw error;
     }
   }

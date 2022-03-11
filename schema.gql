@@ -134,13 +134,18 @@ type Mutation {
   resendConfirmationLink(userEmail: String): BooleanResponse
 
   """Update the currently logged in user."""
-  updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput): UserResponse
+  updateCurrentUser(updateInput: UpdateUserInput): UserResponse
 
   """Update one of the current user sheets."""
-  updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput): SheetResponse
+  updateCurrentUserSheet(updateInput: UpdateSheetInput): SheetResponse
+
+  """
+  Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.
+  """
+  updateSheet(updateInput: UpdateSheetInput): SheetResponse
 
   """Update user."""
-  updateUser(updateUserInput: UpdateUserInput): UserResponse
+  updateUser(updateInput: UpdateUserInput): UserResponse
 }
 
 """Sheet after paginaation was applied"""
@@ -298,8 +303,14 @@ type SheetsResponse {
   response: [Sheet!]
 }
 
-"""Update currently logged in user input"""
-input UpdateCurrentUserInput {
+"""Update Sheet input"""
+input UpdateSheetInput {
+  changes: UpdateUserSheetChangesInput
+  id: String
+}
+
+"""User fields to be changed with an update operation"""
+input UpdateUserChangesInput {
   activated: Boolean
   address: String
   city: String
@@ -312,8 +323,14 @@ input UpdateCurrentUserInput {
   zipCode: String
 }
 
+"""Update user input"""
+input UpdateUserInput {
+  changes: UpdateUserChangesInput
+  id: String
+}
+
 """Sheet fields to be changed with an update operation"""
-input UpdateCurrentUserSheetChangesInput {
+input UpdateUserSheetChangesInput {
   advanceDirectives: Boolean
   allergies: String
   bloodType: String
@@ -329,29 +346,6 @@ input UpdateCurrentUserSheetChangesInput {
   sex: String
   smoker: Boolean
   treatingDoctor: SheetDoctorContactInput
-}
-
-"""Update Sheet input"""
-input UpdateCurrentUserSheetInput {
-  changes: UpdateCurrentUserSheetChangesInput
-  id: String
-}
-
-"""Update user input"""
-input UpdateUserInput {
-  activated: Boolean
-  address: String
-  city: String
-  confirmed: Boolean
-  email: String
-  fname: String
-  lname: String
-  nationality: String
-  password: String
-  phone: String
-  roles: [String]
-  tokenVersion: Float
-  zipCode: String
 }
 
 """User Schema"""

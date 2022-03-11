@@ -1,4 +1,4 @@
-import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
+import { UpdateUserInput } from '@/dtos/user.dto';
 import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
 import { IUser, IUserModel } from '@models/user.model';
 import { BooleanResponse } from '@responses/common.response';
@@ -68,12 +68,12 @@ class UserService {
     return { response: true };
   }
 
-  async updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput, userId: string): Promise<UserResponse> {
+  async updateCurrentUser(updateCurrentUserInput: UpdateUserInput, userId: string): Promise<UserResponse> {
     const user = await this.users.findOneAndUpdate(
       {
         _id: userId,
       },
-      denest(updateCurrentUserInput),
+      denest(updateCurrentUserInput.changes),
       {
         new: true,
       },
@@ -84,12 +84,12 @@ class UserService {
     return { response: transformUser(user) };
   }
 
-  async updateUser(updateUserInput: UpdateUserInput, userId: string): Promise<UserResponse> {
+  async updateUser(updateUserInput: UpdateUserInput): Promise<UserResponse> {
     const user = await this.users.findOneAndUpdate(
       {
-        _id: userId,
+        _id: updateUserInput.id,
       },
-      denest(updateUserInput),
+      denest(updateUserInput.changes),
       {
         new: true,
       },
