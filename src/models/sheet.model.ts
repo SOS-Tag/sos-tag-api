@@ -1,3 +1,4 @@
+import userModel from '@models/user.model';
 import { QRCODE_LENGTH } from '@services/sheet.service';
 import mongoose, { Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
@@ -143,6 +144,8 @@ const sheetModel: mongoose.Schema = new mongoose.Schema(
     emergencyContacts: [ContactSchema],
     user: {
       type: Schema.Types.ObjectId,
+      ref: userModel,
+      autopopulate: true,
     },
   },
   { timestamps: true },

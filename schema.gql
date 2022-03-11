@@ -258,7 +258,7 @@ type Sheet {
   smoker: Boolean
   treatingDoctor: SheetDoctorContact
   updatedAt: String
-  user: String
+  user: User
 }
 
 """Sheet Contact Schema"""
