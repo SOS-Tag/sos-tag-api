@@ -59,10 +59,10 @@ class SheetResolver {
   }
 
   @Query(() => SheetResponse, { description: 'Get a sheet by its id as an admin.' })
-  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async sheetById(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
+  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async Sheet(@Arg('id') id: string): Promise<SheetResponse> {
     try {
-      const sheet = await this.sheetService.findSheetById(sheetId);
+      const sheet = await this.sheetService.findSheetById(id);
       return sheet;
     } catch (error) {
       logger.error(`[resolver:Sheet:sheetById] ${getErrorMessage(error)}.`);

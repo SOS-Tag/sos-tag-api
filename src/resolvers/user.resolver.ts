@@ -29,7 +29,7 @@ class UserResolver {
     try {
       const token = authorization.split(' ')[1];
       const payload: any = verify(token, accessTokenSecret);
-      const currentUser = await this.userById(payload.userId);
+      const currentUser = await this.User(payload.userId);
       return currentUser;
     } catch (error) {
       logger.error(`[resolver:User:currentUser] ${getErrorMessage(error)}.`);
@@ -65,10 +65,10 @@ class UserResolver {
   }
 
   @Query(() => UserResponse, { description: 'Get a user by his id.' })
-  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async userById(@Arg('userId') userId: string): Promise<UserResponse> {
+  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async User(@Arg('id') id: string): Promise<UserResponse> {
     try {
-      const user = await this.userService.findUserById(userId);
+      const user = await this.userService.findUserById(id);
       return user;
     } catch (error) {
       logger.error(`[resolver:User:userByID] ${getErrorMessage(error)}.`);

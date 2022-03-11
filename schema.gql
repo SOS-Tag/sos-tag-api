@@ -174,6 +174,12 @@ type PaginatedUsersResponse {
 }
 
 type Query {
+  """Get a sheet by its id as an admin."""
+  Sheet(id: String): SheetResponse
+
+  """Get a user by his id."""
+  User(id: String): UserResponse
+
   """Get all sheets."""
   allSheets(options: QueryOptions): PaginatedSheetsResponse
 
@@ -183,17 +189,11 @@ type Query {
   """Get the user currently logged in."""
   currentUser: UserResponse
 
-  """Get a sheet by its id as an admin."""
-  sheetById(sheetId: String): SheetResponse
-
   """Get an active sheet by its id."""
   sheetByScanning(sheetId: String): SheetResponse
 
   """Get the sheets of the specified user."""
   sheetsCurrentUser: SheetsResponse
-
-  """Get a user by his id."""
-  userById(userId: String): UserResponse
 
   """Return a simple welcoming message."""
   welcome: String
