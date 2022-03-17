@@ -2,7 +2,7 @@ import { QueryOptions } from '@dtos/common.dto';
 import { AssignSheetToUserInput, UpdateUserSheetInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
 import isAuthenticated from '@middlewares/is-authenticated.middleware';
-import { isAuthorizedAsAdmin } from '@middlewares/is-authorized.middleware';
+// import { isAuthorizedAsAdmin } from '@middlewares/is-authorized.middleware';
 import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
@@ -17,7 +17,7 @@ class SheetResolver {
   constructor(private readonly sheetService: SheetService) {}
 
   @Mutation(() => SheetsResponse, { description: 'Create an empty sheet.' })
-  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async createSheet(@Arg('count') count: number): Promise<SheetsResponse> {
     try {
       const createSheetResponse = await this.sheetService.createSheet(count);

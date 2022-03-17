@@ -1,4 +1,4 @@
-import userModel from '@models/user.model';
+import userModel, { IUser } from '@models/user.model';
 import { QRCODE_LENGTH } from '@services/sheet.service';
 import mongoose, { Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
@@ -67,7 +67,7 @@ export interface ISheet extends mongoose.Document {
   currentTreatment: string;
   treatingDoctor: IDoctorContact;
   emergencyContacts: IContact[];
-  user: string;
+  user: IUser;
   createdAt: string;
   updatedAt: string;
 }
