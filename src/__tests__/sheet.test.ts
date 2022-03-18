@@ -497,6 +497,7 @@ describe('Medical sheets service', () => {
           ...newSheetData.treatingDoctor,
           ...sheetDataChanges.treatingDoctor,
         },
+        emergencyContacts: sheetDataChanges.emergencyContacts,
       });
     });
   });
