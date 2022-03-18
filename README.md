@@ -1,7 +1,7 @@
 # SOS-Tag API
 
 ## Getting started
-First, you will need to clone the repository on your local machine:
+First, you will need to clone the repository on your local machine :
 
 ```sh
 $ git clone https://github.com/SOS-Tag/sos-tag-api.git
@@ -88,7 +88,7 @@ To run eslint checks ([ESLint](https://eslint.org/) is a tool we use for our cod
 yarn lint
 ```
 
-To proceed to eslint fixes, run:
+To proceed to eslint fixes, run :
 
 ```sh
 yarn lint:fix
