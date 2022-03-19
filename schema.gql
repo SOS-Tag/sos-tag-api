@@ -105,6 +105,9 @@ type Mutation {
   """Create an empty sheet."""
   createSheet(count: Float): SheetsResponse
 
+  """Delete one of the current user sheets."""
+  deleteCurrentUserSheet(sheetId: String): SheetResponse
+
   """
   Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.
   """
