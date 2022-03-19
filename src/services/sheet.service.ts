@@ -43,6 +43,18 @@ class SheetService {
     return { response: transformSheet(await sheet.save()) };
   }
 
+  async deleteCurrentUserSheet(sheetId: string, userId: string): Promise<SheetResponse> {
+    const emptyArgs = emptyArgsExist({ sheetId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The sheetId is missing.', generateFieldErrors(emptyArgs)) };
+
+    await this.sheets.deleteOne({
+      _id: sheetId,
+      user: userId,
+    });
+    return { response: { _id: sheetId } };
+  }
+
   async findSheetById(sheetId: string): Promise<SheetResponse> {
     const emptyArgs = emptyArgsExist({ sheetId });
     if (!isEmpty(emptyArgs))
