@@ -2,6 +2,7 @@ import { QueryOptions } from '@dtos/common.dto';
 import { UpdateUserInput } from '@dtos/user.dto';
 import Context from '@interfaces/context.interface';
 import isAuthenticated from '@middlewares/is-authenticated.middleware';
+import isAuthorizedAsAdmin from '@middlewares/is-authorized.middleware';
 import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';
@@ -49,7 +50,7 @@ class UserResolver {
   }
 
   @Mutation(() => UserResponse, { description: 'Update user.' })
-  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async updateUser(@Arg('updateInput') updateInput: UpdateUserInput): Promise<UserResponse> {
     try {
       const updateUserResponse = await this.userService.updateUser(updateInput);
@@ -61,7 +62,7 @@ class UserResolver {
   }
 
   @Query(() => UserResponse, { description: 'Get a user by his id.' })
-  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async User(@Arg('id') id: string): Promise<UserResponse> {
     try {
       const user = await this.userService.findUserById(id);
@@ -73,7 +74,7 @@ class UserResolver {
   }
 
   @Query(() => PaginatedUsersResponse, { description: 'Get all users.' })
-  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async allUsers(@Arg('options') options?: QueryOptions): Promise<PaginatedUsersResponse> {
     try {
       const users = await this.userService.findUsers(options || {});

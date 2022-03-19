@@ -21,4 +21,4 @@ const isAuthorizedAsAdmin: MiddlewareFn<Context> = ({ context }, next) => {
   }
 };
 
-export { isAuthorizedAsAdmin };
+export default isAuthorizedAsAdmin;

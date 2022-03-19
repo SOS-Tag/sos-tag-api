@@ -2,7 +2,7 @@ import { QueryOptions } from '@dtos/common.dto';
 import { AssignSheetToUserInput, UpdateUserSheetInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
 import isAuthenticated from '@middlewares/is-authenticated.middleware';
-// import { isAuthorizedAsAdmin } from '@middlewares/is-authorized.middleware';
+import isAuthorizedAsAdmin from '@middlewares/is-authorized.middleware';
 import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
@@ -17,7 +17,7 @@ class SheetResolver {
   constructor(private readonly sheetService: SheetService) {}
 
   @Mutation(() => SheetsResponse, { description: 'Create an empty sheet.' })
-  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async createSheet(@Arg('count') count: number): Promise<SheetsResponse> {
     try {
       const createSheetResponse = await this.sheetService.createSheet(count);
@@ -59,7 +59,7 @@ class SheetResolver {
     description:
       'Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.',
   })
-  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async updateSheet(@Arg('updateInput') updateInput: UpdateUserSheetInput): Promise<SheetResponse> {
     try {
       const updateSheetResponse = await this.sheetService.updateSheet(updateInput);
@@ -71,7 +71,7 @@ class SheetResolver {
   }
 
   @Query(() => SheetResponse, { description: 'Get a sheet by its id as an admin.' })
-  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async Sheet(@Arg('id') id: string): Promise<SheetResponse> {
     try {
       const sheet = await this.sheetService.findSheetById(id);
@@ -106,7 +106,7 @@ class SheetResolver {
   }
 
   @Query(() => PaginatedSheetsResponse, { description: 'Get all sheets.' })
-  // @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async allSheets(@Arg('options') options?: QueryOptions): Promise<PaginatedSheetsResponse> {
     try {
       const sheets = await this.sheetService.findSheets(options || {});
