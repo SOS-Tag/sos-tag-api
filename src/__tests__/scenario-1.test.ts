@@ -3,8 +3,15 @@ import { IUser } from '@models/user.model';
 import { ErrorTypes } from '@utils/error';
 import { createConnection } from '@utils/mongoose';
 import { setConfirmationToken } from '@utils/token';
-import { CONFIRMATION, LOGIN, REGISTER } from '@__tests__/utils/graphql/auth.graphql';
-import { ASSIGN_SHEET_TO_USER, CREATE_SHEET, SHEETS_CURRENT_USER, SHEET_BY_SCANNING, UPDATE_SHEET } from '@__tests__/utils/graphql/sheet.graphql';
+import { REGISTER, CONFIRMATION, LOGIN } from '@__tests__/utils/graphql/auth.graphql';
+import {
+  ASSIGN_SHEET_TO_USER,
+  CREATE_SHEET,
+  DELETE_SHEET,
+  SHEETS_CURRENT_USER,
+  SHEET_BY_SCANNING,
+  UPDATE_SHEET,
+} from '@__tests__/utils/graphql/sheet.graphql';
 import { UPDATE_CURRENT_USER } from '@__tests__/utils/graphql/user.graphql';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
 import { nanoid } from 'nanoid';
@@ -247,12 +254,6 @@ describe('Scenario 1', () => {
         },
         emergencyContacts: [
           {
-            fname: 'Clément',
-            lname: 'Robert',
-            role: 'Compagnon',
-            phone: '0621458874',
-          },
-          {
             fname: 'Thomas',
             lname: 'Robert',
             role: 'Beau Frère',
@@ -282,6 +283,7 @@ describe('Scenario 1', () => {
           ...sheetData.treatingDoctor,
           ...changes.treatingDoctor,
         },
+        emergencyContacts: changes.emergencyContacts,
       });
     });
   });
@@ -417,6 +419,24 @@ describe('Scenario 1', () => {
       expect(error.title).toEqual('Not found');
       expect(error.message).toEqual('This sheet does not exist.');
       expect(error.fields).toBeNull();
+    });
+  });
+
+  describe('Delete 1st sheet', () => {
+    test('unsuccessful', async () => {
+      const response = await graphqlTestCall(
+        DELETE_SHEET,
+        {
+          sheetId: sheetIds[0],
+        },
+        accessToken,
+      );
+
+      const data = response.data.deleteCurrentUserSheet.response;
+      const error = response.data.deleteCurrentUserSheet.error;
+
+      expect(error).toBeNull();
+      expect(data._id).toEqual(sheetIds[0]);
     });
   });
 

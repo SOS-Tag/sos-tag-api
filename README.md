@@ -1,7 +1,7 @@
 # SOS-Tag API
 
 ## Getting started
-First, you will need to clone the repository on your local machine:
+First, you will need to clone the repository on your local machine :
 
 ```sh
 $ git clone https://github.com/SOS-Tag/sos-tag-api.git

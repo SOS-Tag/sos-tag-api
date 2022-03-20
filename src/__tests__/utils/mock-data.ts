@@ -76,6 +76,14 @@ const sheetDataChanges = {
   smoker: true,
   allergies: 'Poil de chats',
   treatingDoctor: { phone: '0269887410' },
+  emergencyContacts: [
+    {
+      fname: 'Gilles',
+      lname: 'Escacel',
+      role: 'Ami',
+      phone: '0652114523',
+    },
+  ],
 };
 
 const newUserData = {

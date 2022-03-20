@@ -6,6 +6,8 @@ import {
   ALL_SHEETS,
   ASSIGN_SHEET_TO_USER,
   CREATE_SHEET,
+  DELETE_SHEET,
+  SHEETS,
   SHEETS_CURRENT_USER,
   SHEET_BY_ID,
   SHEET_BY_SCANNING,
@@ -501,7 +503,43 @@ describe('Medical sheets service', () => {
           ...newSheetData.treatingDoctor,
           ...sheetDataChanges.treatingDoctor,
         },
+        emergencyContacts: sheetDataChanges.emergencyContacts,
       });
+    });
+  });
+  describe('Delete', () => {
+    test('unsuccessfull with a user not logged in', async () => {
+      const response = await graphqlTestCall(
+        DELETE_SHEET,
+        {
+          sheetId,
+        },
+        undefined,
+      );
+
+      const error = response.data.deleteCurrentUserSheet.error;
+
+      expect(response.data.deleteCurrentUserSheet.response).toBeNull();
+      expect(error.type).toEqual(ErrorTypes.unauthenticated);
+      expect(error.code).toEqual(401);
+      expect(error.title).toEqual('Unauthorized');
+      expect(error.message).toEqual('You need to be authenticated to access the requested resource.');
+      expect(error.fields).toBeNull();
+    });
+    test('successful', async () => {
+      const response = await graphqlTestCall(
+        DELETE_SHEET,
+        {
+          sheetId,
+        },
+        accessToken,
+      );
+
+      const data = response.data.deleteCurrentUserSheet.response;
+      const error = response.data.deleteCurrentUserSheet.error;
+
+      expect(error).toBeNull();
+      expect(data._id).toEqual(sheetId);
     });
   });
 });

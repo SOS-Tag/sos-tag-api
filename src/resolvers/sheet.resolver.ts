@@ -43,6 +43,18 @@ class SheetResolver {
     }
   }
 
+  @Mutation(() => SheetResponse, { description: 'Delete one of the current user sheets.' })
+  @UseMiddleware(isAuthenticated)
+  async deleteCurrentUserSheet(@Ctx() { payload }: Context, @Arg('sheetId') sheetId: string): Promise<SheetResponse> {
+    try {
+      const sheet = await this.sheetService.deleteCurrentUserSheet(sheetId, payload.userId);
+      return sheet;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:deleteCurrentUserSheet] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
   @Mutation(() => SheetResponse, { description: 'Update one of the current user sheets.' })
   @UseMiddleware(isAuthenticated)
   async updateCurrentUserSheet(@Ctx() { payload }: Context, @Arg('updateInput') updateInput: UpdateUserSheetInput): Promise<SheetResponse> {

@@ -53,6 +53,8 @@ const denest = (obj: object, currentPath = '') =>
         const res = {};
         res[prop] = val;
         return res;
+      } else if (Array.isArray(val)) {
+        return { [key]: val };
       } else {
         return denest(val, `${currentPath}${key}.`);
       }

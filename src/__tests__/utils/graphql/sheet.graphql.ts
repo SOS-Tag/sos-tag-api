@@ -77,6 +77,28 @@ const CREATE_SHEET = gql`
   }
 `;
 
+const DELETE_SHEET = gql`
+  mutation DeleteCurrentUserSheet($sheetId: String) {
+    deleteCurrentUserSheet(sheetId: $sheetId) {
+      response {
+        _id
+      }
+      error {
+        type
+        code
+        title
+        message
+        timestamp
+        fields {
+          type
+          name
+          detail
+        }
+      }
+    }
+  }
+`;
+
 const SHEET_BY_ID = gql`
   query Sheet($id: String) {
     Sheet(id: $id) {
@@ -236,4 +258,4 @@ const UPDATE_SHEET = gql`
   }
 `;
 
-export { ALL_SHEETS, ASSIGN_SHEET_TO_USER, CREATE_SHEET, SHEET_BY_ID, SHEET_BY_SCANNING, SHEETS_CURRENT_USER, UPDATE_SHEET };
+export { ASSIGN_SHEET_TO_USER, CREATE_SHEET, DELETE_SHEET, SHEET_BY_ID, SHEET_BY_SCANNING, SHEETS, SHEETS_CURRENT_USER, UPDATE_SHEET };
