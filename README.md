@@ -28,7 +28,7 @@ If you do not have it installed on your computer, you can install it by running 
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Then, to install Redis, simply run:
+Then, to install Redis, simply run :
 
 ```sh
 brew update

@@ -70,6 +70,7 @@ class Server {
     }
 
     try {
+      logger.info('TRYING TO CONNECT TO DB')
       await connect(dbConnection.url, dbConnection.options as ConnectOptions);
     } catch (error) {
       logger.error(`[mongoose:connect] ${error.message}.`);
