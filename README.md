@@ -35,7 +35,7 @@ brew update
 brew install redis
 ```
 
-To start redis (and have it restart at login), run:
+To start redis (and have it restart at login), run :
 
 ```sh
 brew services start redis
