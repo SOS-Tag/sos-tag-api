@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "engines": {
+    "node": "17.7.2"
+  },
   "scripts": {
     "start": "yarn build && cross-env NODE_ENV=production node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/app.js",
     "dev": "cross-env NODE_ENV=development nodemon",
