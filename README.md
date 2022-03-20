@@ -22,7 +22,7 @@ You can check if the instance is correctly running in at least two ways:
 
 Mac users can install Redis using [Homebrew](https://brew.sh/index_fr).
 
-If you do not have it installed on your computer, you can install it by running:
+If you do not have it installed on your computer, you can install it by running :
 
 ```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
