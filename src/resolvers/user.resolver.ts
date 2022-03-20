@@ -54,9 +54,9 @@ class UserResolver {
 
   @Mutation(() => UserResponse, { description: 'Update user.' })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async updateUser(@Arg('updateUserInput') updateUserInput: UpdateUserInput): Promise<UserResponse> {
+  async updateUser(@Arg('updateInput') updateInput: UpdateUserInput): Promise<UserResponse> {
     try {
-      const updateUserResponse = await this.userService.updateUser(updateUserInput);
+      const updateUserResponse = await this.userService.updateUser(updateInput);
       return updateUserResponse;
     } catch (error) {
       logger.error(`[resolver:User:updateUser] ${getErrorMessage(error)}.`);

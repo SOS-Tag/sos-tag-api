@@ -145,10 +145,10 @@ type Mutation {
   """
   Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.
   """
-  updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse
+  updateSheet(updateInput: UpdateSheetInput): SheetResponse
 
   """Update user."""
-  updateUser(updateUserInput: UpdateUserInput): UserResponse
+  updateUser(updateInput: UpdateUserInput): UserResponse
 }
 
 """Sheet after paginaation was applied"""

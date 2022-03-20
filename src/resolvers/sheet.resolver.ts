@@ -75,9 +75,9 @@ class SheetResolver {
       'Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.',
   })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async updateSheet(@Arg('updateSheetInput') updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
+  async updateSheet(@Arg('updateInput') updateInput: UpdateSheetInput): Promise<SheetResponse> {
     try {
-      const updateSheetResponse = await this.sheetService.updateSheet(updateSheetInput);
+      const updateSheetResponse = await this.sheetService.updateSheet(updateInput);
       return updateSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:updateSheet] ${getErrorMessage(error)}.`);
