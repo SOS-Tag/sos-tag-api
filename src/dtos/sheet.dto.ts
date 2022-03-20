@@ -60,8 +60,8 @@ class AssignSheetToUserInput {
   emergencyContacts: SheetContactInput[];
 }
 
-@InputType({ description: 'Sheet fields to be changed with an update operation' })
-class UpdateUserSheetChangesInput {
+@InputType({ description: 'Sheet fields to be changed with an update operation by the user' })
+class UpdateCurrentUserSheetChangesInput {
   @Field()
   enabled: boolean;
   @Field()
@@ -95,12 +95,57 @@ class UpdateUserSheetChangesInput {
   emergencyContacts: SheetContactInput[];
 }
 
-@InputType({ description: 'Update Sheet input' })
-class UpdateUserSheetInput {
+@InputType({ description: 'Update Sheet as user input' })
+class UpdateCurrentUserSheetInput {
   @Field()
   id: string;
   @Field()
-  changes: UpdateUserSheetChangesInput;
+  changes: UpdateCurrentUserSheetChangesInput;
 }
 
-export { AssignSheetToUserInput, UpdateUserSheetInput };
+@InputType({ description: 'Sheet fields to be changed with an update operation by the admin' })
+class UpdateSheetChangesInput {
+  @Field()
+  enabled: boolean;
+  @Field()
+  fname: string;
+  @Field()
+  lname: string;
+  @Field()
+  sex: string;
+  @Field()
+  @IsDate()
+  dateOfBirth: Date;
+  @Field()
+  nationality: string;
+  @Field()
+  bloodType: string;
+  @Field()
+  smoker: boolean;
+  @Field()
+  organDonor: boolean;
+  @Field()
+  advanceDirectives: boolean;
+  @Field()
+  allergies: string;
+  @Field()
+  medicalHistory: string;
+  @Field()
+  currentTreatment: string;
+  @Field()
+  treatingDoctor: SheetDoctorContactInput;
+  @Field(() => [SheetContactInput])
+  emergencyContacts: SheetContactInput[];
+  @Field()
+  user: string;
+}
+
+@InputType({ description: 'Update Sheet as admin input' })
+class UpdateSheetInput {
+  @Field()
+  id: string;
+  @Field()
+  changes: UpdateSheetChangesInput;
+}
+
+export { AssignSheetToUserInput, UpdateCurrentUserSheetInput, UpdateSheetInput };

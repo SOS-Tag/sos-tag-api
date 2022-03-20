@@ -10,7 +10,7 @@ import {
   DELETE_SHEET,
   SHEETS_CURRENT_USER,
   SHEET_BY_SCANNING,
-  UPDATE_SHEET,
+  UPDATE_CURRENT_USER_SHEET,
 } from '@__tests__/utils/graphql/sheet.graphql';
 import { UPDATE_CURRENT_USER } from '@__tests__/utils/graphql/user.graphql';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
@@ -165,8 +165,8 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_CURRENT_USER,
         {
-          updateInput: {
-            changes,
+          updateCurrentUserInput: {
+            ...changes,
           },
         },
         accessToken,
@@ -223,9 +223,9 @@ describe('Scenario 1', () => {
   describe('Update 1st sheet data #1', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
-          updateInput: {
+          updateCurrentUserSheetInput: {
             id: sheetIds[0],
             changes: {
               ...sheetData,
@@ -262,9 +262,9 @@ describe('Scenario 1', () => {
         ],
       };
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
-          updateInput: {
+          updateCurrentUserSheetInput: {
             id: sheetIds[0],
             changes,
           },
@@ -386,9 +386,9 @@ describe('Scenario 1', () => {
     test('successful', async () => {
       const changes = { enabled: false };
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
-          updateInput: {
+          updateCurrentUserSheetInput: {
             id: sheetIds[0],
             changes,
           },
@@ -445,10 +445,8 @@ describe('Scenario 1', () => {
       const response = await graphqlTestCall(
         UPDATE_CURRENT_USER,
         {
-          updateInput: {
-            changes: {
-              activated: false,
-            },
+          updateCurrentUserInput: {
+            activated: false,
           },
         },
         accessToken,

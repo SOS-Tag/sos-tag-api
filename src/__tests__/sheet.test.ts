@@ -7,11 +7,10 @@ import {
   ASSIGN_SHEET_TO_USER,
   CREATE_SHEET,
   DELETE_SHEET,
-  SHEETS,
   SHEETS_CURRENT_USER,
   SHEET_BY_ID,
   SHEET_BY_SCANNING,
-  UPDATE_SHEET,
+  UPDATE_CURRENT_USER_SHEET,
 } from '@__tests__/utils/graphql/sheet.graphql';
 import { initialUserData, newSheetData, sheetDataChanges, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
@@ -405,9 +404,9 @@ describe('Medical sheets service', () => {
   describe('Update #1', () => {
     test('unsuccessfull with a user not logged in', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
-          updateInput: {
+          updateCurrentUserSheetInput: {
             id: sheetId,
             changes: {
               ...newSheetData,
@@ -429,9 +428,9 @@ describe('Medical sheets service', () => {
 
     test('unsuccessfull with an unassigned ID or an ID referencing a sheet that does not belong to the current user', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
-          updateInput: {
+          updateCurrentUserSheetInput: {
             id: `UNKNOWN:${sheetId}`,
             changes: {
               ...newSheetData,
@@ -454,9 +453,9 @@ describe('Medical sheets service', () => {
 
     test('successful with a user logged in, and a valid medical sheet id that belongs to this user', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
-          updateInput: {
+          updateCurrentUserSheetInput: {
             id: sheetId,
             changes: {
               ...newSheetData,
@@ -479,9 +478,9 @@ describe('Medical sheets service', () => {
   describe('Update #2', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
-          updateInput: {
+          updateCurrentUserSheetInput: {
             id: sheetId,
             changes: {
               ...sheetDataChanges,

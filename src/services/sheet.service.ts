@@ -7,7 +7,7 @@ import { ErrorTypes, generateBadRequestError, generateConflictError, generateFie
 import { denest, isEmpty } from '@utils/object';
 import { SortOrder } from '@utils/sort';
 import { emptyArgsExist } from '@validators/utils/validate';
-import { AssignSheetToUserInput, UpdateUserSheetInput } from 'dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateCurrentUserSheetInput, UpdateSheetInput } from 'dtos/sheet.dto';
 import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
 
@@ -122,7 +122,7 @@ class SheetService {
     return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
-  async updateCurrentUserSheet(updateSheetInput: UpdateUserSheetInput, userId: string): Promise<SheetResponse> {
+  async updateCurrentUserSheet(updateSheetInput: UpdateCurrentUserSheetInput, userId: string): Promise<SheetResponse> {
     const sheet = await this.sheets.findOneAndUpdate(
       {
         _id: updateSheetInput.id,
@@ -139,7 +139,7 @@ class SheetService {
     return { response: transformSheet(sheet) };
   }
 
-  async updateSheet(updateSheetInput: UpdateUserSheetInput): Promise<SheetResponse> {
+  async updateSheet(updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
     const sheet = await this.sheets.findOneAndUpdate(
       {
         _id: updateSheetInput.id,

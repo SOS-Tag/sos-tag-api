@@ -213,9 +213,9 @@ const SHEETS_CURRENT_USER = gql`
   }
 `;
 
-const UPDATE_SHEET = gql`
-  mutation UpdateCurrentUserSheet($updateInput: UpdateUserSheetInput) {
-    updateCurrentUserSheet(updateInput: $updateInput) {
+const UPDATE_CURRENT_USER_SHEET = gql`
+  mutation UpdateCurrentUserSheet($updateCurrentUserSheetInput: UpdateCurrentUserSheetInput) {
+    updateCurrentUserSheet(updateCurrentUserSheetInput: $updateCurrentUserSheetInput) {
       response {
         enabled
         fname
@@ -258,4 +258,13 @@ const UPDATE_SHEET = gql`
   }
 `;
 
-export { ASSIGN_SHEET_TO_USER, CREATE_SHEET, DELETE_SHEET, SHEET_BY_ID, SHEET_BY_SCANNING, SHEETS, SHEETS_CURRENT_USER, UPDATE_SHEET };
+export {
+  ALL_SHEETS,
+  ASSIGN_SHEET_TO_USER,
+  CREATE_SHEET,
+  DELETE_SHEET,
+  SHEET_BY_ID,
+  SHEET_BY_SCANNING,
+  SHEETS_CURRENT_USER,
+  UPDATE_CURRENT_USER_SHEET,
+};

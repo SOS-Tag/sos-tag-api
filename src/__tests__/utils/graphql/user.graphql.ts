@@ -1,8 +1,8 @@
 import { gql } from 'apollo-server-express';
 
 const UPDATE_CURRENT_USER = gql`
-  mutation UpdateCurrentUser($updateInput: UpdateUserInput) {
-    updateCurrentUser(updateInput: $updateInput) {
+  mutation UpdateCurrentUser($updateCurrentUserInput: UpdateCurrentUserInput) {
+    updateCurrentUser(updateCurrentUserInput: $updateCurrentUserInput) {
       response {
         fname
         lname

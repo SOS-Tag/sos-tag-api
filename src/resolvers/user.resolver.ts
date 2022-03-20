@@ -1,5 +1,5 @@
 import { QueryOptions } from '@dtos/common.dto';
-import { UpdateUserInput } from '@dtos/user.dto';
+import { UpdateUserInput, UpdateCurrentUserInput } from '@dtos/user.dto';
 import Context from '@interfaces/context.interface';
 import isAuthenticated from '@middlewares/is-authenticated.middleware';
 import isAuthorizedAsAdmin from '@middlewares/is-authorized.middleware';
@@ -39,9 +39,12 @@ class UserResolver {
 
   @Mutation(() => UserResponse, { description: 'Update the currently logged in user.' })
   @UseMiddleware(isAuthenticated)
-  async updateCurrentUser(@Ctx() { payload }: Context, @Arg('updateInput') updateInput: UpdateUserInput): Promise<UserResponse> {
+  async updateCurrentUser(
+    @Ctx() { payload }: Context,
+    @Arg('updateCurrentUserInput') updateCurrentUserInput: UpdateCurrentUserInput,
+  ): Promise<UserResponse> {
     try {
-      const updateCurrentUserResponse = await this.userService.updateCurrentUser(updateInput, payload.userId);
+      const updateCurrentUserResponse = await this.userService.updateCurrentUser(updateCurrentUserInput, payload.userId);
       return updateCurrentUserResponse;
     } catch (error) {
       logger.error(`[resolver:User:updateCurrentUser] ${getErrorMessage(error)}.`);
@@ -51,9 +54,9 @@ class UserResolver {
 
   @Mutation(() => UserResponse, { description: 'Update user.' })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async updateUser(@Arg('updateInput') updateInput: UpdateUserInput): Promise<UserResponse> {
+  async updateUser(@Arg('updateUserInput') updateUserInput: UpdateUserInput): Promise<UserResponse> {
     try {
-      const updateUserResponse = await this.userService.updateUser(updateInput);
+      const updateUserResponse = await this.userService.updateUser(updateUserInput);
       return updateUserResponse;
     } catch (error) {
       logger.error(`[resolver:User:updateUser] ${getErrorMessage(error)}.`);

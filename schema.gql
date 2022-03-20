@@ -137,18 +137,18 @@ type Mutation {
   resendConfirmationLink(userEmail: String): BooleanResponse
 
   """Update the currently logged in user."""
-  updateCurrentUser(updateInput: UpdateUserInput): UserResponse
+  updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput): UserResponse
 
   """Update one of the current user sheets."""
-  updateCurrentUserSheet(updateInput: UpdateUserSheetInput): SheetResponse
+  updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput): SheetResponse
 
   """
   Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.
   """
-  updateSheet(updateInput: UpdateUserSheetInput): SheetResponse
+  updateSheet(updateSheetInput: UpdateSheetInput): SheetResponse
 
   """Update user."""
-  updateUser(updateInput: UpdateUserInput): UserResponse
+  updateUser(updateUserInput: UpdateUserInput): UserResponse
 }
 
 """Sheet after paginaation was applied"""
@@ -306,8 +306,8 @@ type SheetsResponse {
   response: [Sheet!]
 }
 
-"""User fields to be changed with an update operation"""
-input UpdateUserChangesInput {
+"""Update currently logged in user input"""
+input UpdateCurrentUserInput {
   activated: Boolean
   address: String
   city: String
@@ -320,14 +320,8 @@ input UpdateUserChangesInput {
   zipCode: String
 }
 
-"""Update user input"""
-input UpdateUserInput {
-  changes: UpdateUserChangesInput
-  id: String
-}
-
-"""Sheet fields to be changed with an update operation"""
-input UpdateUserSheetChangesInput {
+"""Sheet fields to be changed with an update operation by the user"""
+input UpdateCurrentUserSheetChangesInput {
   advanceDirectives: Boolean
   allergies: String
   bloodType: String
@@ -345,9 +339,55 @@ input UpdateUserSheetChangesInput {
   treatingDoctor: SheetDoctorContactInput
 }
 
-"""Update Sheet input"""
-input UpdateUserSheetInput {
-  changes: UpdateUserSheetChangesInput
+"""Update Sheet as user input"""
+input UpdateCurrentUserSheetInput {
+  changes: UpdateCurrentUserSheetChangesInput
+  id: String
+}
+
+"""Sheet fields to be changed with an update operation by the admin"""
+input UpdateSheetChangesInput {
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
+  currentTreatment: String
+  dateOfBirth: DateTime
+  emergencyContacts: [SheetContactInput]
+  enabled: Boolean
+  fname: String
+  lname: String
+  medicalHistory: String
+  nationality: String
+  organDonor: Boolean
+  sex: String
+  smoker: Boolean
+  treatingDoctor: SheetDoctorContactInput
+  user: String
+}
+
+"""Update Sheet as admin input"""
+input UpdateSheetInput {
+  changes: UpdateSheetChangesInput
+  id: String
+}
+
+"""User fields to be changed with an update operation"""
+input UpdateUserChangesInput {
+  activated: Boolean
+  address: String
+  city: String
+  email: String
+  fname: String
+  lname: String
+  nationality: String
+  password: String
+  phone: String
+  zipCode: String
+}
+
+"""Update user as admin input"""
+input UpdateUserInput {
+  changes: UpdateUserChangesInput
   id: String
 }
 
