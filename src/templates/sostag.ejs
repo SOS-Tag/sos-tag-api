@@ -16,7 +16,7 @@
 
   <div class='container'>
     <header>
-      <h1><%= firstname %> <%= lastname %></h1>
+      <h1><%= fname %> <%= lname %></h1>
       <p>dernière mise à jour <%= updatedAt %></p>
     </header>
 
@@ -28,113 +28,52 @@
       </fieldset>
       <% } %>
 
-      <% if (birthday) { %> 
+      <% if (dateOfBirth) { %> 
       <fieldset>
         <legend>Date de naissance</legend>
-          <label><%= birthday %></label>
+          <label><%= dateOfBirth %></label>
       </fieldset>
       <% } %>
 
-      <% if (height) { %> 
-      <fieldset>
-        <legend>Taille (cm)</legend>
-          <label><%= height %></label>
-      </fieldset>
-      <% } %>
-
-      <% if (weight) { %> 
-      <fieldset>
-        <legend>Poids (kg)</legend>
-          <label><%= weight %></label>
-      </fieldset>
-      <% } %>
-
-      <% if (bloodGroup) { %> 
+      <% if (bloodType) { %> 
       <fieldset>
         <legend>Groupe sanguin</legend>
-          <label><%= bloodGroup %></label>
+          <label><%= bloodType %></label>
       </fieldset>
       <% } %>
 
-      <% if (smoking) { %> 
+      <% if (smoker) { %> 
       <fieldset>
         <legend>Fumeur·euse</legend>
-          <label><%= smoking %></label>
+          <label><%= smoker %></label>
       </fieldset>
       <% } %>
 
-      <% if (organsDonation) { %> 
+      <% if (organDonor) { %> 
       <fieldset>
         <legend>Don d'organe</legend>
-          <label><%= organsDonation %></label>
+          <label><%= organDonor %></label>
       </fieldset>
       <% } %>
 
-      <% if (drugAllergies.length > 0) { %> 
+      <% if (allergies) { %> 
       <fieldset>
         <legend>Allergie(s) médicamenteuse(s)</legend>
-        <ul>
-          <% for (let allergy of drugAllergies) {%>
-            <li><%= allergy %></label></li>
-          <%}%>
-        </ul>
+            <label><%= allergies %></label>
       </fieldset>
       <% } %>
 
-      <% if (antecedents.length > 0) { %> 
+      <% if (medicalHistory) { %> 
       <fieldset>
         <legend>Antécédents</legend>
-        <ul>
-        <% for (let antecedent of antecedents) {%>
-          <li><%= antecedent %></li>
-        <%}%>
-        </ul>
+            <label><%= medicalHistory %></label>
       </fieldset>
       <% } %>
 
-      <% if (currentTreatment.length > 0) { %> 
+      <% if (currentTreatment) { %> 
       <fieldset>
-        <legend>Traitements en cours</legend>
-        <ul>
-        <% for (let treatment of currentTreatment) {%>
-          <li><%= treatment %></li>
-        <%}%>
-        </ul>
-      </fieldset>
-      <% } %>
-
-      <% if (utdVaccines) { %> 
-      <fieldset>
-        <legend>Vaccins à jour</legend>
-          <label><%= utdVaccines %></label>
-      </fieldset>
-      <% } %>
-
-      <% if (diabetes) { %> 
-      <fieldset>
-        <legend>Diabète</legend>
-          <label><%= diabetes %></label>
-      </fieldset>
-      <% } %>
-
-      <% if (haemophilia) { %> 
-      <fieldset>
-        <legend>Hémophilie</legend>
-          <label><%= haemophilia %></label>
-      </fieldset>
-      <% } %>
-
-      <% if (epilepsy) { %> 
-      <fieldset>
-        <legend>Épilespie</legend>
-          <label><%= epilepsy %></label>
-      </fieldset>
-      <% } %>
-
-      <% if (pacemaker) { %> 
-      <fieldset>
-        <legend>Port d'un pacemaker</legend>
-          <label><%= pacemaker %></label>
+        <legend>Traitement en cours</legend>
+            <label><%= currentTreatment %></label>
       </fieldset>
       <% } %>
     </section>

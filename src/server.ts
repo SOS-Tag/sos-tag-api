@@ -28,6 +28,7 @@ import { Container } from 'typedi';
 import ejs from 'ejs'
 import dbConnection from '@databases';
 import { generateExtendedApolloError } from '@utils/apollo-error';
+import sheetModel from '@models/sheet.model'
 
 class Server {
   public express: Application;
@@ -100,34 +101,15 @@ class Server {
     this.express.get('/', (_, res) => res.send(`SOS-Tag API (alpha version)`));
     this.express.post('/refresh_token', (req, res) => refreshToken(req, res));
     this.express.get('/oauth/google', (req, res) => googleOauthHandler(req, res));
-    this.express.get('/:id', (req, res) => {
+
+    // MEDICAL SHEETS (Server Side Rendering)
+    this.express.get('/:id', async (req, res) => {
       res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
-      // TEMPORARY, replace with data from database
-      const fakeData = {
-            id: req.params.id,
-            firstname: 'John',
-            lastname: 'Doe',
-            updatedAt: '2000-01-01',
-            sex: 'M',
-            birthday: '1980-01-01',
-            height: '178',
-            weight: '76',
-            bloodGroup: 'A-',
-            advanceDirectives: false,
-            drugAllergies: ['pollen', 'cocaïne'],
-            organsDonation: true,
-            currentTreatment: [],
-            smoking: false,
-            antecedents: [],
-            utdVaccines: true,
-            diabetes: false,
-            haemophilia: false,
-            epilepsy: true,
-            pacemaker: false
-      }
-      if (fakeData.id !== '00000000') {
+      const sheetData = await sheetModel.findById(req.params.id)
+      console.log(`--> --> sheetData : ${sheetData}`)
+      if (sheetData?.user) {
         // Render health sheet template filled with user data
-        ejs.renderFile(__dirname + '/templates/sostag.ejs', fakeData, {}, (err, template) => {
+        ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
           if (err) {
             throw err
           } else {
@@ -135,6 +117,7 @@ class Server {
           }
         })
       } else {
+        // Sheet not found
         ejs.renderFile(__dirname + '/templates/healthSheetNotFound.ejs', { id: req.params.id }, {}, (err, template) => {
           if (err) {
             throw err
