@@ -12,7 +12,7 @@ import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
 
 const QRCODE_LENGTH = 8;
-const customNanoId = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ1234578', QRCODE_LENGTH);
+const customNanoId = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ234578', QRCODE_LENGTH);
 
 @Service()
 class SheetService {
