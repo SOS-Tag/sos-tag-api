@@ -72,6 +72,7 @@ class Server {
   private async initializeApolloServer() {
     this.apollo = new ApolloServer({
       schema: this.schema,
+      introspection: true,
       context: ({ req, res }) => ({ req, res } as Context),
       formatError: (error: GraphQLError) => {
         return generateExtendedApolloError(error);
