@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOS Tag</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;600;900&display=swap" rel="stylesheet"> 
+</head>
+
+<body>
+    <nav>
+      <img src="sos-tag_logo-full.svg" alt="sos-tag logo">
+    </nav>
+
+  <div class='container'>
+    <header>
+      <h1><%= fname %> <%= lname %></h1>
+      <p>dernière mise à jour <%= updatedAt %></p>
+    </header>
+
+    <section class='infos'>
+      <% if (sex) { %> 
+      <fieldset>
+        <legend>Sexe</legend>
+          <label><%= sex %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (dateOfBirth) { %> 
+      <fieldset>
+        <legend>Date de naissance</legend>
+          <label><%= dateOfBirth %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (bloodType) { %> 
+      <fieldset>
+        <legend>Groupe sanguin</legend>
+          <label><%= bloodType %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (smoker) { %> 
+      <fieldset>
+        <legend>Fumeur·euse</legend>
+          <label><%= smoker %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (organDonor) { %> 
+      <fieldset>
+        <legend>Don d'organe</legend>
+          <label><%= organDonor %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (allergies) { %> 
+      <fieldset>
+        <legend>Allergie(s) médicamenteuse(s)</legend>
+            <label><%= allergies %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (medicalHistory) { %> 
+      <fieldset>
+        <legend>Antécédents</legend>
+            <label><%= medicalHistory %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (currentTreatment) { %> 
+      <fieldset>
+        <legend>Traitement en cours</legend>
+            <label><%= currentTreatment %></label>
+      </fieldset>
+      <% } %>
+    </section>
+  </div>
+
+</body>
+
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    color: #19224F;
+    font-family: "Source Sans Pro";
+  }
+  html {
+    height: 100%;
+    width: 100%;
+  }
+  body {
+    height: 100%;
+    width: 100%;
+    background: #F9F9F9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    padding: 5vw;
+  }
+  nav {
+    width: 100vw;
+    height: 80px;
+    background: #FFF;
+    display: flex;
+    align-items: center;
+  }
+  img {
+    height: 75%;
+    margin-left: 5vw;
+  }
+  h1 {
+    font-weight: 900;
+    font-size: 24px;
+  }
+  header {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+  }
+  p {
+    font-weight: 300;
+    font-size: 18px;
+  }
+  .infos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .infos > fieldset {
+    min-width: 50%;
+    border: none;
+    margin-top: 2vh;
+    margin-top: 2vw;
+  }
+  fieldset > legend {
+    font-weight: 300;
+    font-size: 16px;
+  }
+  fieldset > label, li {
+    font-weight: 600;
+    font-size: 18px;
+  }
+</style>
+
+</html>

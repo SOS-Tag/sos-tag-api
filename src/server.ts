@@ -24,7 +24,10 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
+import ejs from 'ejs'
+import dbConnection from '@databases';
 import { generateExtendedApolloError } from '@utils/apollo-error';
+import sheetModel from '@models/sheet.model'
 
 class Server {
   public express: Application;
@@ -44,6 +47,7 @@ class Server {
 
   private async initialize() {
     this.express.set('proxy', 1);
+    this.express.use(express.static('public'))
 
     await this.connectToDatabase();
     await this.buildGraphQLSchema();
@@ -97,6 +101,32 @@ class Server {
     this.express.get('/', (_, res) => res.send(`SOS-Tag API (alpha version)`));
     this.express.post('/refresh_token', (req, res) => refreshToken(req, res));
     this.express.get('/oauth/google', (req, res) => googleOauthHandler(req, res));
+
+    // MEDICAL SHEETS (Server Side Rendering)
+    this.express.get('/:id', async (req, res) => {
+      res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
+      const sheetData = await sheetModel.findById(req.params.id)
+      console.log(`--> --> sheetData : ${sheetData}`)
+      if (sheetData?.user) {
+        // Render health sheet template filled with user data
+        ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
+          if (err) {
+            throw err
+          } else {
+            res.end(template)
+          }
+        })
+      } else {
+        // Sheet not found
+        ejs.renderFile(__dirname + '/templates/healthSheetNotFound.ejs', { id: req.params.id }, {}, (err, template) => {
+          if (err) {
+            throw err
+          } else {
+            res.end(template)
+          }
+        })
+      }
+    });
   }
 
   public listen() {
