@@ -1,13 +1,18 @@
-import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from 'dtos/sheet.dto';
+import { QueryOptions } from '@dtos/common.dto';
 import { ISheet, ISheetModel } from '@models/sheet.model';
 import { IUserModel } from '@models/user.model';
-import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
+import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import { transformSheet } from '@services/utils/transform';
-import { isEmpty, denest } from '@utils/object';
+import { ErrorTypes, generateBadRequestError, generateConflictError, generateFieldErrors, generateNotFoundError } from '@utils/error';
+import { denest, isEmpty } from '@utils/object';
+import { SortOrder } from '@utils/sort';
+import { emptyArgsExist } from '@validators/utils/validate';
+import { AssignSheetToUserInput, UpdateCurrentUserSheetInput, UpdateSheetInput } from 'dtos/sheet.dto';
+import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
-import { customNanoId } from './qrcode.service';
-import { ErrorTypes, generateBadRequestError, generateConflictError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
-import { emptyArgsExist } from '@/validators/utils/validate';
+
+const QRCODE_LENGTH = 8;
+const customNanoId = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ1234578', QRCODE_LENGTH);
 
 @Service()
 class SheetService {
@@ -55,6 +60,15 @@ class SheetService {
     return { response: { _id: sheetId } };
   }
 
+  async deleteSheet(sheetId: string): Promise<SheetResponse> {
+    const emptyArgs = emptyArgsExist({ sheetId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The sheetId is missing.', generateFieldErrors(emptyArgs)) };
+
+    await this.sheets.findByIdAndDelete(sheetId);
+    return { response: { _id: sheetId } };
+  }
+
   async findSheetById(sheetId: string): Promise<SheetResponse> {
     const emptyArgs = emptyArgsExist({ sheetId });
     if (!isEmpty(emptyArgs))
@@ -80,9 +94,36 @@ class SheetService {
     return { response: transformSheet(sheet) };
   }
 
-  async findSheets(): Promise<SheetsResponse> {
-    const sheets: ISheet[] = await this.sheets.find();
-    return { response: sheets.map(sheet => transformSheet(sheet)) };
+  async findSheets({ filter, pagination, sort }: QueryOptions): Promise<PaginatedSheetsResponse> {
+    const sheets: ISheet[] = await this.sheets
+      .find(filter && { [filter.field]: { $regex: filter.value } })
+      .limit(pagination?.limit * 1 || 0)
+      .skip((pagination?.page - 1) * pagination?.limit || 0)
+      .sort(sort && { [sort.field]: sort.order === SortOrder.ascending ? 1 : -1 })
+      .exec();
+
+    let totalItems = 0;
+
+    if (!isEmpty(filter)) {
+      const matchedSheets = await this.sheets.find({ [filter.field]: { $regex: filter.value } });
+      totalItems = matchedSheets.length;
+    } else {
+      totalItems = await this.sheets.countDocuments();
+    }
+
+    const totalPages = Math.ceil(totalItems / pagination?.limit) || 1;
+    const currentPage = pagination?.page || 1;
+    const hasMore = pagination?.page < totalPages || false;
+
+    return {
+      response: {
+        items: sheets.map(sheet => transformSheet(sheet)),
+        totalItems,
+        totalPages,
+        currentPage,
+        hasMore,
+      },
+    };
   }
 
   async findSheetsByUser(userId: string): Promise<SheetsResponse> {
@@ -90,13 +131,29 @@ class SheetService {
     return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
-  async updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput, userId: string): Promise<SheetResponse> {
+  async updateCurrentUserSheet(updateSheetInput: UpdateCurrentUserSheetInput, userId: string): Promise<SheetResponse> {
     const sheet = await this.sheets.findOneAndUpdate(
       {
-        _id: updateCurrentUserSheetInput.id,
+        _id: updateSheetInput.id,
         user: userId,
       },
-      denest(updateCurrentUserSheetInput.changes),
+      denest(updateSheetInput.changes),
+      {
+        new: true,
+      },
+    );
+
+    if (!sheet) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };
+
+    return { response: transformSheet(sheet) };
+  }
+
+  async updateSheet(updateSheetInput: UpdateSheetInput): Promise<SheetResponse> {
+    const sheet = await this.sheets.findOneAndUpdate(
+      {
+        _id: updateSheetInput.id,
+      },
+      denest(updateSheetInput.changes),
       {
         new: true,
       },
@@ -108,4 +165,5 @@ class SheetService {
   }
 }
 
+export { customNanoId, QRCODE_LENGTH };
 export default SheetService;

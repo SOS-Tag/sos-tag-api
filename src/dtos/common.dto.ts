@@ -1,11 +1,38 @@
+import { Order } from '@utils/sort';
 import { Field, InputType } from 'type-graphql';
 
-@InputType({ description: 'Paginator input' })
-class PaginatorInput {
+@InputType({ description: 'Filter options' })
+class QueryFilterOptions {
   @Field()
-  page: number;
+  field?: string;
   @Field()
-  limit: number;
+  value?: string;
 }
 
-export { PaginatorInput };
+@InputType({ description: 'Sort options' })
+class QuerySortOptions {
+  @Field()
+  field?: string;
+  @Field(() => String)
+  order?: Order;
+}
+
+@InputType({ description: 'Pagination options' })
+class QueryPaginationOptions {
+  @Field()
+  page?: number;
+  @Field()
+  limit?: number;
+}
+
+@InputType({ description: 'Query options to apply on list' })
+class QueryOptions {
+  @Field(() => QueryFilterOptions)
+  filter?: QueryFilterOptions;
+  @Field(() => QueryPaginationOptions)
+  pagination?: QueryPaginationOptions;
+  @Field(() => QuerySortOptions)
+  sort?: QuerySortOptions;
+}
+
+export { QueryOptions };

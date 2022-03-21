@@ -1,5 +1,5 @@
-import { ErrorTypes, generateUnauthorizedError } from '@/utils/error';
 import Context from '@interfaces/context.interface';
+import { ErrorTypes, generateUnauthorizedError } from '@utils/error';
 import 'dotenv-safe/config';
 import { MiddlewareFn } from 'type-graphql';
 
@@ -21,4 +21,4 @@ const isAuthorizedAsAdmin: MiddlewareFn<Context> = ({ context }, next) => {
   }
 };
 
-export { isAuthorizedAsAdmin };
+export default isAuthorizedAsAdmin;

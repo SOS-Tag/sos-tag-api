@@ -1,8 +1,9 @@
-import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
+import { QueryOptions } from '@dtos/common.dto';
+import { UpdateUserInput, UpdateCurrentUserInput } from '@dtos/user.dto';
 import Context from '@interfaces/context.interface';
-import isAuthenticated from '@/middlewares/is-authenticated.middleware';
-import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
-import { UserResponse, UsersResponse } from '@responses/user.response';
+import isAuthenticated from '@middlewares/is-authenticated.middleware';
+import isAuthorizedAsAdmin from '@middlewares/is-authorized.middleware';
+import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';
 import { getErrorMessage } from '@utils/error';
@@ -28,11 +29,23 @@ class UserResolver {
     try {
       const token = authorization.split(' ')[1];
       const payload: any = verify(token, accessTokenSecret);
-      const currentUser = await this.userById(payload.userId);
+      const currentUser = await this.User(payload.userId);
       return currentUser;
     } catch (error) {
       logger.error(`[resolver:User:currentUser] ${getErrorMessage(error)}.`);
       return null;
+    }
+  }
+
+  @Mutation(() => UserResponse, { description: 'Delete a user as admin' })
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async deleteUser(@Arg('id') id: string): Promise<UserResponse> {
+    try {
+      const deleteUserResponse = await this.userService.deleteUser(id);
+      return deleteUserResponse;
+    } catch (error) {
+      logger.error(`[resolver:User:deleteUser] ${getErrorMessage(error)}.`);
+      throw error;
     }
   }
 
@@ -53,9 +66,9 @@ class UserResolver {
 
   @Mutation(() => UserResponse, { description: 'Update user.' })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async updateUser(@Ctx() { payload }: Context, @Arg('updateUserInput') updateUserInput: UpdateUserInput): Promise<UserResponse> {
+  async updateUser(@Arg('updateInput') updateInput: UpdateUserInput): Promise<UserResponse> {
     try {
-      const updateUserResponse = await this.userService.updateUser(updateUserInput, payload.userId);
+      const updateUserResponse = await this.userService.updateUser(updateInput);
       return updateUserResponse;
     } catch (error) {
       logger.error(`[resolver:User:updateUser] ${getErrorMessage(error)}.`);
@@ -65,9 +78,9 @@ class UserResolver {
 
   @Query(() => UserResponse, { description: 'Get a user by his id.' })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async userById(@Arg('userId') userId: string): Promise<UserResponse> {
+  async User(@Arg('id') id: string): Promise<UserResponse> {
     try {
-      const user = await this.userService.findUserById(userId);
+      const user = await this.userService.findUserById(id);
       return user;
     } catch (error) {
       logger.error(`[resolver:User:userByID] ${getErrorMessage(error)}.`);
@@ -75,11 +88,11 @@ class UserResolver {
     }
   }
 
-  @Query(() => UsersResponse, { description: 'Get all users.' })
+  @Query(() => PaginatedUsersResponse, { description: 'Get all users.' })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async users(): Promise<UsersResponse> {
+  async allUsers(@Arg('options') options?: QueryOptions): Promise<PaginatedUsersResponse> {
     try {
-      const users = await this.userService.findUsers();
+      const users = await this.userService.findUsers(options || {});
       return users;
     } catch (error) {
       logger.error(`[resolver:User:users] ${getErrorMessage(error)}.`);

@@ -1,8 +1,9 @@
-import { AssignSheetToUserInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
+import { QueryOptions } from '@dtos/common.dto';
+import { AssignSheetToUserInput, UpdateSheetInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
-import isAuthenticated from '@/middlewares/is-authenticated.middleware';
-import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
-import { SheetResponse, SheetsResponse } from '@responses/sheet.response';
+import isAuthenticated from '@middlewares/is-authenticated.middleware';
+import isAuthorizedAsAdmin from '@middlewares/is-authorized.middleware';
+import { PaginatedSheetsResponse, SheetResponse, SheetsResponse } from '@responses/sheet.response';
 import SheetSchema from '@schemas/sheet.schema';
 import SheetService from '@services/sheet.service';
 import { getErrorMessage } from '@utils/error';
@@ -46,10 +47,22 @@ class SheetResolver {
   @UseMiddleware(isAuthenticated)
   async deleteCurrentUserSheet(@Ctx() { payload }: Context, @Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
-      const sheet = await this.sheetService.deleteCurrentUserSheet(sheetId, payload.userId);
-      return sheet;
+      const deleteSheetResponse = await this.sheetService.deleteCurrentUserSheet(sheetId, payload.userId);
+      return deleteSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:deleteCurrentUserSheet] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => SheetResponse, { description: 'Delete a sheet as admin' })
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async deleteSheet(@Arg('id') id: string): Promise<SheetResponse> {
+    try {
+      const deleteSheetResponse = await this.sheetService.deleteSheet(id);
+      return deleteSheetResponse;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:deleteSheet] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
@@ -69,11 +82,26 @@ class SheetResolver {
     }
   }
 
+  @Mutation(() => SheetResponse, {
+    description:
+      'Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.',
+  })
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async updateSheet(@Arg('updateInput') updateInput: UpdateSheetInput): Promise<SheetResponse> {
+    try {
+      const updateSheetResponse = await this.sheetService.updateSheet(updateInput);
+      return updateSheetResponse;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:updateSheet] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
   @Query(() => SheetResponse, { description: 'Get a sheet by its id as an admin.' })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async sheetById(@Arg('sheetId') sheetId: string): Promise<SheetResponse> {
+  async Sheet(@Arg('id') id: string): Promise<SheetResponse> {
     try {
-      const sheet = await this.sheetService.findSheetById(sheetId);
+      const sheet = await this.sheetService.findSheetById(id);
       return sheet;
     } catch (error) {
       logger.error(`[resolver:Sheet:sheetById] ${getErrorMessage(error)}.`);
@@ -104,11 +132,11 @@ class SheetResolver {
     }
   }
 
-  @Query(() => SheetsResponse, { description: 'Get all sheets.' })
+  @Query(() => PaginatedSheetsResponse, { description: 'Get all sheets.' })
   @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
-  async sheets(): Promise<SheetsResponse> {
+  async allSheets(@Arg('options') options?: QueryOptions): Promise<PaginatedSheetsResponse> {
     try {
-      const sheets = await this.sheetService.findSheets();
+      const sheets = await this.sheetService.findSheets(options || {});
       return sheets;
     } catch (error) {
       logger.error(`[resolver:Sheet:sheets] ${getErrorMessage(error)}.`);

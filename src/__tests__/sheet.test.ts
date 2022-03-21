@@ -3,14 +3,14 @@ import { IUser } from '@models/user.model';
 import { ErrorTypes } from '@utils/error';
 import { createConnection } from '@utils/mongoose';
 import {
+  ALL_SHEETS,
   ASSIGN_SHEET_TO_USER,
   CREATE_SHEET,
   DELETE_SHEET,
-  SHEETS,
   SHEETS_CURRENT_USER,
   SHEET_BY_ID,
   SHEET_BY_SCANNING,
-  UPDATE_SHEET,
+  UPDATE_CURRENT_USER_SHEET,
 } from '@__tests__/utils/graphql/sheet.graphql';
 import { initialUserData, newSheetData, sheetDataChanges, password } from '@__tests__/utils/mock-data';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
@@ -21,7 +21,7 @@ let adminAccessToken: string | undefined = undefined;
 let accessToken: string | undefined = undefined;
 let registeredUser: (IUser & { _id: string }) | null = null;
 
-let sheetId;
+let sheetId: string;
 
 beforeAll(async () => {
   await createConnection();
@@ -56,11 +56,12 @@ afterAll(async () => {
 describe('Medical sheets service', () => {
   describe('Retrieve all', () => {
     test('unsuccessful when user is not logged in', async () => {
-      const response = await graphqlTestCall(SHEETS);
+      const response = await graphqlTestCall(ALL_SHEETS);
 
-      const error = response.data.sheets.error;
+      const data = response.data.allSheets.response;
+      const error = response.data.allSheets.error;
 
-      expect(response.data.sheets.response).toBeNull();
+      expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthenticated);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -69,11 +70,12 @@ describe('Medical sheets service', () => {
     });
 
     test('unsuccessful when user is not authorized', async () => {
-      const response = await graphqlTestCall(SHEETS, undefined, accessToken);
+      const response = await graphqlTestCall(ALL_SHEETS, undefined, accessToken);
 
-      const error = response.data.sheets.error;
+      const data = response.data.allSheets.response;
+      const error = response.data.allSheets.error;
 
-      expect(response.data.sheets.response).toBeNull();
+      expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthorized);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -82,13 +84,13 @@ describe('Medical sheets service', () => {
     });
 
     test('successful when user is logged in', async () => {
-      const response = await graphqlTestCall(SHEETS, undefined, adminAccessToken);
+      const response = await graphqlTestCall(ALL_SHEETS, undefined, adminAccessToken);
 
-      const data = response.data.sheets.response;
-      const error = response.data.sheets.error;
+      const data = response.data.allSheets.response;
+      const error = response.data.allSheets.error;
 
       expect(error).toBeNull();
-      expect(data).toBeInstanceOf(Array);
+      expect(data.items).toBeInstanceOf(Array);
     });
   });
   describe('Retrieve from current user', () => {
@@ -211,7 +213,9 @@ describe('Medical sheets service', () => {
       expect(data).toEqual({
         _id: sheetId,
         enabled: true,
-        user: registeredUser.id,
+        user: {
+          _id: registeredUser.id,
+        },
       });
     });
 
@@ -262,14 +266,14 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         SHEET_BY_ID,
         {
-          sheetId,
+          id: sheetId,
         },
         undefined,
       );
 
-      const error = response.data.sheetById.error;
+      const error = response.data.Sheet.error;
 
-      expect(response.data.sheetById.response).toBeNull();
+      expect(response.data.Sheet.response).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthenticated);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -286,9 +290,9 @@ describe('Medical sheets service', () => {
         accessToken,
       );
 
-      const error = response.data.sheetById.error;
+      const error = response.data.Sheet.error;
 
-      expect(response.data.sheetById.response).toBeNull();
+      expect(response.data.Sheet.response).toBeNull();
       expect(error.type).toEqual(ErrorTypes.unauthorized);
       expect(error.code).toEqual(401);
       expect(error.title).toEqual('Unauthorized');
@@ -305,8 +309,8 @@ describe('Medical sheets service', () => {
         adminAccessToken,
       );
 
-      const data = response.data.sheetById.response;
-      const error = response.data.sheetById.error;
+      const data = response.data.Sheet.response;
+      const error = response.data.Sheet.error;
 
       expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.emptyArgs);
@@ -320,13 +324,13 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         SHEET_BY_ID,
         {
-          sheetId: 'AAAAAAAA',
+          id: 'AAAAAAAA',
         },
         adminAccessToken,
       );
 
-      const data = response.data.sheetById.response;
-      const error = response.data.sheetById.error;
+      const data = response.data.Sheet.response;
+      const error = response.data.Sheet.error;
 
       expect(data).toBeNull();
       expect(error.type).toEqual(ErrorTypes.sheetNotFound);
@@ -340,13 +344,13 @@ describe('Medical sheets service', () => {
       const response = await graphqlTestCall(
         SHEET_BY_ID,
         {
-          sheetId,
+          id: sheetId,
         },
         adminAccessToken,
       );
 
-      const data = response.data.sheetById.response;
-      const error = response.data.sheetById.error;
+      const data = response.data.Sheet.response;
+      const error = response.data.Sheet.error;
 
       expect(error).toBeNull();
       expect(data._id).toEqual(sheetId);
@@ -400,7 +404,7 @@ describe('Medical sheets service', () => {
   describe('Update #1', () => {
     test('unsuccessfull with a user not logged in', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
           updateCurrentUserSheetInput: {
             id: sheetId,
@@ -424,7 +428,7 @@ describe('Medical sheets service', () => {
 
     test('unsuccessfull with an unassigned ID or an ID referencing a sheet that does not belong to the current user', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
           updateCurrentUserSheetInput: {
             id: `UNKNOWN:${sheetId}`,
@@ -449,7 +453,7 @@ describe('Medical sheets service', () => {
 
     test('successful with a user logged in, and a valid medical sheet id that belongs to this user', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
           updateCurrentUserSheetInput: {
             id: sheetId,
@@ -474,7 +478,7 @@ describe('Medical sheets service', () => {
   describe('Update #2', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
           updateCurrentUserSheetInput: {
             id: sheetId,

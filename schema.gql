@@ -52,6 +52,13 @@ type ExtendedError {
   wwwAuthenticate: String
 }
 
+interface IPaginationDetails {
+  currentPage: Int
+  hasMore: Boolean
+  totalItems: Int
+  totalPages: Int
+}
+
 """Error with message"""
 type InputError {
   detail: String
@@ -97,16 +104,17 @@ type Mutation {
   """
   confirmUser(token: String): BooleanResponse
 
-  """
-  Create a QR Code with a custom id. By default, the QR Code is not used.
-  """
-  createQRCode: QRCodeResponse
-
   """Create an empty sheet."""
   createSheet(count: Float): SheetsResponse
 
   """Delete one of the current user sheets."""
   deleteCurrentUserSheet(sheetId: String): SheetResponse
+
+  """Delete a sheet as admin"""
+  deleteSheet(id: String): SheetResponse
+
+  """Delete a user as admin"""
+  deleteUser(id: String): UserResponse
 
   """
   Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.
@@ -140,77 +148,94 @@ type Mutation {
   """Update one of the current user sheets."""
   updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput): SheetResponse
 
+  """
+  Update a sheet. It requires to be authenticated as an admin because it is not necessarily a sheet that belongs the user that want to apply changes.
+  """
+  updateSheet(updateInput: UpdateSheetInput): SheetResponse
+
   """Update user."""
-  updateUser(updateUserInput: UpdateUserInput): UserResponse
+  updateUser(updateInput: UpdateUserInput): UserResponse
 }
 
-"""Paginated QR Code response"""
-type PaginatedQRCodeResponse {
+"""Sheet after paginaation was applied"""
+type PaginatedSheets implements IPaginationDetails {
   currentPage: Int
-  error: ExtendedError
   hasMore: Boolean
-  items: [QRCode]
+  items: [Sheet]
+  totalItems: Int
   totalPages: Int
 }
 
-"""Paginator input"""
-input PaginatorInput {
-  limit: Float
-  page: Float
-}
-
-"""QR Code Schema"""
-type QRCode {
-  _id: ID
-  createdAt: String
-  inUse: Boolean
-  updatedAt: String
-}
-
-"""QR Code response"""
-type QRCodeResponse {
+"""Paginated sheets response"""
+type PaginatedSheetsResponse {
   error: ExtendedError
-  response: QRCode
+  response: PaginatedSheets
 }
 
-"""QR Codes response"""
-type QRCodesResponse {
+"""User after paginaation was applied"""
+type PaginatedUsers implements IPaginationDetails {
+  currentPage: Int
+  hasMore: Boolean
+  items: [User]
+  totalItems: Int
+  totalPages: Int
+}
+
+"""Paginated users response"""
+type PaginatedUsersResponse {
   error: ExtendedError
-  response: [QRCode!]
+  response: PaginatedUsers
 }
 
 type Query {
+  """Get a sheet by its id as an admin."""
+  Sheet(id: String): SheetResponse
+
+  """Get a user by his id."""
+  User(id: String): UserResponse
+
+  """Get all sheets."""
+  allSheets(options: QueryOptions): PaginatedSheetsResponse
+
+  """Get all users."""
+  allUsers(options: QueryOptions): PaginatedUsersResponse
+
   """Get the user currently logged in."""
   currentUser: UserResponse
-
-  """Get all QR Codes."""
-  qrCodes: QRCodesResponse
-
-  """
-  Get QR Codes page by page (by fixing the page and the limit of QR Codes by page).
-  """
-  qrCodesWithPagination(paginatorInput: PaginatorInput): PaginatedQRCodeResponse
-
-  """Get a sheet by its id as an admin."""
-  sheetById(sheetId: String): SheetResponse
 
   """Get an active sheet by its id."""
   sheetByScanning(sheetId: String): SheetResponse
 
-  """Get all sheets."""
-  sheets: SheetsResponse
-
   """Get the sheets of the specified user."""
   sheetsCurrentUser: SheetsResponse
 
-  """Get a user by his id."""
-  userById(userId: String): UserResponse
-
-  """Get all users."""
-  users: UsersResponse
-
   """Return a simple welcoming message."""
   welcome: String
+}
+
+"""Filter options"""
+input QueryFilterOptions {
+  field: String
+  value: String
+}
+
+"""Query options to apply on list"""
+input QueryOptions {
+  filter: QueryFilterOptions
+  pagination: QueryPaginationOptions
+  sort: QuerySortOptions
+}
+
+"""Pagination options"""
+input QueryPaginationOptions {
+  limit: Float
+  page: Float
+}
+
+"""Sort options"""
+input QuerySortOptions {
+  field: String
+  order: String
 }
 
 """Register input"""
@@ -242,7 +267,7 @@ type Sheet {
   smoker: Boolean
   treatingDoctor: SheetDoctorContact
   updatedAt: String
-  user: String
+  user: User
 }
 
 """Sheet Contact Schema"""
@@ -301,7 +326,7 @@ input UpdateCurrentUserInput {
   zipCode: String
 }
 
-"""Sheet fields to be changed with an update operation"""
+"""Sheet fields to be changed with an update operation by the user"""
 input UpdateCurrentUserSheetChangesInput {
   advanceDirectives: Boolean
   allergies: String
@@ -320,27 +345,56 @@ input UpdateCurrentUserSheetChangesInput {
   treatingDoctor: SheetDoctorContactInput
 }
 
-"""Update Sheet input"""
+"""Update Sheet as user input"""
 input UpdateCurrentUserSheetInput {
   changes: UpdateCurrentUserSheetChangesInput
   id: String
 }
 
-"""Update user input"""
-input UpdateUserInput {
+"""Sheet fields to be changed with an update operation by the admin"""
+input UpdateSheetChangesInput {
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
+  currentTreatment: String
+  dateOfBirth: DateTime
+  emergencyContacts: [SheetContactInput]
+  enabled: Boolean
+  fname: String
+  lname: String
+  medicalHistory: String
+  nationality: String
+  organDonor: Boolean
+  sex: String
+  smoker: Boolean
+  treatingDoctor: SheetDoctorContactInput
+  user: String
+}
+
+"""Update Sheet as admin input"""
+input UpdateSheetInput {
+  changes: UpdateSheetChangesInput
+  id: String
+}
+
+"""User fields to be changed with an update operation"""
+input UpdateUserChangesInput {
   activated: Boolean
   address: String
   city: String
-  confirmed: Boolean
   email: String
   fname: String
   lname: String
   nationality: String
   password: String
   phone: String
-  roles: [String]
-  tokenVersion: Float
   zipCode: String
+}
+
+"""Update user as admin input"""
+input UpdateUserInput {
+  changes: UpdateUserChangesInput
+  id: String
 }
 
 """User Schema"""
@@ -367,10 +421,4 @@ type User {
 type UserResponse {
   error: ExtendedError
   response: User
-}
-
-"""Users response"""
-type UsersResponse {
-  error: ExtendedError
-  response: [User!]
 }

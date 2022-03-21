@@ -1,6 +1,6 @@
-import { ErrorTypes } from '@/utils/error';
 import { faker } from '@faker-js/faker';
 import { IUser } from '@models/user.model';
+import { ErrorTypes } from '@utils/error';
 import { createConnection } from '@utils/mongoose';
 import { setConfirmationToken } from '@utils/token';
 import { REGISTER, CONFIRMATION, LOGIN } from '@__tests__/utils/graphql/auth.graphql';
@@ -10,7 +10,7 @@ import {
   DELETE_SHEET,
   SHEETS_CURRENT_USER,
   SHEET_BY_SCANNING,
-  UPDATE_SHEET,
+  UPDATE_CURRENT_USER_SHEET,
 } from '@__tests__/utils/graphql/sheet.graphql';
 import { UPDATE_CURRENT_USER } from '@__tests__/utils/graphql/user.graphql';
 import { graphqlTestCall, logTestUserIn, registerTestUser, teardown } from '@__tests__/utils/set-up';
@@ -223,7 +223,7 @@ describe('Scenario 1', () => {
   describe('Update 1st sheet data #1', () => {
     test('successful', async () => {
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
           updateCurrentUserSheetInput: {
             id: sheetIds[0],
@@ -262,7 +262,7 @@ describe('Scenario 1', () => {
         ],
       };
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
           updateCurrentUserSheetInput: {
             id: sheetIds[0],
@@ -386,7 +386,7 @@ describe('Scenario 1', () => {
     test('successful', async () => {
       const changes = { enabled: false };
       const response = await graphqlTestCall(
-        UPDATE_SHEET,
+        UPDATE_CURRENT_USER_SHEET,
         {
           updateCurrentUserSheetInput: {
             id: sheetIds[0],

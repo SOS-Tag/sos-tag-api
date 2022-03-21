@@ -5,7 +5,6 @@ import 'reflect-metadata';
 import { NodeEnvironment, __prod__ } from '@constants/env';
 import Context from '@interfaces/context.interface';
 import AuthResolver from '@resolvers/auth.resolver';
-import QRCodeResolver from '@resolvers/qrcode.resolver';
 import SheetResolver from '@resolvers/sheet.resolver';
 import UserResolver from '@resolvers/user.resolver';
 import { logger, stream } from '@utils/logger';
@@ -55,7 +54,7 @@ class Server {
 
   private async buildGraphQLSchema() {
     this.schema = await buildSchema({
-      resolvers: [AuthResolver, QRCodeResolver, SheetResolver, UserResolver],
+      resolvers: [AuthResolver, SheetResolver, UserResolver],
       emitSchemaFile: true,
       nullableByDefault: true,
       container: Container,

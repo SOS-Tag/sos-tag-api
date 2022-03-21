@@ -1,16 +1,27 @@
-import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
-import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFoundError } from '@/utils/error';
-import { emptyArgsExist } from '@/validators/utils/validate';
+import { UpdateCurrentUserInput, UpdateUserInput } from '@dtos/user.dto';
 import { IUser, IUserModel } from '@models/user.model';
 import { BooleanResponse } from '@responses/common.response';
-import { UserResponse, UsersResponse } from '@responses/user.response';
+import { PaginatedUsersResponse, UserResponse } from '@responses/user.response';
 import { transformUser } from '@services/utils/transform';
+import { ErrorTypes, generateBadRequestError, generateFieldErrors, generateNotFoundError } from '@utils/error';
 import { denest, isEmpty } from '@utils/object';
+import { SortOrder } from '@utils/sort';
+import { emptyArgsExist } from '@validators/utils/validate';
 import { Inject, Service } from 'typedi';
+import { QueryOptions } from '../dtos/common.dto';
 
 @Service()
 class UserService {
   constructor(@Inject('USER') private readonly users: IUserModel) {}
+
+  async deleteUser(userId: string): Promise<UserResponse> {
+    const emptyArgs = emptyArgsExist({ userId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The userId is missing.', generateFieldErrors(emptyArgs)) };
+
+    await this.users.findByIdAndDelete(userId);
+    return { response: { _id: userId } };
+  }
 
   async findUserById(userId: string): Promise<UserResponse> {
     const emptyArgs = emptyArgsExist({ userId });
@@ -23,9 +34,36 @@ class UserService {
     return { response: transformUser(user) };
   }
 
-  async findUsers(): Promise<UsersResponse> {
-    const users: IUser[] = await this.users.find();
-    return { response: users.map(user => transformUser(user)) };
+  async findUsers({ filter, pagination, sort }: QueryOptions): Promise<PaginatedUsersResponse> {
+    const users: IUser[] = await this.users
+      .find(filter && { [filter.field]: { $regex: filter.value } })
+      .limit(pagination?.limit * 1 || 0)
+      .skip((pagination?.page - 1) * pagination?.limit || 0)
+      .sort(sort && { [sort.field]: sort.order === SortOrder.ascending ? 1 : -1 })
+      .exec();
+
+    let totalItems = 0;
+
+    if (!isEmpty(filter)) {
+      const matchedUsers = await this.users.find({ [filter.field]: { $regex: filter.value } });
+      totalItems = matchedUsers.length;
+    } else {
+      totalItems = await this.users.countDocuments();
+    }
+
+    const totalPages = Math.ceil(totalItems / pagination?.limit) || 1;
+    const currentPage = pagination?.page || 1;
+    const hasMore = pagination?.page < totalPages || false;
+
+    return {
+      response: {
+        items: users.map(user => transformUser(user)),
+        totalItems,
+        totalPages,
+        currentPage,
+        hasMore,
+      },
+    };
   }
 
   async revokeRefreshTokensByUserId(userId: string): Promise<BooleanResponse> {
@@ -55,12 +93,12 @@ class UserService {
     return { response: transformUser(user) };
   }
 
-  async updateUser(updateUserInput: UpdateUserInput, userId: string): Promise<UserResponse> {
+  async updateUser(updateUserInput: UpdateUserInput): Promise<UserResponse> {
     const user = await this.users.findOneAndUpdate(
       {
-        _id: userId,
+        _id: updateUserInput.id,
       },
-      denest(updateUserInput),
+      denest(updateUserInput.changes),
       {
         new: true,
       },

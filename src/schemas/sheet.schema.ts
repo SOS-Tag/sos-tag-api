@@ -1,3 +1,4 @@
+import User from '@schemas/user.schema';
 import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType({ description: 'Sheet Treating Doctor Contact Schema' })
@@ -72,7 +73,7 @@ class Sheet {
   @Field(() => [SheetContact])
   emergencyContacts: [SheetContact];
 
-  @Field()
+  @Field(() => User)
   user: String;
 
   @Field(() => String)

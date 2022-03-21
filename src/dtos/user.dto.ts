@@ -24,8 +24,8 @@ class UpdateCurrentUserInput {
   activated: boolean;
 }
 
-@InputType({ description: 'Update user input' })
-class UpdateUserInput {
+@InputType({ description: 'User fields to be changed with an update operation' })
+class UpdateUserChangesInput {
   @Field()
   fname: string;
   @Field()
@@ -42,16 +42,18 @@ class UpdateUserInput {
   phone: string;
   @Field()
   nationality: string;
-  @Field(() => [String])
-  roles: string;
   @Field()
   password: string;
   @Field()
   activated: boolean;
+}
+
+@InputType({ description: 'Update user as admin input' })
+class UpdateUserInput {
   @Field()
-  confirmed: boolean;
+  id: string;
   @Field()
-  tokenVersion: number;
+  changes: UpdateUserChangesInput;
 }
 
 export { UpdateCurrentUserInput, UpdateUserInput };
