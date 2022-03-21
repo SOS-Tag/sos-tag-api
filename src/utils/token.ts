@@ -72,6 +72,7 @@ const refreshToken = async (req: Request, res: Response) => {
 const sendRefreshToken = (res: Response, token: string) => {
   res.cookie('jid', token, {
     httpOnly: true,
+    sameSite: 'lax',
     path: '/refresh_token',
   });
 };
