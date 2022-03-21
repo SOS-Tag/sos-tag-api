@@ -3,9 +3,29 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""Assign sheet to user input"""
+input AssignSheetToUserInput {
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
+  currentTreatment: String
+  dateOfBirth: DateTime
+  emergencyContacts: [SheetContactInput]
+  enabled: Boolean
+  fname: String
+  id: String
+  lname: String
+  medicalHistory: String
+  nationality: String
+  organDonor: Boolean
+  sex: String
+  smoker: Boolean
+  treatingDoctor: SheetDoctorContactInput
+}
+
 """Boolean response"""
 type BooleanResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: Boolean
 }
 
@@ -15,10 +35,28 @@ input ChangePasswordInput {
   token: String
 }
 
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
 """Error with message and the associated field"""
-type FieldError {
-  field: String
+type ExtendedError {
+  code: Float
+  fields: [InputError]
   message: String
+  retryAfter: Float
+  timestamp: String
+  title: String
+  type: String
+  wwwAuthenticate: String
+}
+
+"""Error with message"""
+type InputError {
+  detail: String
+  name: String
+  type: String
 }
 
 """Login input"""
@@ -29,7 +67,7 @@ input LoginInput {
 
 """Login response"""
 type LoginResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: LoginResponseData
 }
 
@@ -39,7 +77,16 @@ type LoginResponseData {
   user: User
 }
 
+"""Login with Google input"""
+input LoginWithGoogleInput {
+  token: String
+  tokenId: String
+}
+
 type Mutation {
+  """Assign an unassigned sheet to the current user."""
+  assignSheetToUser(assignSheetToUserInput: AssignSheetToUserInput): SheetResponse
+
   """
   Change the password of a specific user. It implies that the user has already made a modification request, as a token has to be generated to retrieve the user id.
   """
@@ -55,6 +102,12 @@ type Mutation {
   """
   createQRCode: QRCodeResponse
 
+  """Create an empty sheet."""
+  createSheet(count: Float): SheetsResponse
+
+  """Delete one of the current user sheets."""
+  deleteCurrentUserSheet(sheetId: String): SheetResponse
+
   """
   Send an email containing a link that redirect to change password dedicated route on the frontend. The link contains a token that, once decoded, will reveal the user id.
   """
@@ -63,19 +116,38 @@ type Mutation {
   """Log the user in using his email address and his password."""
   login(loginInput: LoginInput): LoginResponse
 
-  """Log the user out. He will no longer be authenticated."""
+  """Log the user in using his google account."""
+  loginWithGoogle(loginInput: LoginWithGoogleInput): LoginResponse
+
+  """
+  Log the user out. He will no longer be authenticated and will not have access to restricted and private resources anymore.
+  """
   logout: BooleanResponse
 
   """
   Register a new user. To complete the registration, the user will have to confirm his account by following the link that has been sent to him by email.
   """
   register(registerInput: RegisterInput): UserResponse
+
+  """
+  Resend an email containing a link to confirm the account of a specific user. The previous confirmation link sent to him when he registered can indeed be expired.
+  """
+  resendConfirmationLink(userEmail: String): BooleanResponse
+
+  """Update the currently logged in user."""
+  updateCurrentUser(updateCurrentUserInput: UpdateCurrentUserInput): UserResponse
+
+  """Update one of the current user sheets."""
+  updateCurrentUserSheet(updateCurrentUserSheetInput: UpdateCurrentUserSheetInput): SheetResponse
+
+  """Update user."""
+  updateUser(updateUserInput: UpdateUserInput): UserResponse
 }
 
 """Paginated QR Code response"""
 type PaginatedQRCodeResponse {
   currentPage: Int
-  errors: [FieldError!]
+  error: ExtendedError
   hasMore: Boolean
   items: [QRCode]
   totalPages: Int
@@ -97,13 +169,13 @@ type QRCode {
 
 """QR Code response"""
 type QRCodeResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: QRCode
 }
 
 """QR Codes response"""
 type QRCodesResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [QRCode!]
 }
 
@@ -119,6 +191,18 @@ type Query {
   """
   qrCodesWithPagination(paginatorInput: PaginatorInput): PaginatedQRCodeResponse
 
+  """Get a sheet by its id as an admin."""
+  sheetById(sheetId: String): SheetResponse
+
+  """Get an active sheet by its id."""
+  sheetByScanning(sheetId: String): SheetResponse
+
+  """Get all sheets."""
+  sheets: SheetsResponse
+
+  """Get the sheets of the specified user."""
+  sheetsCurrentUser: SheetsResponse
+
   """Get a user by his id."""
   userById(userId: String): UserResponse
 
@@ -132,34 +216,161 @@ type Query {
 """Register input"""
 input RegisterInput {
   email: String
-  firstname: String
-  lastname: String
+  fname: String
+  lname: String
   password: String
   phone: String
+}
+
+"""Sheet Schema"""
+type Sheet {
+  _id: String
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
+  createdAt: String
+  currentTreatment: String
+  dateOfBirth: String
+  emergencyContacts: [SheetContact]
+  enabled: Boolean
+  fname: String
+  lname: String
+  medicalHistory: String
+  nationality: String
+  organDonor: Boolean
+  sex: String
+  smoker: Boolean
+  treatingDoctor: SheetDoctorContact
+  updatedAt: String
+  user: String
+}
+
+"""Sheet Contact Schema"""
+type SheetContact {
+  fname: String
+  lname: String
+  phone: String
+  role: String
+}
+
+"""Sheet emergency contact field to be changed with an update operation"""
+input SheetContactInput {
+  fname: String
+  lname: String
+  phone: String
+  role: String
+}
+
+"""Sheet Treating Doctor Contact Schema"""
+type SheetDoctorContact {
+  fname: String
+  lname: String
+  phone: String
+}
+
+"""Sheet doctor contact field to be changed with an update operation"""
+input SheetDoctorContactInput {
+  fname: String
+  lname: String
+  phone: String
+}
+
+"""Sheet response"""
+type SheetResponse {
+  error: ExtendedError
+  response: Sheet
+}
+
+"""Sheets response"""
+type SheetsResponse {
+  error: ExtendedError
+  response: [Sheet!]
+}
+
+"""Update currently logged in user input"""
+input UpdateCurrentUserInput {
+  activated: Boolean
+  address: String
+  city: String
+  email: String
+  fname: String
+  lname: String
+  nationality: String
+  password: String
+  phone: String
+  zipCode: String
+}
+
+"""Sheet fields to be changed with an update operation"""
+input UpdateCurrentUserSheetChangesInput {
+  advanceDirectives: Boolean
+  allergies: String
+  bloodType: String
+  currentTreatment: String
+  dateOfBirth: DateTime
+  emergencyContacts: [SheetContactInput]
+  enabled: Boolean
+  fname: String
+  lname: String
+  medicalHistory: String
+  nationality: String
+  organDonor: Boolean
+  sex: String
+  smoker: Boolean
+  treatingDoctor: SheetDoctorContactInput
+}
+
+"""Update Sheet input"""
+input UpdateCurrentUserSheetInput {
+  changes: UpdateCurrentUserSheetChangesInput
+  id: String
+}
+
+"""Update user input"""
+input UpdateUserInput {
+  activated: Boolean
+  address: String
+  city: String
+  confirmed: Boolean
+  email: String
+  fname: String
+  lname: String
+  nationality: String
+  password: String
+  phone: String
+  roles: [String]
+  tokenVersion: Float
+  zipCode: String
 }
 
 """User Schema"""
 type User {
   _id: ID
+  activated: Boolean
+  address: String
+  city: String
   confirmed: Boolean
   createdAt: String
   email: String
-  firstname: String
-  lastname: String
+  fname: String
+  lname: String
+  nationality: String
   password: String
   phone: String
+  roles: [String]
   tokenVersion: Int
   updatedAt: String
+  zipCode: String
 }
 
 """User response"""
 type UserResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: User
 }
 
 """Users response"""
 type UsersResponse {
-  errors: [FieldError!]
+  error: ExtendedError
   response: [User!]
 }

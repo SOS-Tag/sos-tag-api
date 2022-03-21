@@ -1,57 +1,73 @@
-import { capitalizeFirstLetter, containsOnlySpaces } from '@utils/string';
-import { ChangePasswordInput, LoginInput, RegisterInput } from '@dtos/auth.dto';
+import { ChangePasswordInput, LoginInput, LoginWithGoogleInput, RegisterInput } from '@dtos/auth.dto';
 import CustomRegex from '@interfaces/custom-regex.interface';
+import { FieldErrorsMap, FieldErrorTypes, Input } from '@utils/error';
 import { isEmpty } from '@utils/object';
-import { emailRegex, passwordRegex, phoneRegex } from './regex';
-import { Request } from 'express';
+import { capitalizeFirstLetter, containsOnlySpaces, nullableString } from '@utils/string';
+import { emailRegex, passwordRegex, phoneRegex } from '@validators/utils/regex';
+
+type PotentialyEmptyArgs =
+  | ChangePasswordInput
+  | LoginInput
+  | LoginWithGoogleInput
+  | RegisterInput
+  | { token: string }
+  | { email: string }
+  | { sheetId: string }
+  | { userId: string };
+type PotentialyInvalidArgs = Pick<ChangePasswordInput, 'password'> | LoginInput | Omit<RegisterInput, 'fname' | 'lname'>;
 
 const validators = {
-  isEmailValid: function (input: string, req: Request) {
-    return isValid(input, emailRegex, req);
+  isEmailValid: function (input: string) {
+    return isValid(input, emailRegex);
   },
-  isPasswordValid: function (input: string, req: Request) {
-    return isValid(input, passwordRegex, req);
+  isPasswordValid: function (input: string) {
+    return isValid(input, passwordRegex);
   },
-  isPhoneValid: function (input: string, req: Request) {
-    return isValid(input, phoneRegex, req);
+  isPhoneValid: function (input: string) {
+    return isValid(input, phoneRegex);
   },
 };
 
-const isValid = (input: string, customRegex: CustomRegex, req: Request): string | null => {
-  if (!customRegex.regex.test(input)) return req.t(customRegex.errorMessage);
+const isValid = (input: string, customRegex: CustomRegex): nullableString => {
+  if (!customRegex.regex.test(input)) return customRegex.errorMessage;
   return null;
 };
 
-const emptyArgsExist = (
-  input: ChangePasswordInput | LoginInput | RegisterInput | { token: string } | { email: string },
-  req: Request,
-): Record<string, string> => {
-  const emptyArgs = {};
+const emptyArgsExist = (input: PotentialyEmptyArgs): FieldErrorsMap<Input> => {
+  const emptyArgs = {} as FieldErrorsMap<Input>;
   for (const [key, value] of Object.entries(input)) {
     if (isEmpty(value) || containsOnlySpaces(value)) {
-      emptyArgs[key] = req.t('error.empty_input', { what: capitalizeFirstLetter(req.t(`input.${key}_with_article`)) });
+      emptyArgs[key] = {
+        type: FieldErrorTypes.empty,
+        name: key,
+        detail: `The ${key} is required.`,
+      };
     }
   }
   return emptyArgs;
 };
 
-const invalidArgsExist = (
-  input: Pick<ChangePasswordInput, 'password'> | LoginInput | Omit<RegisterInput, 'firstname' | 'lastname'>,
-  req: Request,
-): Record<string, string> => {
-  const invalidArgs = {};
+const invalidArgsExist = (input: PotentialyInvalidArgs): FieldErrorsMap<Input> => {
+  const invalidArgs = {} as FieldErrorsMap<Input>;
   for (const [key, value] of Object.entries(input)) {
     const validator = `is${capitalizeFirstLetter(key)}Valid`;
 
     if (!Object.keys(validators).includes(validator))
       throw new Error(`${capitalizeFirstLetter(key)} has no corresponding validator method (${validator} function not found)`);
-    const error = validators[validator](value, req);
+
+    const error = validators[validator](value);
 
     if (error) {
-      invalidArgs[key] = error;
+      invalidArgs[key] = {
+        type: FieldErrorTypes.invalid,
+        name: key,
+        detail: error,
+      };
     }
   }
+
   return invalidArgs;
 };
 
+export type { Input };
 export { emptyArgsExist, invalidArgsExist, validators };

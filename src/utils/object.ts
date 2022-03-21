@@ -1,3 +1,8 @@
+const applyVariable = (str: string, variable: string) => {
+  const toReplace = str.slice(str.indexOf('{'), str.lastIndexOf('}') + 1);
+  return str.replace(toReplace, variable);
+};
+
 const isEmpty = (value: string | number | object): boolean => {
   if (value === null) {
     return true;
@@ -17,4 +22,43 @@ const filterObject = (obj: Object, predicate: Function): any =>
     .filter(key => predicate(obj[key]))
     .reduce((res, key) => ((res[key] = obj[key]), res), {});
 
-export { isEmpty, filterObject };
+/**
+ * Deinterleaves nested props at the root of the object
+ * @example
+ * {
+ *    organDonor: true,
+ *    treatingDoctor: {
+ *      phone: '0621548962',
+ *      address: {
+ *        street: '1st avenue',
+ *        city: 'Vancouver',
+ *      },
+ *    },
+ *  }
+ *
+ *  gives
+ *
+ *  {
+ *    organDonor: true,
+ *    'treatingDoctor.phone': '0621548962',
+ *    'treatingDoctor.address.street': '1st avenue',
+ *    'treatingDoctor.address.city': 'Vancouver',
+ *  }
+ */
+const denest = (obj: object, currentPath = '') =>
+  Object.entries(obj)
+    .map(([key, val]) => {
+      if (val.toString() !== '[object Object]') {
+        const prop = `${currentPath}${key}`;
+        const res = {};
+        res[prop] = val;
+        return res;
+      } else if (Array.isArray(val)) {
+        return { [key]: val };
+      } else {
+        return denest(val, `${currentPath}${key}.`);
+      }
+    })
+    .reduce((acc, e) => ({ ...acc, ...e }), {});
+
+export { applyVariable, denest, isEmpty, filterObject };

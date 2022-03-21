@@ -1,10 +1,14 @@
+import redis from '@/redis';
+import { confirmUserPrefix, forgotPasswordPrefix } from '@constants/redis-prefixes';
+import { oneDay } from '@constants/time';
 import { ContextPayload } from '@interfaces/context.interface';
 import tokenConfig from '@interfaces/token.interface';
-import accountModel, { IUser } from '@models/user.model';
+import userModel, { IUser } from '@models/user.model';
 import config from 'config';
 import 'dotenv/config';
 import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
+import { nanoid } from 'nanoid';
 
 const { duration: accessTokenDuration }: tokenConfig = config.get('accessToken');
 const { duration: refreshTokenDuration }: tokenConfig = config.get('refreshToken');
@@ -12,27 +16,28 @@ const { duration: refreshTokenDuration }: tokenConfig = config.get('refreshToken
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
-const createAccessToken = (account: IUser) => {
+const createAccessToken = (user: IUser) => {
   return sign(
     {
-      accountId: account.id,
+      userId: user.id,
+      roles: user.roles,
     },
     accessTokenSecret,
     {
-      expiresIn: `${accessTokenDuration}m`, // What access token duration do we want? Do we want differences between dev, prod and test mode?
+      expiresIn: `${accessTokenDuration}m`,
     },
   );
 };
 
-const createRefreshToken = (account: IUser) => {
+const createRefreshToken = (user: IUser) => {
   return sign(
     {
-      userId: account.id,
-      tokenVersion: account.tokenVersion,
+      userId: user.id,
+      tokenVersion: user.tokenVersion,
     },
     refreshTokenSecret,
     {
-      expiresIn: `${refreshTokenDuration}d`, // What refresh token duration do we want? Do we want differences between dev, prod and test mode?
+      expiresIn: `${refreshTokenDuration}d`,
     },
   );
 };
@@ -50,19 +55,18 @@ const refreshToken = async (req: Request, res: Response) => {
     return res.send({ ok: false, accessToken: '' });
   }
 
-  // Refresh token is valid and we can send back an access token
-  const account: IUser = await accountModel.findOne({ _id: payload.userId });
+  const user: IUser = await userModel.findOne({ _id: payload.userId });
 
-  if (!account) {
+  if (!user) {
     return res.send({ ok: false, accessToken: '' });
   }
 
-  if (account.tokenVersion !== payload.tokenVersion) {
+  if (user.tokenVersion !== payload.tokenVersion) {
     return res.send({ ok: false, accessToken: '' });
   }
 
-  sendRefreshToken(res, createRefreshToken(account));
-  return res.send({ ok: true, accessToken: createAccessToken(account) });
+  sendRefreshToken(res, createRefreshToken(user));
+  return res.send({ ok: true, accessToken: createAccessToken(user) });
 };
 
 const sendRefreshToken = (res: Response, token: string) => {
@@ -72,4 +76,14 @@ const sendRefreshToken = (res: Response, token: string) => {
   });
 };
 
-export { createAccessToken, createRefreshToken, refreshToken, sendRefreshToken };
+const setConfirmationToken = async (userId: string, token = nanoid(), expirationTime = oneDay) => {
+  await redis.set(confirmUserPrefix + token, userId, 'ex', expirationTime);
+  return token;
+};
+
+const setForgotPasswordToken = async (userId: string, token = nanoid(), expirationTime = oneDay) => {
+  await redis.set(forgotPasswordPrefix + token, userId, 'ex', expirationTime);
+  return token;
+};
+
+export { createAccessToken, createRefreshToken, refreshToken, sendRefreshToken, setConfirmationToken, setForgotPasswordToken };

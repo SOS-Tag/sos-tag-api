@@ -2,35 +2,35 @@ process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
 
 import 'reflect-metadata';
 
-import { __prod__ } from '@constants/env';
+import { NodeEnvironment, __prod__ } from '@constants/env';
+import Context from '@interfaces/context.interface';
 import AuthResolver from '@resolvers/auth.resolver';
 import QRCodeResolver from '@resolvers/qrcode.resolver';
+import SheetResolver from '@resolvers/sheet.resolver';
 import UserResolver from '@resolvers/user.resolver';
 import { logger, stream } from '@utils/logger';
+import { createConnection } from '@utils/mongoose';
+import { googleOauthHandler } from '@utils/oauth';
+import { refreshToken } from '@utils/token';
 import { ApolloServer, ExpressContext } from 'apollo-server-express';
 import compression from 'compression';
 import config from 'config';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import 'dotenv-safe/config';
-import express from 'express';
-import { GraphQLSchema } from 'graphql';
+import express, { Application } from 'express';
+import { GraphQLError, GraphQLSchema } from 'graphql';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import i18next from 'i18next';
-import Backend from 'i18next-fs-backend';
-import middleware from 'i18next-http-middleware';
-import { connect, ConnectOptions, set } from 'mongoose';
 import morgan from 'morgan';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
-import { refreshToken } from '@utils/token';
-import dbConnection from '@databases';
-import Context from '@interfaces/context.interface';
 import ejs from 'ejs'
+import dbConnection from '@databases';
+import { generateExtendedApolloError } from '@utils/apollo-error';
 
 class Server {
-  public express: express.Application;
+  public express: Application;
   public apollo: ApolloServer<ExpressContext>;
   public port: string | number;
   public env: string;
@@ -40,7 +40,7 @@ class Server {
     this.express = express();
 
     this.port = process.env.PORT || 8080;
-    this.env = process.env.NODE_ENV || 'development';
+    this.env = process.env.NODE_ENV || NodeEnvironment.development;
 
     this.initialize();
   }
@@ -49,9 +49,8 @@ class Server {
     this.express.set('proxy', 1);
     this.express.use(express.static('public'))
 
-    await this.buildGraphQLSchema();
     await this.connectToDatabase();
-    this.initializeTranslation();
+    await this.buildGraphQLSchema();
     this.initializeMiddlewares();
     this.initializeRoutes();
     await this.initializeApolloServer();
@@ -59,7 +58,7 @@ class Server {
 
   private async buildGraphQLSchema() {
     this.schema = await buildSchema({
-      resolvers: [AuthResolver, QRCodeResolver, UserResolver],
+      resolvers: [AuthResolver, QRCodeResolver, SheetResolver, UserResolver],
       emitSchemaFile: true,
       nullableByDefault: true,
       container: Container,
@@ -67,17 +66,7 @@ class Server {
   }
 
   private async connectToDatabase() {
-    if (!__prod__) {
-      set('debug', true);
-    }
-
-    try {
-      await connect(dbConnection.url, dbConnection.options as ConnectOptions);
-    } catch (error) {
-      logger.error(`[mongoose:connect] ${error.message}.`);
-      throw error;
-    }
-    logger.info('[mongoose:connect] The connection with the database has been established successfully.');
+    await createConnection();
   }
 
   public get() {
@@ -88,6 +77,9 @@ class Server {
     this.apollo = new ApolloServer({
       schema: this.schema,
       context: ({ req, res }) => ({ req, res } as Context),
+      formatError: (error: GraphQLError) => {
+        return generateExtendedApolloError(error);
+      },
     });
 
     await this.apollo.start();
@@ -102,12 +94,12 @@ class Server {
     this.express.use(hpp());
     this.express.use(helmet({ contentSecurityPolicy: __prod__ ? undefined : false }));
     this.express.use(compression());
-    this.express.use(middleware.handle(i18next));
   }
 
   private initializeRoutes() {
     this.express.get('/', (_, res) => res.send(`SOS-Tag API (alpha version)`));
     this.express.post('/refresh_token', (req, res) => refreshToken(req, res));
+    this.express.get('/oauth/google', (req, res) => googleOauthHandler(req, res));
     this.express.get('/:id', (req, res) => {
       res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
       // TEMPORARY, replace with data from database
@@ -154,20 +146,8 @@ class Server {
     });
   }
 
-  private initializeTranslation() {
-    i18next
-      .use(Backend)
-      .use(middleware.LanguageDetector)
-      .init({
-        fallbackLng: 'en',
-        backend: {
-          loadPath: `${__dirname}/locales/{{lng}}/translation.json`,
-        },
-      });
-  }
-
   public listen() {
-    this.express.listen(typeof this.port === 'string' ? parseInt(this.port) : this.port, () => {
+    return this.express.listen(typeof this.port === 'string' ? parseInt(this.port) : this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} ========`);
       logger.info(`  App listening on port ${this.port}  `);

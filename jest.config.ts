@@ -10,6 +10,8 @@ export default async (): Promise<Config.InitialOptions> => {
     transform: {
       '^.+\\.tsx?$': 'ts-jest',
     },
+    setupFiles: ['<rootDir>/src/__tests__/utils/set-up.ts'],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src' }),
+    testPathIgnorePatterns: ['<rootDir>/src/__tests__/utils'],
   };
 };

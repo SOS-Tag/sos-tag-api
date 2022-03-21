@@ -1,11 +1,14 @@
-import { UserResponse, UsersResponse } from '@responses/user.response';
+import { UpdateCurrentUserInput, UpdateUserInput } from '@/dtos/user.dto';
 import Context from '@interfaces/context.interface';
-import { isAuth } from '@middlewares/is-auth.middleware';
+import isAuthenticated from '@/middlewares/is-authenticated.middleware';
+import { isAuthorizedAsAdmin } from '@/middlewares/is-authorized.middleware';
+import { UserResponse, UsersResponse } from '@responses/user.response';
 import UserSchema from '@schemas/user.schema';
 import UserService from '@services/user.service';
+import { getErrorMessage } from '@utils/error';
 import { logger } from '@utils/logger';
 import { verify } from 'jsonwebtoken';
-import { Arg, Ctx, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Service } from 'typedi';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -28,31 +31,58 @@ class UserResolver {
       const currentUser = await this.userById(payload.userId);
       return currentUser;
     } catch (error) {
-      logger.error(`[resolver:User:currentUser] ${error.message}.`);
+      logger.error(`[resolver:User:currentUser] ${getErrorMessage(error)}.`);
       return null;
     }
   }
 
+  @Mutation(() => UserResponse, { description: 'Update the currently logged in user.' })
+  @UseMiddleware(isAuthenticated)
+  async updateCurrentUser(
+    @Ctx() { payload }: Context,
+    @Arg('updateCurrentUserInput') updateCurrentUserInput: UpdateCurrentUserInput,
+  ): Promise<UserResponse> {
+    try {
+      const updateCurrentUserResponse = await this.userService.updateCurrentUser(updateCurrentUserInput, payload.userId);
+      return updateCurrentUserResponse;
+    } catch (error) {
+      logger.error(`[resolver:User:updateCurrentUser] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => UserResponse, { description: 'Update user.' })
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async updateUser(@Ctx() { payload }: Context, @Arg('updateUserInput') updateUserInput: UpdateUserInput): Promise<UserResponse> {
+    try {
+      const updateUserResponse = await this.userService.updateUser(updateUserInput, payload.userId);
+      return updateUserResponse;
+    } catch (error) {
+      logger.error(`[resolver:User:updateUser] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
   @Query(() => UserResponse, { description: 'Get a user by his id.' })
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async userById(@Arg('userId') userId: string): Promise<UserResponse> {
     try {
       const user = await this.userService.findUserById(userId);
       return user;
     } catch (error) {
-      logger.error(`[resolver:User:userByID] ${error.message}.`);
+      logger.error(`[resolver:User:userByID] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
 
   @Query(() => UsersResponse, { description: 'Get all users.' })
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
   async users(): Promise<UsersResponse> {
     try {
       const users = await this.userService.findUsers();
       return users;
     } catch (error) {
-      logger.error(`[resolver:User:users] ${error.message}.`);
+      logger.error(`[resolver:User:users] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
