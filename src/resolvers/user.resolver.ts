@@ -37,6 +37,18 @@ class UserResolver {
     }
   }
 
+  @Mutation(() => UserResponse, { description: 'Delete a user as admin' })
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async deleteUser(@Arg('id') id: string): Promise<UserResponse> {
+    try {
+      const deleteUserResponse = await this.userService.deleteUser(id);
+      return deleteUserResponse;
+    } catch (error) {
+      logger.error(`[resolver:User:deleteUser] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
   @Mutation(() => UserResponse, { description: 'Update the currently logged in user.' })
   @UseMiddleware(isAuthenticated)
   async updateCurrentUser(

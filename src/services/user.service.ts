@@ -14,6 +14,15 @@ import { QueryOptions } from '../dtos/common.dto';
 class UserService {
   constructor(@Inject('USER') private readonly users: IUserModel) {}
 
+  async deleteUser(userId: string): Promise<UserResponse> {
+    const emptyArgs = emptyArgsExist({ userId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The userId is missing.', generateFieldErrors(emptyArgs)) };
+
+    await this.users.findByIdAndDelete(userId);
+    return { response: { _id: userId } };
+  }
+
   async findUserById(userId: string): Promise<UserResponse> {
     const emptyArgs = emptyArgsExist({ userId });
     if (!isEmpty(emptyArgs))
