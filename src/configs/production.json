@@ -15,7 +15,12 @@
       "dir": "../logs"
   },
   "cors": {
-      "origin": "http://localhost:3000",
+      "origin": [
+          "https://app.sostag.tech",
+          "https://qr.sostag.tech",
+          "https://admin.sostag.tech",
+          "http://localhost:3000"
+      ],
       "credentials": true
   }
 }
