@@ -60,6 +60,15 @@ class SheetService {
     return { response: { _id: sheetId } };
   }
 
+  async deleteSheet(sheetId: string): Promise<SheetResponse> {
+    const emptyArgs = emptyArgsExist({ sheetId });
+    if (!isEmpty(emptyArgs))
+      return { error: generateBadRequestError(ErrorTypes.emptyArgs, 'The sheetId is missing.', generateFieldErrors(emptyArgs)) };
+
+    await this.sheets.findByIdAndDelete(sheetId);
+    return { response: { _id: sheetId } };
+  }
+
   async findSheetById(sheetId: string): Promise<SheetResponse> {
     const emptyArgs = emptyArgsExist({ sheetId });
     if (!isEmpty(emptyArgs))

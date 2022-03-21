@@ -110,6 +110,9 @@ type Mutation {
   """Delete one of the current user sheets."""
   deleteCurrentUserSheet(sheetId: String): SheetResponse
 
+  """Delete a sheet as admin"""
+  deleteSheet(id: String): SheetResponse
+
   """Delete a user as admin"""
   deleteUser(id: String): UserResponse
 

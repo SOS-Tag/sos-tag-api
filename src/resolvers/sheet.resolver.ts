@@ -47,10 +47,22 @@ class SheetResolver {
   @UseMiddleware(isAuthenticated)
   async deleteCurrentUserSheet(@Ctx() { payload }: Context, @Arg('sheetId') sheetId: string): Promise<SheetResponse> {
     try {
-      const sheet = await this.sheetService.deleteCurrentUserSheet(sheetId, payload.userId);
-      return sheet;
+      const deleteSheetResponse = await this.sheetService.deleteCurrentUserSheet(sheetId, payload.userId);
+      return deleteSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:deleteCurrentUserSheet] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => SheetResponse, { description: 'Delete a sheet as admin' })
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async deleteSheet(@Arg('id') id: string): Promise<SheetResponse> {
+    try {
+      const deleteSheetResponse = await this.sheetService.deleteSheet(id);
+      return deleteSheetResponse;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:deleteSheet] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
