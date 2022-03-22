@@ -13,5 +13,7 @@ declare namespace NodeJS {
     GOOGLE_OAUTH_CLIENT_ID: string;
     GOOGLE_OAUTH_REDIRECT_URL: string;
     WEB_APP_GOOGLE_AUTH_URL: string;
+    WEB_APP_CONFIRMATION_URL: string;
+    WEB_APP_CHANGE_PASSWORD_URL: string;
   }
 }

@@ -7,6 +7,9 @@ import nodemailer from 'nodemailer';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import path from 'path';
 
+const changePasswordUrl = process.env.WEB_APP_CHANGE_PASSWORD_URL;
+const confirmationUrl = process.env.WEB_APP_CONFIRMATION_URL;
+
 const OAuth2 = google.auth.OAuth2;
 const OAuth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
 
@@ -14,14 +17,12 @@ OAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_CLIENT_REFRESH_T
 
 const createConfirmationUrl = async (userId: string) => {
   const token = await setConfirmationToken(userId);
-  // Must correspond to the dedicated route on the frontend
-  return `http://localhost:3000/auth/confirm/${token}`;
+  return `${confirmationUrl}/${token}`;
 };
 
 const createForgotPasswordUrl = async (userId: string) => {
   const token = await setForgotPasswordToken(userId);
-  // Must correspond to the dedicated route on the frontend
-  return `http://localhost:3000/auth/change-password/${token}`;
+  return `${changePasswordUrl}/${token}`;
 };
 
 enum emailAim {

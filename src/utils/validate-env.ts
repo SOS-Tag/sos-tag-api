@@ -16,6 +16,8 @@ const validateEnv = () => {
     GOOGLE_OAUTH_CLIENT_ID: str(),
     GOOGLE_OAUTH_REDIRECT_URL: url(),
     WEB_APP_GOOGLE_AUTH_URL: url(),
+    WEB_APP_CONFIRMATION_URL: url(),
+    WEB_APP_CHANGE_PASSWORD_URL: url(),
   });
 };
 
