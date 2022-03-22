@@ -1,24 +1,109 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SOS Tag</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;600;900&display=swap" rel="stylesheet"> 
 </head>
 
 <body>
-  <h1>Health sheet not found</h1>
-  <h2>Unable to find health sheet for <%= id %></h2>
+  <nav>
+    <img src="sos-tag_logo-full.svg" alt="sos-tag logo">
+  </nav>
+
+  <header>
+    <h1>Health sheet not found</h1>
+    <h2>Unable to find health sheet for <%= id %> ...</h2>
+  </header>
 </body>
 
 <style>
+  * {
+    padding: 0;
+    margin: 0;
+    color: #19224F;
+    font-family: "Source Sans Pro";
+    box-sizing: border-box;
+  }
+  html {
+    height: 100%;
+    width: 100%;
+  }
   body {
-    background-color: #eee;
-    line-height: 1.5;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    color: #333;
+    height: 100%;
+    width: 100%;
+    background: #F9F9F9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+  }
+  nav {
+    width: 100vw;
+    height: 80px;
+    background: #FFF;
+    display: flex;
+    align-items: center;
+  }
+  img {
+    height: 75%;
+    margin-left: 5vw;
+  }
+  h1 {
+    font-weight: 900;
+    font-size: 48px;
+    margin-bottom: 2rem;
+  }
+  header {
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+  }
+  p {
+    font-weight: 300;
+    font-size: 18px;
+  }
+  .infos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .infos > fieldset {
+    min-width: 50%;
+    border: none;
+    margin-top: 2vh;
+    margin-top: 2vw;
+  }
+  fieldset > legend {
+    font-weight: 300;
+    font-size: 16px;
+  }
+  fieldset > label, li {
+    font-weight: 600;
+    font-size: 18px;
+  }
+  ul, li {
+    margin-left: 1rem;
+  }
+
+  @media screen and (max-width: 600px) {
+    .infos {
+      flex-direction: column;
+    }
+    fieldset {
+      margin-top: 8vw;
+      margin-bottom: 8vw;
+    }
+    .container {
+      padding: 8vw;
+    }
   }
 </style>
-
 </html>
