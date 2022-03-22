@@ -24,10 +24,9 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
-import ejs from 'ejs'
-import dbConnection from '@databases';
+import ejs from 'ejs';
 import { generateExtendedApolloError } from '@utils/apollo-error';
-import sheetModel from '@models/sheet.model'
+import sheetModel from '@models/sheet.model';
 
 class Server {
   public express: Application;
@@ -47,7 +46,7 @@ class Server {
 
   private async initialize() {
     this.express.set('proxy', 1);
-    this.express.use(express.static('public'))
+    this.express.use(express.static('public'));
 
     await this.connectToDatabase();
     await this.buildGraphQLSchema();
@@ -104,47 +103,47 @@ class Server {
 
     // MEDICAL SHEETS (Server Side Rendering)
     this.express.get('/:id', async (req, res) => {
-      const sheetData = await sheetModel.findById(req.params.id)
-      console.log(`--> --> sheetData : ${sheetData}`)
+      const sheetData = await sheetModel.findById(req.params.id);
+      console.log(`--> --> sheetData : ${sheetData}`);
       if (sheetData?.user) {
-        console.log('--> sheetData?.user found')
+        console.log('--> sheetData?.user found');
         if (sheetData.enabled) {
           // Render health sheet template filled with user data
-          console.log(`--> __dirname : ${__dirname}`)
-          res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
+          console.log(`--> __dirname : ${__dirname}`);
+          res.writeHead(200, { 'Content-Type': 'text/html;charset="utf-8"' });
           ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
             if (err) {
-              throw err
+              throw err;
             } else {
-            console.log('--> No error rendering template. --> res.end(template')
-              res.end(template)
+              console.log('--> No error rendering template. --> res.end(template');
+              res.end(template);
             }
-          })
+          });
         } else {
-          console.log('--> Sheet disabled')
-          res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
+          console.log('--> Sheet disabled');
+          res.writeHead(200, { 'Content-Type': 'text/html;charset="utf-8"' });
           ejs.renderFile(__dirname + '/templates/healthSheetDisabled.ejs', sheetData, {}, (err, template) => {
             if (err) {
-              throw err
+              throw err;
             } else {
-            console.log('--> No error rendering template. --> res.end(template')
-              res.end(template)
+              console.log('--> No error rendering template. --> res.end(template');
+              res.end(template);
             }
-          })
+          });
         }
       } else if (sheetData && !sheetData.user) {
-        console.log('----- EMPTY SHEET ------')
-        res.redirect('https://app.sostag.tech/sign-up')
+        console.log('----- EMPTY SHEET ------');
+        res.redirect('https://app.sostag.tech/sign-up');
       } else {
         // Sheet not found
-        res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
+        res.writeHead(200, { 'Content-Type': 'text/html;charset="utf-8"' });
         ejs.renderFile(__dirname + '/templates/healthSheetNotFound.ejs', { id: req.params.id }, {}, (err, template) => {
           if (err) {
-            throw err
+            throw err;
           } else {
-            res.end(template)
+            res.end(template);
           }
-        })
+        });
       }
     });
   }
