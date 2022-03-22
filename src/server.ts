@@ -108,11 +108,13 @@ class Server {
       const sheetData = await sheetModel.findById(req.params.id)
       console.log(`--> --> sheetData : ${sheetData}`)
       if (sheetData?.user) {
+        console.log('--> sheetData?.user found')
         // Render health sheet template filled with user data
         ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
           if (err) {
             throw err
           } else {
+          console.log('--> No error rendering template. --> res.end(template')
             res.end(template)
           }
         })
