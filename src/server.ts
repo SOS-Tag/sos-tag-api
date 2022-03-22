@@ -104,13 +104,13 @@ class Server {
 
     // MEDICAL SHEETS (Server Side Rendering)
     this.express.get('/:id', async (req, res) => {
-      res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
       const sheetData = await sheetModel.findById(req.params.id)
       console.log(`--> --> sheetData : ${sheetData}`)
       if (sheetData?.user) {
         console.log('--> sheetData?.user found')
         // Render health sheet template filled with user data
         console.log(`--> __dirname : ${__dirname}`)
+        res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
         ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
           if (err) {
             throw err
@@ -119,8 +119,12 @@ class Server {
             res.end(template)
           }
         })
+      } else if (sheetData && !sheetData.user) {
+        console.log('----- EMPTY SHEET ------')
+        res.redirect('https://app.sostag.tech/sign-up')
       } else {
         // Sheet not found
+        res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
         ejs.renderFile(__dirname + '/templates/healthSheetNotFound.ejs', { id: req.params.id }, {}, (err, template) => {
           if (err) {
             throw err
