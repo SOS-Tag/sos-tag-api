@@ -110,7 +110,8 @@ class Server {
       if (sheetData?.user) {
         console.log('--> sheetData?.user found')
         // Render health sheet template filled with user data
-        ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
+        console.log(`--> __dirname : ${__dirname}`)
+        ejs.renderFile('./templates/sostag.ejs', sheetData, {}, (err, template) => {
           if (err) {
             throw err
           } else {
@@ -120,7 +121,7 @@ class Server {
         })
       } else {
         // Sheet not found
-        ejs.renderFile(__dirname + '/templates/healthSheetNotFound.ejs', { id: req.params.id }, {}, (err, template) => {
+        ejs.renderFile('./templates/healthSheetNotFound.ejs', { id: req.params.id }, {}, (err, template) => {
           if (err) {
             throw err
           } else {
