@@ -148,4 +148,10 @@ class UpdateSheetInput {
   changes: UpdateSheetChangesInput;
 }
 
-export { AssignSheetToUserInput, UpdateCurrentUserSheetInput, UpdateSheetInput };
+@InputType({ description: 'Create sheets from ids input' })
+class CreateSheetsFromIdsInput {
+  @Field(() => [String])
+  ids: string[];
+}
+
+export { AssignSheetToUserInput, CreateSheetsFromIdsInput, UpdateCurrentUserSheetInput, UpdateSheetInput };

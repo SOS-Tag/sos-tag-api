@@ -35,6 +35,11 @@ input ChangePasswordInput {
   token: String
 }
 
+"""Create sheets from ids input"""
+input CreateSheetsFromIdsInput {
+  ids: [String]
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
@@ -106,6 +111,9 @@ type Mutation {
 
   """Create an empty sheet."""
   createSheet(count: Float): SheetsResponse
+
+  """Create empty sheets with given ids."""
+  createSheetsFromIds(createSheetsFromIdsInput: CreateSheetsFromIdsInput): SheetsResponse
 
   """Delete one of the current user sheets."""
   deleteCurrentUserSheet(sheetId: String): SheetResponse

@@ -34,6 +34,11 @@ class SheetService {
     return { response: sheets.map(sheet => transformSheet(sheet)) };
   }
 
+  async createSheetsFromIds(ids: string[]): Promise<SheetsResponse> {
+    const sheets = await this.sheets.insertMany(ids.map(id => ({ _id: id })));
+    return { response: sheets.map(sheet => transformSheet(sheet)) };
+  }
+
   async assignSheetToUser(sheetData: AssignSheetToUserInput, userId: string): Promise<SheetResponse> {
     const sheetFound = await this.sheets.findById(sheetData.id);
     if (!sheetFound) return { error: generateNotFoundError(ErrorTypes.sheetNotFound, 'This sheet does not exist.') };

@@ -1,5 +1,5 @@
 import { QueryOptions } from '@dtos/common.dto';
-import { AssignSheetToUserInput, UpdateSheetInput, UpdateCurrentUserSheetInput } from '@dtos/sheet.dto';
+import { AssignSheetToUserInput, UpdateSheetInput, UpdateCurrentUserSheetInput, CreateSheetsFromIdsInput } from '@dtos/sheet.dto';
 import Context from '@interfaces/context.interface';
 import isAuthenticated from '@middlewares/is-authenticated.middleware';
 import isAuthorizedAsAdmin from '@middlewares/is-authorized.middleware';
@@ -24,6 +24,18 @@ class SheetResolver {
       return createSheetResponse;
     } catch (error) {
       logger.error(`[resolver:Sheet:createSheet] ${getErrorMessage(error)}.`);
+      throw error;
+    }
+  }
+
+  @Mutation(() => SheetsResponse, { description: 'Create empty sheets with given ids.' })
+  @UseMiddleware(isAuthenticated, isAuthorizedAsAdmin)
+  async createSheetsFromIds(@Arg('createSheetsFromIdsInput') idsInput: CreateSheetsFromIdsInput): Promise<SheetsResponse> {
+    try {
+      const createSheetsFromIdsResponse = await this.sheetService.createSheetsFromIds(idsInput.ids);
+      return createSheetsFromIdsResponse;
+    } catch (error) {
+      logger.error(`[resolver:Sheet:createSheetsFromIds] ${getErrorMessage(error)}.`);
       throw error;
     }
   }
