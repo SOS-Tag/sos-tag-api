@@ -10,14 +10,16 @@
 </head>
 
 <body>
-  <nav>
-    <img src="sos-tag_logo-full.svg" alt="sos-tag logo">
-  </nav>
+    <nav>
+      <img src="sos-tag_logo-full.svg" alt="sos-tag logo">
+    </nav>
 
-  <header>
-    <h1>Health sheet not found</h1>
-    <h2>Unable to find health sheet for <%= id %> ...</h2>
-  </header>
+  <div class='container'>
+    <header>
+      <h1>Cette fiche a été désactivée par son administrateur.</h1>
+    </header>
+  </div>
+
 </body>
 
 <style>
@@ -59,8 +61,7 @@
   }
   h1 {
     font-weight: 900;
-    font-size: 48px;
-    margin-bottom: 2rem;
+    font-size: 48;
   }
   header {
     margin-top: 5vh;
@@ -105,5 +106,7 @@
       padding: 8vw;
     }
   }
+
 </style>
+
 </html>

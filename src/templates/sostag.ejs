@@ -11,7 +11,7 @@
 
 <body>
     <nav>
-      <img src="sos-tag_logo-full.svg" alt="sos-tag logo">
+      <img src="sos-tag_logo-full.svg" alt="sos-tag logo" style="transform: scale(0.8);">
     </nav>
 
   <div class='container'>
@@ -32,6 +32,13 @@
       <fieldset>
         <legend>Date de naissance</legend>
           <label><%= dateOfBirth %></label>
+      </fieldset>
+      <% } %>
+
+      <% if (nationality) { %> 
+      <fieldset>
+        <legend>Nationalité</legend>
+          <label><%= nationality %></label>
       </fieldset>
       <% } %>
 
@@ -56,6 +63,13 @@
       </fieldset>
       <% } %>
 
+      <% if (advanceDirectives) { %> 
+      <fieldset>
+        <legend>Directives avancées</legend>
+          <label><%= advanceDirectives %></label>
+      </fieldset>
+      <% } %>
+
       <% if (allergies) { %> 
       <fieldset>
         <legend>Allergie(s) médicamenteuse(s)</legend>
@@ -76,6 +90,38 @@
             <label><%= currentTreatment %></label>
       </fieldset>
       <% } %>
+
+      <% if (treatingDoctor) { %> 
+      <fieldset>
+        <legend>Médecin traitant</legend>
+          <label>
+            <%= treatingDoctor.fname %> <%= treatingDoctor.lname %> <br>
+            <% if (treatingDoctor) { %>
+              <%= treatingDoctor.phone %>
+            <% } %>
+          </label>      
+        </fieldset>
+      <% } %>
+
+      <% if (emergencyContacts) { %> 
+      <fieldset>
+        <legend>Contacts d'urgence</legend>
+          <% for (let contact of emergencyContacts) { %>
+            <ul>
+              <li><%= contact.fname %> <%= contact.lname %></li>
+              <ul>
+                <% if (contact.role) { %>
+                  <li><%= contact.role %></li>
+                <% } %>
+                <% if (contact.phone) { %>
+                  <li><%= contact.phone %></li>
+                <% } %>
+              </ul>
+            </ul>
+          <% } %>
+        </fieldset>
+      <% } %>
+
     </section>
   </div>
 
@@ -87,6 +133,7 @@
     margin: 0;
     color: #19224F;
     font-family: "Source Sans Pro";
+    box-sizing: border-box;
   }
   html {
     height: 100%;
@@ -105,7 +152,6 @@
     display: flex;
     flex-direction: column;
     max-width: 800px;
-    padding: 5vw;
   }
   nav {
     width: 100vw;
@@ -154,6 +200,23 @@
     font-weight: 600;
     font-size: 18px;
   }
+  ul, li {
+    margin-left: 1rem;
+  }
+
+  @media screen and (max-width: 600px) {
+    .infos {
+      flex-direction: column;
+    }
+    fieldset {
+      margin-top: 8vw;
+      margin-bottom: 8vw;
+    }
+    .container {
+      padding: 8vw;
+    }
+  }
+
 </style>
 
 </html>
