@@ -11,7 +11,7 @@
     "test": "jest --forceExit --runInBand",
     "test:watch": "yarn test --watch --runInBand",
     "test:clearCache": "jest --clearCache",
-    "build": "tsc && npx tsc-alias",
+    "build": "tsc && npx tsc-alias && cp -r ./src/templates/ ./dist/",
     "lint": "eslint --ignore-path .gitignore --ext .ts src/",
     "lint:fix": "yarn lint --fix",
     "gen-env": "gen-env-types .env -o @types/env.d.ts -e ."
