@@ -108,17 +108,30 @@ class Server {
       console.log(`--> --> sheetData : ${sheetData}`)
       if (sheetData?.user) {
         console.log('--> sheetData?.user found')
-        // Render health sheet template filled with user data
-        console.log(`--> __dirname : ${__dirname}`)
-        res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
-        ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
-          if (err) {
-            throw err
-          } else {
-          console.log('--> No error rendering template. --> res.end(template')
-            res.end(template)
-          }
-        })
+        if (sheetData.enabled) {
+          // Render health sheet template filled with user data
+          console.log(`--> __dirname : ${__dirname}`)
+          res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
+          ejs.renderFile(__dirname + '/templates/sostag.ejs', sheetData, {}, (err, template) => {
+            if (err) {
+              throw err
+            } else {
+            console.log('--> No error rendering template. --> res.end(template')
+              res.end(template)
+            }
+          })
+        } else {
+          console.log('--> Sheet disabled')
+          res.writeHead(200, {'Content-Type': 'text/html;charset="utf-8"'})
+          ejs.renderFile(__dirname + '/templates/healthSheetDisabled.ejs', sheetData, {}, (err, template) => {
+            if (err) {
+              throw err
+            } else {
+            console.log('--> No error rendering template. --> res.end(template')
+              res.end(template)
+            }
+          })
+        }
       } else if (sheetData && !sheetData.user) {
         console.log('----- EMPTY SHEET ------')
         res.redirect('https://app.sostag.tech/sign-up')
