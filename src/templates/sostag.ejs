@@ -133,6 +133,7 @@
     margin: 0;
     color: #19224F;
     font-family: "Source Sans Pro";
+    box-sizing: border-box;
   }
   html {
     height: 100%;
@@ -151,7 +152,6 @@
     display: flex;
     flex-direction: column;
     max-width: 800px;
-    padding: 5vw;
   }
   nav {
     width: 100vw;
@@ -203,6 +203,20 @@
   ul, li {
     margin-left: 1rem;
   }
+
+  @media screen and (max-width: 600px) {
+    .infos {
+      flex-direction: column;
+    }
+    fieldset {
+      margin-top: 8vw;
+      margin-bottom: 8vw;
+    }
+    .container {
+      padding: 8vw;
+    }
+  }
+
 </style>
 
 </html>
